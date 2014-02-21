@@ -58,7 +58,7 @@ msgUtils_setStatus (mamaMsg msg, short status)
 mama_status
 msgUtils_msgTotal (mamaMsg msg, short *result)
 {
-    int32_t val;
+    int32_t val = 0;
     mama_status status;
 
     status = mamaMsg_getI32 (msg,
@@ -74,7 +74,7 @@ msgUtils_msgTotal (mamaMsg msg, short *result)
 mama_status
 msgUtils_msgNum (mamaMsg msg, short *result)
 {
-    int32_t val;
+    int32_t val = 0;
     mama_status status;
 
     status = mamaMsg_getI32 (msg,
