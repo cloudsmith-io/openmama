@@ -642,7 +642,7 @@ mamaInternal_getAllowMsgModify (void)
     return gAllowMsgModify;
 }
 
-static mama_status
+mama_status
 mama_openWithPropertiesCount (const char* path,
                               const char* filename,
                               unsigned int* count)
@@ -694,8 +694,7 @@ mama_openWithPropertiesCount (const char* path,
 
     if (0 != gImpl.myRefCount)
     {
-        if (MAMA_STATUS_OK == result)
-            gImpl.myRefCount++;
+        gImpl.myRefCount++;
         
         if (count)
             *count = gImpl.myRefCount;
@@ -768,6 +767,8 @@ mama_openWithPropertiesCount (const char* path,
 
     if (0 == numBridges)
     {
+        cleanupReservedFields();
+
         mama_log (MAMA_LOG_LEVEL_SEVERE,
                   "mama_openWithProperties(): "
                   "At least one bridge must be specified");
@@ -780,6 +781,8 @@ mama_openWithPropertiesCount (const char* path,
 
     if (!gDefaultPayload)
     {
+        cleanupReservedFields();
+
         mama_log (MAMA_LOG_LEVEL_SEVERE,
                   "mama_openWithProperties(): "
                   "At least one payload must be specified");
@@ -987,6 +990,14 @@ mama_open ()
 }
 
 mama_status
+mama_openCount (unsigned int* count)
+{
+    /*Passing NULL as path and filename will result in the
+     default behaviour - mama.properties on $WOMBAT_PATH*/
+    return mama_openWithPropertiesCount (NULL, NULL, count);
+}
+
+mama_status
 mama_openWithProperties (const char* path,
                          const char* filename)
 {
@@ -1098,7 +1109,7 @@ mama_getVersion (mamaBridge bridgeImpl)
     return mama_ver_string;
 }
 
-static mama_status
+mama_status
 mama_closeCount (unsigned int* count)
 {
     mama_status    result     = MAMA_STATUS_OK;
