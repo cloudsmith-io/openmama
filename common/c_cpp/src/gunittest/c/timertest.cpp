@@ -71,6 +71,10 @@ static void  onTimerFire(timerElement timer, void* closure)
     ASSERT_EQ (0, destroyTimer(closure,timer)) <<"Could not destroy timer!";
 }
 
+static void  onTimerFireNop(timerElement timer, void* closure)
+{
+}
+
 #if defined(__cplusplus)
 }
 #endif
@@ -140,7 +144,27 @@ TEST_F (CommonTimerTestC, createDestroyTimer)
 
 }
 
-/*  Description: Creates a timerHeap, starts dispatching  then creates   
+/*  Description: Creates a timerHeap, creates more than one timer using
+ *               the same pointer to ensure the existing one is destroyed.
+ */
+TEST_F (CommonTimerTestC, createDestroySameTimer)
+{
+    struct timeval  timeout;
+    timerElement    timer   = NULL;
+    timerHeap       heap    = NULL;
+
+    timeout.tv_sec  = 0;
+    timeout.tv_usec = 500;
+
+    ASSERT_EQ (0, createTimerHeap(&heap));
+    ASSERT_EQ (0, startDispatchTimerHeap(heap));
+    ASSERT_EQ (0, createTimer(&timer, heap, onTimerFireNop, &timeout, heap));
+    ASSERT_EQ (0, createTimer(&timer, heap, onTimerFireNop, &timeout, heap));
+    ASSERT_EQ (0, destroyTimer(heap, timer));
+    ASSERT_EQ (0, destroyHeap(heap));
+}
+
+/*  Description: Creates a timerHeap, starts dispatching  then creates
  *               100 timers which destroys themselves by callback. Heap is
  *               then destroyed.
  *  

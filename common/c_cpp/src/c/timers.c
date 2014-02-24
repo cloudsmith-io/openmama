@@ -242,6 +242,12 @@ writeagain:
                                &heapImpl->mEndingLock);
         }
         wthread_mutex_unlock (&heapImpl->mEndingLock);
+
+        wthread_join (heapImpl->mDispatchThread, NULL);
+
+        close (heapImpl->mSockPair[0]);
+        close (heapImpl->mSockPair[1]);
+
         free (heapImpl);
     }
     return 0;
@@ -255,6 +261,15 @@ int createTimer (timerElement* timer, timerHeap heap, timerFireCb cb, struct tim
 
     {
         timerHeapImpl* heapImpl = (timerHeapImpl*)heap;
+
+        if (*timer)
+        {
+            /* If the timer already exists ensure that it has been destroyed
+             * first before it is recreated again. */
+            destroyTimer (heap, *timer);
+            *timer = NULL;
+        }
+
         int kickPipe = 0;
         struct timeval now;
         timerImpl* nextTimeOut = NULL;
@@ -292,6 +307,7 @@ writeagain:
                 }
             }
         }
+
         wthread_mutex_unlock (&heapImpl->mLock);
 
         *timer = ele;

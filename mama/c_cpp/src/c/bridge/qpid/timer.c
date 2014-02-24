@@ -210,9 +210,6 @@ qpidBridgeMamaTimer_reset (timerBridge timer)
         return MAMA_STATUS_NULL_ARG;
     }
 
-    /* Destroy the existing timer element */
-    destroyTimer (gQpidTimerHeap, impl->mTimerElement);
-
     /* Calculate next time interval */
     timeout.tv_sec  = (time_t) impl->mInterval;
     timeout.tv_usec = ((impl->mInterval- timeout.tv_sec) * 1000000.0);
