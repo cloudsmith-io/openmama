@@ -62,6 +62,18 @@ typedef struct mamaDQPublisherManagerImpl_
 
 } mamaDQPublisherManagerImpl;
 
+static
+void cleanupPublisherMap (
+    wtable_t    t,
+    void*       data,
+    const char* key,
+    void*       closure)
+{
+    mamaPublishTopic* topic = (mamaPublishTopic*) data;
+
+    free ((char*)topic->symbol);
+    free (topic);
+}
 
 static void MAMACALLTYPE
 inboxMsgCb (mamaMsg msg, void *closure)
@@ -339,10 +351,14 @@ void mamaDQPublisherManager_destroy (mamaDQPublisherManager manager)
         }
 
         /* Destroy the publisher table. */
-        if(NULL != impl->mPublisherMap)
+        if (NULL != impl->mPublisherMap)
         {
-    wtable_destroy ( impl->mPublisherMap );
-}
+            wtable_clear_for_each (impl->mPublisherMap,
+                                   &cleanupPublisherMap,
+                                   NULL);
+
+            wtable_destroy (impl->mPublisherMap);
+        }
 
         /* Free the impl itself. */
         free(impl);
