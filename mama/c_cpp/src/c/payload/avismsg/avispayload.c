@@ -35,6 +35,7 @@
 
 #include "avispayload.h"
 #include "avismsgimpl.h"
+#include "msgfield.h"
 #include "msgfieldimpl.h"
 #include "../../bridge/avis/avisdefs.h"
 #include "platform.h"
@@ -638,6 +639,29 @@ avismsgPayload_getNativeMsg     (const msgPayload    msg,
 {
     CHECK_PAYLOAD(msg);
     *nativeMsg = msg;
+    return MAMA_STATUS_OK;
+}
+
+mama_status
+avismsgPayload_setAttributes (msgPayload  msg,
+                              Attributes* attributes)
+{
+    CHECK_PAYLOAD(msg);
+
+    attributes_destroy (avisPayload(msg));
+    avisPayload(msg) = attributes;
+
+    return MAMA_STATUS_OK;
+}
+
+mama_status
+avismsgPayload_copyAttributes (msgPayload  msg,
+                               Attributes* attributes)
+{
+    CHECK_PAYLOAD(msg);
+
+    attributes_copy (avisPayload(msg), attributes);
+
     return MAMA_STATUS_OK;
 }
 
@@ -1933,6 +1957,12 @@ avismsgPayloadIter_destroy       (msgPayloadIter iter)
 
     if (impl->mMsgIterator)
        attributes_iter_destroy(impl->mMsgIterator);
+
+    if (impl->mAvisField)
+    {
+        avismsgFieldPayload_destroy (impl->mAvisField);
+    }
+
     free(impl);
 
     return MAMA_STATUS_OK;
