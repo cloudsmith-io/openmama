@@ -1159,17 +1159,24 @@ mamaTransport_destroy (mamaTransport transport)
             mamaCmResponder_destroy (self->mCmResponder);
             self->mCmResponder = NULL;
         }
-        /* Inform all listeners that the transport is about to be destroyed. */
-        mamaTransportImpl_clearTransportWithListeners (self);
 
-        /* Destroy the array of listeners. */
-        list_destroy (self->mListeners, NULL, self);
+        if (self->mListeners)
+        {
+            /* Inform all listeners that the transport is about to be destroyed. */
+            mamaTransportImpl_clearTransportWithListeners (self);
 
-        /* Inform all publishers. */
-        mamaTransportImpl_clearTransportWithPublishers (self);
+            /* Destroy the array of listeners. */
+            list_destroy (self->mListeners, NULL, self);
+        }
 
-        /* Destroy the publisher list. */
-        list_destroy (self->mPublishers, NULL, self);
+        if (self->mPublishers)
+        {
+            /* Inform all publishers. */
+            mamaTransportImpl_clearTransportWithPublishers (self);
+
+            /* Destroy the publisher list. */
+            list_destroy (self->mPublishers, NULL, self);
+        }
 
         if (self->mRefreshTransport)
         {
