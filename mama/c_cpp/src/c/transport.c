@@ -1204,7 +1204,7 @@ mamaTransport_destroy (mamaTransport transport)
 
     for (i = 0; i < self->mNumTransports; i++)
     {
-        if (self->mTransports[1])
+        if (self->mTransports[i])
         {
             self->mBridgeImpl->bridgeMamaTransportDestroy (self->mTransports[i]);
         }
