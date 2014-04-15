@@ -807,11 +807,13 @@ mama_openWithPropertiesCount (const char* path,
     }
 
 #ifndef WITH_ENTITLEMENTS
+#if 0
     mama_log (MAMA_LOG_LEVEL_WARN,
                 "\n********************************************************************************\n"
                 "Note: This build of the MAMA API is not enforcing entitlement checks.\n"
                 "Please see the Licensing file for details\n"
                 "**********************************************************************************");
+#endif
 #else
     result = enableEntitlements (NULL);
     if (result != MAMA_STATUS_OK)
