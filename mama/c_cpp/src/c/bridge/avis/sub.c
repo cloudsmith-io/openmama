@@ -330,6 +330,18 @@ avisBridgeMamaSubscription_create (subscriptionBridge* subscriber,
     if (!avisTransport)
         return MAMA_STATUS_INVALID_ARG;
 
+    if (source != NULL && source[0])
+    {
+        impl->mSource = source;
+    }
+    else
+    {
+        impl->mSource = "";
+    }
+
+    if (!avisTransport)
+        return MAMA_STATUS_INVALID_ARG;
+
     /* Use a standard centralized method to determine a topic key */
     avisBridgeMamaSubscriptionImpl_generateSubjectKey (NULL,
                                                        source,
