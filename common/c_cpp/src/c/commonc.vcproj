@@ -409,6 +409,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\windows\mman.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fileparser.c"
+				>
+			</File>
+			<File
 				RelativePath=".\windows\network.c"
 				>
 			</File>
