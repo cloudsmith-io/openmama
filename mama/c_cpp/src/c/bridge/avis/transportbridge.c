@@ -33,7 +33,7 @@
 #include "transportbridge.h"
 #include "avisbridgefunctions.h"
 #include "avisdefs.h"
-#include "wombat/wInterlocked.h"
+#include <wombat/wInterlocked.h>
 
 #define TPORT_PREFIX    "mama.avis.transport"
 #define TPORT_PARAM     "url"

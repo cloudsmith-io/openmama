@@ -24,7 +24,7 @@
 
 #include <avis/elvin.h>
 #include <wombat/wSemaphore.h>
-#include "wombat/wInterlocked.h"
+#include <wombat/wInterlocked.h>
 
 #if defined(__cplusplus)
 extern "C" {

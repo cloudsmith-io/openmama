@@ -19,7 +19,6 @@
 
 #include "MainUnitTestC.h"
 #include <gtest/gtest.h>
-#include <pthread.h>
 #include "mama/mama.h"
 #include "mama/status.h"
 #include "mama/queue.h"
@@ -95,7 +94,7 @@ void lowWaterMarkCallback (mamaQueue queue, size_t size, void* closure)
     fixture->m_lowWaterMarkOccurance++;
 }
 
-void onEvent (mamaQueue queue, void* closure)
+void MAMACALLTYPE onEvent (mamaQueue queue, void* closure)
 {
     MamaQueueTestC* fixture = (MamaQueueTestC *)closure;
     fixture->m_eventCounter++;
@@ -109,7 +108,7 @@ void onEventNop (mamaQueue queue, void* closure)
 {
 }
 
-void onBgEvent (mamaQueue queue, void* closure)
+void MAMACALLTYPE onBgEvent (mamaQueue queue, void* closure)
 {
     MamaQueueTestC* fixture = (MamaQueueTestC *)closure;
 
@@ -123,15 +122,15 @@ void onBgEvent (mamaQueue queue, void* closure)
     }
 }
 
-void onEnqueue (mamaQueue queue, void* closure)
+void MAMACALLTYPE onEnqueue (mamaQueue queue, void* closure)
 {
 }
 
-void onHighWatermark (mamaQueue queue, size_t size, void* closure)
+void MAMACALLTYPE onHighWatermark (mamaQueue queue, size_t size, void* closure)
 {
 }
 
-void onLowWatermark (mamaQueue queue, size_t size, void* closure)
+void MAMACALLTYPE onLowWatermark (mamaQueue queue, size_t size, void* closure)
 {
 }
 
