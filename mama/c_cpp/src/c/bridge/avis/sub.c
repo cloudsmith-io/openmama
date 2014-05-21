@@ -419,10 +419,7 @@ avisBridgeMamaSubscription_destroy (subscriptionBridge subscriber)
 
     wsem_destroy(&avisSub(subscriber)->mCreateDestroySem);
 
-<<<<<<< HEAD
-=======
     free(avisSub(subscriber)->mSubject);
->>>>>>> a4b5c6a485b3cfb2b2e044bdd2fb5061cbe65d00
     free(avisSub(subscriber));
 
     return status;
