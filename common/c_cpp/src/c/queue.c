@@ -95,8 +95,8 @@ wombatQueue_allocate (wombatQueue *result)
     impl->mTail.mPrev = &impl->mHead;
     impl->mTail.mNext = &impl->mTail; /* for iteration */
 
-    wInterlocked_initialize(&impl->mUnblocking);
-    wInterlocked_set(0, &impl->mUnblocking);
+    wInterlocked_initialize (&impl->mUnblocking);
+    wInterlocked_set (0, &impl->mUnblocking);
 
     return WOMBAT_QUEUE_OK;
 }
@@ -164,7 +164,7 @@ wombatQueue_destroy (wombatQueue queue)
         result = WOMBAT_QUEUE_SEM_ERR;
     }
 
-    wInterlocked_destroy(&impl->mUnblocking);
+    wInterlocked_destroy (&impl->mUnblocking);
     
     wthread_mutex_destroy( &impl->mLock);
     free (impl);
