@@ -966,7 +966,10 @@ mamaLibraryManager_loadFunction (LIB_HANDLE  lib,
         if (snprintf (buf, MAX_LIBRARY_FUNCTION_NAME-1, funcAltSpec, funcAltName) < 0)
             return NULL;
 
-        func = loadLibFunc (lib, buf);
+        /* FIXME: Alternative function loaded from process space, but if we 
+         * want to load from the same (or different) library, a new parameter
+         * is required. */
+        func = loadLibFunc (NULL, buf);
         if (func)
             return func;
     }
