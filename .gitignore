@@ -8,6 +8,7 @@
 *.so
 *.lo
 *.la
+*.pyc
 
 # Temporary Directories #
 #########################
@@ -47,8 +48,15 @@ Thumbs.db
 *~
 *.swp
 
+# Scons files #
+###############
+.sconsign.dblite
+.sconf_temp/
+
 # OpenMAMA Specific #
 # ###################
+omama.conf
+objdir/
 common/c_cpp/aclocal.m4
 common/c_cpp/autom4te.cache/
 common/c_cpp/config.h
@@ -60,6 +68,17 @@ common/c_cpp/libtool
 common/c_cpp/src/c/properties.c
 common/c_cpp/src/c/version.h
 common/c_cpp/stamp-h1
+common/c_cpp/src/c/directory.c
+common/c_cpp/src/c/environment.c
+common/c_cpp/src/c/machine_port.c
+common/c_cpp/src/c/network.c
+common/c_cpp/src/c/platform.c
+common/c_cpp/src/c/wSemaphore.c
+common/c_cpp/src/c/wombat/port.h
+common/c_cpp/src/c/wombat/wConfig.h
+common/c_cpp/src/c/wombat/wInterlocked.h
+common/c_cpp/src/c/wombat/wMath.h
+common/c_cpp/src/c/wombat/wUuid.h
 mama/c_cpp/aclocal.m4
 mama/c_cpp/autom4te.cache/
 mama/c_cpp/config.h
@@ -74,3 +93,5 @@ mama/c_cpp/src/c/bridge/solace/Makefile.am
 mama/c_cpp/src/c/mama/version.h
 mama/c_cpp/src/c/version.c
 mama/c_cpp/stamp-h1
+mamda/c_cpp/src/cpp/version.c
+mamda/c_cpp/src/cpp/version.h

@@ -8,56 +8,60 @@ releaseString = env['versions']['mama']['releaseString']
 
 InstMamaInclude = \
     Split("""
-	mama/clientmanage.h 
-	mama/config.h 
-	mama/datetime.h 
-	mama/dictionary.h 
-    mama/error.h 
-	mama/fielddesc.h 
-	mama/inbox.h 
-	mama/io.h 
-	mama/log.h 
-	mama/mama.h 
-	mama/marketdata.h 
-    mama/middleware.h 
-	mama/msg.h 
-	mama/msgfield.h 
-	mama/msgqualifier.h 
-	mama/msgstatus.h 
-	mama/msgtype.h 
-	mama/price.h 
-	mama/publisher.h 
-    mama/dqpublisher.h 
-    mama/dqpublishermanager.h 
-	mama/quality.h 
-	mama/queue.h 
-	mama/reservedfields.h 
-	mama/senderId.h 
-	mama/servicelevel.h 
-	mama/source.h 
-	mama/sourceman.h 
-	mama/stat.h 
-	mama/statscollector.h 
-	mama/statfields.h 
-	mama/status.h 
-	mama/subscmsgtype.h 
-	mama/subscription.h 
-	mama/subscriptiontype.h 
-	mama/symbollist.h 
-	mama/ft.h 
-	mama/symbollistmember.h 
-	mama/symbollisttypes.h 
-    mama/symbolmap.h 
-	mama/symbolmapfile.h 
-	mama/timer.h 
-	mama/timezone.h 
-	mama/transport.h 
-	mama/types.h 
-	mama/version.h
+    mama/clientmanage.h
+    mama/config.h
+    mama/datetime.h
+    mama/dictionary.h
+    mama/error.h
+    mama/fielddesc.h
+    mama/inbox.h
+    mama/io.h
+    mama/library.h
+    mama/log.h
+    mama/mama.h
+    mama/marketdata.h
+    mama/middleware.h
+    mama/middlewaremanager.h
+    mama/msg.h
+    mama/msgfield.h
+    mama/msgqualifier.h
+    mama/msgstatus.h
+    mama/msgtype.h
+    mama/payloadmanager.h
+    mama/pluginmanager.h
+    mama/price.h
+    mama/publisher.h
+    mama/dqpublisher.h
+    mama/dqpublishermanager.h
+    mama/quality.h
+    mama/queue.h
+    mama/reservedfields.h
+    mama/senderId.h
+    mama/servicelevel.h
+    mama/source.h
+    mama/sourceman.h
+    mama/stat.h
+    mama/statscollector.h
+    mama/statfields.h
+    mama/status.h
+    mama/subscmsgtype.h
+    mama/subscription.h
+    mama/subscriptiontype.h
+    mama/symbollist.h
+    mama/ft.h
+    mama/symbollistmember.h
+    mama/symbollisttypes.h
+    mama/symbolmap.h
+    mama/symbolmapfile.h
+    mama/timer.h
+    mama/timezone.h
+    mama/transport.h
+    mama/types.h
+    mama/version.h
 """)
 
 InstConflInclude = Split("""
-    mama/conflation/connection.h 
+    mama/conflation/connection.h
 """)
 
 includePath = []
@@ -78,33 +82,39 @@ else:
 libmama_sources = \
     Split("""
     bridge.c
-	clientmanageresponder.c
+    clientmanageresponder.c
     datetime.c
-	dictionary.c
-	dqstrategy.c
+    defaultmanager.c
+    dictionary.c
+    dqstrategy.c
     error.c
-	fielddesc.c
-	imagerequest.c
-	listenermsgcallback.c
-	log.c
+    fielddesc.c
+    imagerequest.c
+    library.c
+    librarymanager.c
+    listenermsgcallback.c
+    log.c
     mama.c
     mamaStrUtils.c
-	marketdata.c
+    marketdata.c
     middleware.c
-	msg.c
-	msgfield.c
-	msgqualifier.c
-	msgstatus.c
-	msgtype.c
-	msgutils.c
+    middlewaremanager.c
+    msg.c
+    msgfield.c
+    msgqualifier.c
+    msgstatus.c
+    msgtype.c
+    msgutils.c
     publisher.c
     dqpublisher.c
     dqpublishermanager.c
     inbox.c
-	quality.c
-	reservedfields.c
-	senderId.c
-	servicelevel.c
+    payloadmanager.c
+    pluginmanager.c
+    quality.c
+    reservedfields.c
+    senderId.c
+    servicelevel.c
     queue.c
     io.c
     price.c
@@ -112,26 +122,26 @@ libmama_sources = \
     refreshtransport.c
     timer.c
     timezone.c
-	source.c
-	sourceman.c
+    source.c
+    sourceman.c
     status.c
-	stat.c
-	statscollector.c
-	statfields.c
-	statsgenerator.c
-	subscmsgtype.c
-	subscription.c
-	subscriptiontype.c
-	statslogger.c
-	statsloggerfields.c
-	symbollist.c
-	ft.c
+    stat.c
+    statscollector.c
+    statfields.c
+    statsgenerator.c
+    subscmsgtype.c
+    subscription.c
+    subscriptiontype.c
+    statslogger.c
+    statsloggerfields.c
+    symbollist.c
+    ft.c
     version.c
-	symbollistmember.c
-	symbolmapfile.c
-	syncresponder.c
-	throttle.c
-	transport.c
+    symbollistmember.c
+    symbolmapfile.c
+    syncresponder.c
+    throttle.c
+    transport.c
     fileutils.c
     playback/playbackFileParser.c
     playback/playbackpublisher.c
@@ -145,7 +155,7 @@ objects = []
 StaticLibs['libmama'] = []
 
 if env['entitled'] == True:
-    env.Append( 
+    env.Append(
         LIBPATH = [ os.path.join(env['entitle_home'],'lib') ],
         LIBS = ['oeac'],
         CPPDEFINES = ['WITH_ENTITLEMENTS'],

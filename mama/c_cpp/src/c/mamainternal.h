@@ -31,6 +31,14 @@ extern "C"
 #endif
 
 #define MAMA_PAYLOAD_MAX	CHAR_MAX
+
+/**
+* Return the entitlement string to say whether it is entitled or not
+*/
+MAMAExpDLL
+extern const char*
+mamaInternal_getEntitled (void);
+
 /**
 * Check whether Callbacks are run in 'debug' catch exceptions mode
 */
@@ -83,6 +91,9 @@ mamaInternal_findPayload (char id);
 
 mamaPayloadBridge
 mamaInternal_getDefaultPayload (void);
+
+void
+mamaInternal_setDefaultPayload (mamaPayloadBridge payloadBridge);
 
 mama_bool_t
 mamaInternal_getAllowMsgModify (void);

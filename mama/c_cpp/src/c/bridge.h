@@ -22,13 +22,14 @@
 #ifndef MamaBridgeH__
 #define MamaBridgeH__
 
-
 #include "mama/mama.h"
 #include "mama/io.h"
 #include "mama/subscmsgtype.h"
 #include "mamainternal.h"
 #include "conflation/manager_int.h"
 #include "wlock.h"
+#include "librarymanager.h"
+#include "wombat/wInterlocked.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -49,7 +50,6 @@ typedef struct  inboxBridge_*       inboxBridge;
 typedef struct  msgBridge_*         msgBridge;
 
 /* ******************************************************************************** */
-/* Definitions. */
 /* ******************************************************************************** */
 /* This define is the name of the property containing the timeout value when destroying
  * the default queue.
@@ -274,6 +274,17 @@ typedef mama_status (*bridge_stop)(mamaQueue defaultEventQueue);
 typedef const char* (*bridge_getVersion)(void);
 typedef const char* (*bridge_getName)(void);
 typedef mama_status (*bridge_getDefaultPayloadId)(char***name, char** id);
+
+/**
+ * Used to return various bridge related properties, which OpenMAMA may then
+ * query for information used during bridge management.
+ *
+ * @param[out] properties A wproperties_t object containing the required
+ *             properties data.
+ *
+ * @return mama_status indicating the success or failure of the call.
+ */
+typedef mama_status (*bridge_getBridgeProperties)(wproperty_t* properties);
 
 /*===================================================================
  =               mamaQueue bridge function pointers                 =
@@ -690,7 +701,7 @@ typedef mama_status
  */
 typedef struct mamaBridgeImpl_
 {
-    /* Used by mama_start() and mama_stop(). */
+    /* Old reference count, for backwards compatibility. */
     unsigned int mRefCount;
 
     /*The default event queue is now middleware specific. (Originally global)*/
@@ -838,6 +849,8 @@ typedef struct mamaBridgeImpl_
     bridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandle;
     bridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandleAndIncrement;
     bridgeMamaMsg_destroyReplyHandle        bridgeMamaMsgDestroyReplyHandle;
+
+    mamaMiddlewareLibrary mLibrary; /**< Back-reference to parent library */
 } mamaBridgeImpl;
 
 /*Functions for internal use only. Will be used from the C++ layer.*/

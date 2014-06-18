@@ -24,8 +24,6 @@
 #include "wombat/port.h"
 #include "platform.h"
 
-#define PATH_SEPERATOR "\\"
-
 /**
  * Functions relating to DLLs/shared objects
  */

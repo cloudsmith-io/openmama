@@ -765,13 +765,14 @@ void initializeMama (void)
     /*
         mama_setApplicationName should be called before mama_open().
     */
+
     if (gAppName)
     {
         mama_setApplicationName (gAppName);
     }
 
-    status = mama_loadBridge (&gMamaBridge, gMiddleware);
-
+    mama_loadBridge(&gMamaBridge, "avis");
+    
     if (gPrintVersionAndExit)
     {
         if (gMamaBridge != NULL)

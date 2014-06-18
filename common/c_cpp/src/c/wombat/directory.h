@@ -19,58 +19,27 @@
  * 02110-1301 USA
  */
 
-#include "wombat/port.h"
+#ifndef DIRECTORY_H__
+#define DIRECTORY_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-#include <wlock.h>
+#include "wombat/wConfig.h"
+#include "limits.h"
 
-typedef struct
-{
-    wthread_mutex_t    mMutex;
-} wLockImpl;
+typedef void (MAMACALLTYPE *fileNameCb)(const char* path, const char* filename, void* closure);
 
-
-wLock
-wlock_create( void )
-
-{
-    wLockImpl* rval = calloc(1, sizeof( wLockImpl ) );
-
-    wthread_mutexattr_t attr;
-    wthread_mutexattr_init (&attr);
-    wthread_mutexattr_settype (&attr, WTHREAD_MUTEX_RECURSIVE);
-    wthread_mutex_init (&rval->mMutex, &attr);
-
-    return( rval );
+COMMONExpDLL
+int enumerateDirectory (const char*  path,
+                        const char*  pattern,
+                        fileNameCb   cb,
+                        void*        closure);
+ 
+#if defined(__cplusplus)
 }
+#endif
 
-void
-wlock_destroy( wLock lock )
-{
-    if (!lock)
-        return;
+#endif /* DIRECTORY_H__ */
 
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_destroy( &impl->mMutex );
-    free( lock );
-}
-
-void
-wlock_lock( wLock lock )
-{
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_lock( &impl->mMutex );
-}
-
-void 
-wlock_unlock( wLock lock )
-{
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_unlock( &impl->mMutex );   
-}

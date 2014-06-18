@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <limits.h>
 
 #include "platform.h"
 #include "wombat/wincompat.h"
@@ -34,40 +35,21 @@
 char errorBuf[25];
 LIB_HANDLE openSharedLib (const char* libName, const char* path)
 {
-    size_t nameLength;
-    char* fileName;
-    LIB_HANDLE handle;
-
-    if (path) 
-    {
-        nameLength = strlen(path) + strlen(libName) + strlen(LIB_EXTENSION) + 
-                     strlen(PATHSEP) + strlen("lib") + 1;
-    }
-    else 
-    {
-        nameLength =  strlen(libName) + strlen(LIB_EXTENSION) + strlen("lib") + 1;
-    }
-    fileName = (char*) calloc (nameLength, sizeof (char));
-    if(fileName == NULL)
-    {
-        return 0;
-    }
+    char fileName[FILENAME_MAX];
 
     if (path)   
     {
-        snprintf (fileName, nameLength, "%s%slib%s%s", path, PATHSEP, libName, LIB_EXTENSION);
+        snprintf (fileName, FILENAME_MAX-1, "%s%slib%s%s", 
+                  path, PATHSEP, libName, LIB_EXTENSION);
     }
     else
     {
-        snprintf (fileName, nameLength, "lib%s%s", libName, LIB_EXTENSION);
+        snprintf (fileName, FILENAME_MAX-1, "lib%s%s", 
+                  libName, LIB_EXTENSION);
     }
 
-    handle = dlopen (fileName, RTLD_NOW | RTLD_GLOBAL);
-
-    free(fileName);
-    return handle;
+    return dlopen (fileName, RTLD_NOW | RTLD_GLOBAL);
 }
-
 
 int closeSharedLib (LIB_HANDLE handle)
 {

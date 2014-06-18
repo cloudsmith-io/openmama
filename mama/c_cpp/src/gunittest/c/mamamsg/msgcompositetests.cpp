@@ -37,8 +37,8 @@ protected:
 
     virtual void SetUp(void) 
     {
-        mama_loadPayloadBridge (&mPayloadBridge, getPayload());
-        mamaMsg_create (&mMsg);
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
     };
 
     virtual void TearDown(void) 
@@ -431,11 +431,23 @@ protected:
 
     MsgSubMsgTestsC() : m_out(NULL)
     {
-        mamaMsg_create(&m_in);
-        mamaMsg_create(&m_update);
     }
 
     ~MsgSubMsgTestsC()
+    {
+        //mamaMsg_destroy(m_in);
+        //mamaMsg_destroy(m_update);
+    }
+
+    virtual void SetUp()
+    {
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+        mamaMsg_createForPayloadBridge (&m_in, mPayloadBridge);
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
+        mamaMsg_createForPayloadBridge (&m_update, mPayloadBridge);
+    }
+
+    virtual void TearDown()
     {
         //mamaMsg_destroy(m_in);
         //mamaMsg_destroy(m_update);

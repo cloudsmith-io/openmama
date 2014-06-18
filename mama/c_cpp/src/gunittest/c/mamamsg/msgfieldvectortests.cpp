@@ -54,8 +54,8 @@ protected:
 
     virtual void SetUp(void) 
     {
-        mama_loadPayloadBridge (&mPayloadBridge, getPayload());
-        mamaMsg_create (&mMsg);
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
         mamaMsgField_create (&mField);
     };
 
@@ -969,7 +969,7 @@ protected:
 
         for (uint32_t i = 0 ; i < VECTOR_SIZE ; i++)
         {
-            mamaMsg_create (&mIn[i]);
+            mamaMsg_createForPayloadBridge (&mIn[i], mPayloadBridge);
         }
 
         mamaMsg_addVectorMsg (mMsg, NULL, 1, mIn, VECTOR_SIZE);

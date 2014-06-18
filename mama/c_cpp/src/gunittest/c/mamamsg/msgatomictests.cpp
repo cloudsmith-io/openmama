@@ -39,8 +39,8 @@ protected:
 
     virtual void SetUp(void) 
     {
-        mama_loadPayloadBridge (&mPayloadBridge, getPayload());
-        mamaMsg_create (&mMsg);
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
     };
 
     virtual void TearDown(void) 

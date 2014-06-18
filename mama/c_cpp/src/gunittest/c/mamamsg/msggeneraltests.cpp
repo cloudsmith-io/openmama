@@ -44,9 +44,9 @@ protected:
 
     virtual void SetUp(void) 
     {
-        mama_loadPayloadBridge (&mPayloadBridge, getPayload());
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
         mama_loadBridge (&mMiddlewareBridge, getMiddleware());
-        mamaMsg_create (&mMsg);
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
     };
 
     virtual void TearDown(void) 
@@ -751,7 +751,6 @@ TEST_F (MsgGeneralTestsC, msgGetEntitleCodeValid)
     mama_i32_t             entitleCode  = 100;
 
     //add fields to msg
-    mamaMsg_create (&mMsg);
     mamaMsg_addI32 (mMsg, ENTITLE_FIELD_NAME, ENTITLE_FIELD_ID, entitleCode);
 
     ASSERT_EQ (mamaMsg_getEntitleCode(mMsg, &entitleCode), MAMA_STATUS_OK);
@@ -999,7 +998,7 @@ protected:
  */
 TEST_F(MsgCopyTests, Copy)
 {
-    mStatus = mamaMsg_create (&mCopy);
+    mStatus = mamaMsg_createForPayloadBridge (&mCopy, mPayloadBridge);
     mStatus = mamaMsg_copy (mMsg, &mCopy);
     ASSERT_EQ (mStatus, MAMA_STATUS_OK);
 }
@@ -1105,15 +1104,15 @@ protected:
 
     MsgApplyMsgTests()
         : mApplyMsg (NULL)
-    {
-        mamaMsg_create (&mApplyMsg);
-        mamaMsg_addU8 (mApplyMsg, NULL, 1, 255);
-    }
+    {}
+
     ~MsgApplyMsgTests() {};
 
     virtual void SetUp (void)
     {
         MsgGeneralTestsC::SetUp();
+        mamaMsg_createForPayloadBridge (&mApplyMsg, mPayloadBridge);
+        mamaMsg_addU8 (mApplyMsg, NULL, 1, 255);
     }
 
     virtual void TearDown (void)

@@ -43,8 +43,8 @@ protected:
 
     virtual void SetUp(void) 
     {
-        mama_loadPayloadBridge (&mPayloadBridge, getPayload());
-        mamaMsg_create (&mMsg);
+        ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+        mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
         mStatus = MAMA_STATUS_OK;
     };
 
@@ -3262,7 +3262,7 @@ protected:
             char symbol[ MAX_SUBJECT ];
             ::snprintf( symbol, MAX_SUBJECT, "InSymbol%d", ii);
 
-            mamaMsg_create( &mIn[ii] );
+            mamaMsg_createForPayloadBridge ( &mIn[ii] , mPayloadBridge);
             mamaMsgImpl_setSubscInfo ( mIn[ii],
                                        "_MD",
                                        "InSource",
@@ -3277,7 +3277,7 @@ protected:
             char symbol[ MAX_SUBJECT ];
             ::snprintf( symbol, MAX_SUBJECT, "UpdateSymbol%d", ii);
 
-            mamaMsg_create( &mUpdate[ii] );
+            mamaMsg_createForPayloadBridge ( &mUpdate[ii] , mPayloadBridge);
             mamaMsgImpl_setSubscInfo ( mUpdate[ii],
                                        "_MD",
                                        "UpdateSource",

@@ -25,6 +25,7 @@ sources = Split("""
 inboxtest.cpp
 iotest.cpp
 msgutils.cpp
+librarymanagertest.cpp
 openclosetest.cpp
 payloadmiddlewareidtest.cpp
 publishertest.cpp

@@ -32,6 +32,8 @@ if env['host']['os'] == 'Linux':
          'common/c_cpp/src/c/linux/network.c'),
         ('common/c_cpp/src/c/environment.c',
          'common/c_cpp/src/c/linux/environment.c'),
+        ('common/c_cpp/src/c/directory.c',
+         'common/c_cpp/src/c/linux/directory.c')
         ]
 elif env['host']['os'] == 'Darwin':
     includePath.append('./darwin')
@@ -56,6 +58,8 @@ elif env['host']['os'] == 'Darwin':
          'common/c_cpp/src/c/linux/network.c'),
         ('common/c_cpp/src/c/environment.c',
          'common/c_cpp/src/c/linux/environment.c'),
+        ('common/c_cpp/src/c/directory.c',
+         'common/c_cpp/src/c/linux/directory.c'),
     ]
 
 srcdir = os.path.join(Dir('#').abspath, 'common/c_cpp/src/c')

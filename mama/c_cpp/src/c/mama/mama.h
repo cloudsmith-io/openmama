@@ -139,6 +139,13 @@ extern "C"
     extern mama_status
     mama_loadPayloadBridge (mamaPayloadBridge*  bridge,  const char* payloadName);
 
+    MAMAExpDLL
+    extern mama_status
+    mama_loadPayloadBridgeWithPath (mamaPayloadBridge* impl,
+                                    const char* payloadName,
+                                    const char* path);
+
+
     /** Load the bridge specified by middleware string using the path specified by the user.
      * If the bridge has already been loaded then the existing bridge instance
      * will be returned.
@@ -172,6 +179,29 @@ extern "C"
         }                                                           \
     }                                                               \
     while(0)                                                        \
+
+    /**
+     * @brief Used to load mama plugin shared objects
+     *
+     * param[in] plugin The mama plugin object.
+     * param[in] pluginName The name of the mama plugin to be loaded.
+     *
+     * @return mama_status return code can be one of:
+     *              MAMA_STATUS_NULL_ARG
+     *              MAMA_STATUS_NO_BRIDGE_IMPL
+     *              MAMA_STATUS_SYSTEM_ERROR
+     *              MAMA_STATUS_OK
+     */
+    MAMAExpDLL
+    extern mama_status
+    mama_loadPlugin  (mamaPlugin* plugin, const char*        pluginName);
+
+    MAMAExpDLL
+    extern mama_status
+    mama_loadPluginWithPath (mamaPlugin* plugin,
+                             const char* pluginName,
+                             const char* path);
+
 
     /******** End of multi-impl section   ********/
 
@@ -302,6 +332,20 @@ extern "C"
     extern const char*
     mama_getVersion (mamaBridge bridgeImpl);
 
+
+   /**
+     * Opens the provided bridge - defers to the 
+     * bridge libraries specific implementation 
+     * of the open function.
+     * 
+     * <p>
+     *
+     * @param bridgeImpl The bridge specific structure.
+     */
+    MAMAExpDLL
+    extern mama_status
+    mama_openBridge (mamaBridge bridgeImpl);
+ 
 
     /**
      * Start processing messages on the internal queue. This starts Mama's

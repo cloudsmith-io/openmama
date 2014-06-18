@@ -469,6 +469,8 @@ mamaMsg_createForPayload (mamaMsg* msg,  const char id)
 mama_status
 mamaMsg_createForPayloadBridge (mamaMsg* msg, mamaPayloadBridge payloadBridge)
 {
+    if (!payloadBridge) return MAMA_STATUS_NULL_ARG;
+
     msgPayload payload;
     mama_status status = MAMA_STATUS_OK;
 

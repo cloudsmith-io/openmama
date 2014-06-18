@@ -1,5 +1,4 @@
-/* $Id$
- *
+/*
  * OpenMAMA: The open middleware agnostic messaging API
  * Copyright (C) 2011 NYSE Technologies, Inc.
  *
@@ -19,58 +18,48 @@
  * 02110-1301 USA
  */
 
-#include "wombat/port.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
+#include "librarymanager.h"
 #include <wlock.h>
 
-typedef struct
+/*
+ * Public implementation
+ */
+
+const char*
+mamaLibrary_getName (mamaLibrary library)
 {
-    wthread_mutex_t    mMutex;
-} wLockImpl;
+    return (library ? library->mName : NULL);
+}
 
-
-wLock
-wlock_create( void )
-
+mamaLibraryType
+mamaLibrary_getType (mamaLibrary library)
 {
-    wLockImpl* rval = calloc(1, sizeof( wLockImpl ) );
+    return (library ? library->mType : MAMA_UNKNOWN_LIBRARY);
+}
 
-    wthread_mutexattr_t attr;
-    wthread_mutexattr_init (&attr);
-    wthread_mutexattr_settype (&attr, WTHREAD_MUTEX_RECURSIVE);
-    wthread_mutex_init (&rval->mMutex, &attr);
+const char*
+mamaLibrary_getTypeName (mamaLibrary library)
+{
+    return (library ? library->mTypeName : NULL);
+}
 
-    return( rval );
+const char*
+mamaLibrary_getPath (mamaLibrary library)
+{
+    return (library ? library->mPath : NULL);
 }
 
 void
-wlock_destroy( wLock lock )
+mamaLibrary_lock (mamaLibrary library)
 {
-    if (!lock)
-        return;
-
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_destroy( &impl->mMutex );
-    free( lock );
+    if (library)
+        wlock_lock (library->mLock);
 }
 
 void
-wlock_lock( wLock lock )
+mamaLibrary_unlock (mamaLibrary library)
 {
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_lock( &impl->mMutex );
+    if (library)
+        wlock_unlock (library->mLock);
 }
 
-void 
-wlock_unlock( wLock lock )
-{
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_unlock( &impl->mMutex );   
-}

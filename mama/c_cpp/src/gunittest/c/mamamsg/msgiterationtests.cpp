@@ -42,7 +42,8 @@ protected:
     virtual void SetUp(void);
     virtual void TearDown(void);
 
-    mamaBridge mBridge;
+    mamaBridge        mBridge;
+    mamaPayloadBridge mPayloadBridge;
 };
 
 MsgIterateTestC::MsgIterateTestC(void)
@@ -56,6 +57,7 @@ MsgIterateTestC::~MsgIterateTestC(void)
 void MsgIterateTestC::SetUp(void)
 {
     mama_loadBridge (&mBridge, getMiddleware());
+    ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
     mama_open();
 }
 
@@ -134,7 +136,7 @@ TEST_F (MsgIterateTestC, IteratorCallback)
 {
     /* create a mama message. */
     mamaMsg msg = NULL;
-    mamaMsg_create (&msg);
+    mamaMsg_createForPayloadBridge (&msg, mPayloadBridge);
 
     /* add a fields to the message. */
     mamaMsg_addString (msg, "string", 101, "This is an iteration test.");
@@ -166,7 +168,7 @@ TEST_F (MsgIterateTestC, CreateIterator)
 
     /* Create a mama message. */
     mamaMsg msg = NULL;
-    mamaMsg_create (&msg);
+    mamaMsg_createForPayloadBridge (&msg, mPayloadBridge);
     
     /* add a fields to the message. */
     mamaMsg_addString (msg, "string", 101, "This is an iteration test.");
@@ -244,11 +246,12 @@ protected:
     virtual void SetUp(void);
     virtual void TearDown(void);
 
-    mamaBridge      mBridge;
-    mamaMsg         msg;
-    mamaMsgIterator iterator;
-    mamaDictionary  dict;
-    mamaMsgField    field;
+    mamaBridge        mBridge;
+    mamaPayloadBridge mPayloadBridge;
+    mamaMsg           msg;
+    mamaMsgIterator   iterator;
+    mamaDictionary    dict;
+    mamaMsgField      field;
 };
 
 MsgNewIteratorTestC::MsgNewIteratorTestC(void)
@@ -267,10 +270,11 @@ MsgNewIteratorTestC::~MsgNewIteratorTestC(void)
 void MsgNewIteratorTestC::SetUp(void)
 {
     mama_loadBridge (&mBridge, getMiddleware());
+    ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
     mama_open();
 
     /* add a fields to the message. */
-    mamaMsg_create    (&msg);
+    mamaMsg_createForPayloadBridge (&msg, mPayloadBridge);
     mamaMsg_addU8     (msg, "u8", 101, 8);
     mamaMsg_addString (msg, "string", 102, "This is an iteration test.");
     mamaMsg_addU16    (msg, "u16", 103, 16);

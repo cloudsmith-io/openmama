@@ -422,6 +422,9 @@ while(0)                                                                    \
 typedef mama_status
 (*msgPayload_createImpl)      (mamaPayloadBridge* result, char* identifier);
 
+typedef void
+(*msgPayload_destroyImpl)     (mamaPayloadBridge bridge);
+
 typedef mamaPayloadType
 (*msgPayload_getType)         (void);
 /*===================================================================
@@ -1490,6 +1493,7 @@ typedef struct mamaPayloadBridgeImpl_
 
     void*                               closure;
 
+    mamaPayloadLibrary mLibrary;   /**< Back-reference to parent library */
 } mamaPayloadBridgeImpl;
 
 

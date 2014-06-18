@@ -19,58 +19,21 @@
  * 02110-1301 USA
  */
 
-#include "wombat/port.h"
+#ifndef MamaPluginH__
+#define MamaPluginH__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include <wlock.h>
-
-typedef struct
+#if defined(__cplusplus)
+extern "C"
 {
-    wthread_mutex_t    mMutex;
-} wLockImpl;
+#endif /* __cplusplus */
 
+/* Structure for storing the plugin info. */
+typedef struct mamaPluginImpl_ {
+    void* closure;
+} mamaPluginImpl;
 
-wLock
-wlock_create( void )
-
-{
-    wLockImpl* rval = calloc(1, sizeof( wLockImpl ) );
-
-    wthread_mutexattr_t attr;
-    wthread_mutexattr_init (&attr);
-    wthread_mutexattr_settype (&attr, WTHREAD_MUTEX_RECURSIVE);
-    wthread_mutex_init (&rval->mMutex, &attr);
-
-    return( rval );
+#if defined(__cplusplus)
 }
+#endif /* __cplusplus */
 
-void
-wlock_destroy( wLock lock )
-{
-    if (!lock)
-        return;
-
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_destroy( &impl->mMutex );
-    free( lock );
-}
-
-void
-wlock_lock( wLock lock )
-{
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_lock( &impl->mMutex );
-}
-
-void 
-wlock_unlock( wLock lock )
-{
-    wLockImpl* impl = (wLockImpl*) lock;
-
-    wthread_mutex_unlock( &impl->mMutex );   
-}
+#endif /*MamaPluginH__ */

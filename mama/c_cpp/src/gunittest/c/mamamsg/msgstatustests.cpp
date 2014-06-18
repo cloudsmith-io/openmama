@@ -50,7 +50,9 @@ private:
 
 };
 
-MsgStatusTestsC::MsgStatusTestsC() : testing::Test() 
+MsgStatusTestsC::MsgStatusTestsC() 
+    : testing::Test() 
+    , mMsg (NULL)
 {
    CreateTestData();
 }
@@ -61,14 +63,15 @@ MsgStatusTestsC::~MsgStatusTestsC() {}
 void
 MsgStatusTestsC::SetUp()
 {
-    mama_loadPayloadBridge (&mPayloadBridge, getPayload());
-    mamaMsg_create (&mMsg);
+    ASSERT_EQ (MAMA_STATUS_OK, mama_loadPayloadBridge (&mPayloadBridge, getPayload()));
+    mamaMsg_createForPayloadBridge (&mMsg, mPayloadBridge);
 }
 
 void
 MsgStatusTestsC::TearDown()
 {
-	mamaMsg_destroy(mMsg);
+    if (mMsg)
+	    mamaMsg_destroy(mMsg);
 }
 
 void

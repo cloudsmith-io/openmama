@@ -43,7 +43,7 @@ protected:
 
 void PayloadAtomicTestsC::SetUp(void)
 {
-	mama_loadPayloadBridge(&m_payloadBridge, getPayload());
+    mama_loadPayloadBridge(&m_payloadBridge, getPayload());
     m_payloadBridge->msgPayloadCreate(&m_payload);
 }
 
