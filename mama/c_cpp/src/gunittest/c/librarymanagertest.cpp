@@ -73,6 +73,7 @@ TEST_F (MamaLibraryManagerTestC, GetLoadedMiddlewares)
     mamaMiddlewareLibraryManager_getBridges (bridges, &numBridges);
 
     EXPECT_EQ (1, numBridges);
+    EXPECT_EQ(mBridge, bridges[0]);
 }
 
 #if 0

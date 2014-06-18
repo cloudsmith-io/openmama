@@ -201,15 +201,29 @@ mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library)
 }
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* libraries,
+mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
                                             mama_size_t*           size,
                                             mamaLibraryPredicateCb predicate)
 {
-    if (!libraries || !size)
+    if (!plLibraries || !size)
         return MAMA_STATUS_NULL_ARG;
 
-    return mamaLibraryManager_getLibraries ((mamaLibrary*) libraries, size,
-                                            MAMA_PAYLOAD_LIBRARY, predicate);
+    mamaLibrary libraries [MAX_LIBRARIES];
+    mama_size_t librariesSize = MAX_LIBRARIES;
+
+    mama_status status =
+        mamaLibraryManager_getLibraries (libraries,
+                                         &librariesSize,
+                                         MAMA_PAYLOAD_LIBRARY,
+                                         predicate);
+
+    for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
+        plLibraries[k] = (mamaPayloadLibrary)libraries[k]->mClosure;
+
+    if (librariesSize < *size)
+        *size = librariesSize;
+
+    return status;
 }
 
 static mama_status
@@ -220,16 +234,21 @@ mamaPayloadLibraryManagerImpl_getBridges (mamaPayloadBridge*     bridges,
     if (!bridges || !size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaPayloadLibrary libraries [MAX_LIBRARIES];
+    mamaLibrary libraries [MAX_LIBRARIES];
     mama_size_t librariesSize = MAX_LIBRARIES;
 
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getLibraries (libraries,
-                                                    &librariesSize,
-                                                    predicate);
+        mamaLibraryManager_getLibraries (libraries,
+                                         &librariesSize,
+                                         MAMA_PAYLOAD_LIBRARY,
+                                         predicate);
 
     for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
-        bridges[k] = libraries[k]->mBridge;
+    {
+        mamaPayloadLibrary library = 
+            (mamaPayloadLibrary)libraries[k]->mClosure;
+        bridges[k] = library->mBridge;
+    }
 
     if (librariesSize < *size)
         *size = librariesSize;
