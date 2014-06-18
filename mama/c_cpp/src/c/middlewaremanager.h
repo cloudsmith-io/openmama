@@ -22,6 +22,7 @@
 #define MamaMiddlewareLibraryManagerH__
 
 #include "librarymanager.h"
+#include <mama/middleware.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -43,6 +44,14 @@ mamaMiddlewareLibraryManager_unloadLibrary (mamaLibrary library);
 extern mamaLibraryType
 mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
                                                   LIB_HANDLE  libraryLib);
+
+/*Deprecated convert from middleware name to mamaMiddleware enum string*/
+extern mamaMiddleware
+mamaMiddlewareLibraryManager_convertFromString (const char*  str);
+
+/*Deprecated convert from mamaMiddleware to string representation of middleware name*/
+extern const char*
+mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware);
 
 #if defined(__cplusplus)
 }

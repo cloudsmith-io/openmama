@@ -449,7 +449,7 @@ mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
     }
 
     mamaMiddleware tmpId =
-            mamaMiddleware_convertFromString (library->mName);
+            mamaMiddlewareLibraryManager_convertFromString (library->mName);
 
     if (tmpId != MAMA_MIDDLEWARE_UNKNOWN)
     {
@@ -1643,5 +1643,104 @@ mamaMiddlewareLibraryManager_stringToMiddlewareId (const char*  str,
     mamaMiddlewareLibrary library = bridge->mLibrary;
     *middlewareId = library->mMiddlewareId;
     return status;
+}
+
+mamaMiddleware
+mamaMiddlewareLibraryManager_convertFromString (const char*  str)
+{
+    if (!str)
+        return MAMA_MIDDLEWARE_UNKNOWN;
+    
+    if (strcasecmp (str, "wmw") == 0)
+        return MAMA_MIDDLEWARE_WMW;
+        
+    if (strcasecmp (str, "lbm") == 0)
+        return MAMA_MIDDLEWARE_LBM;
+        
+    if (strcasecmp (str, "tibrv") == 0)
+        return MAMA_MIDDLEWARE_TIBRV;
+
+    if (strcasecmp (str, "avis") == 0)
+        return MAMA_MIDDLEWARE_AVIS;
+
+    if (strcasecmp (str, "tick42blp") == 0)
+        return MAMA_MIDDLEWARE_TICK42BLP;
+
+    if (strcasecmp (str, "solace") == 0)
+        return MAMA_MIDDLEWARE_SOLACE;
+    
+    if (strcasecmp (str, "rai") == 0)
+        return MAMA_MIDDLEWARE_RAI;
+
+    if (strcasecmp (str, "qpid") == 0)
+        return MAMA_MIDDLEWARE_QPID;
+
+    if (strcasecmp (str, "exegy") == 0)
+        return MAMA_MIDDLEWARE_EXEGY;
+
+    if (strcasecmp (str, "ibmwfo") == 0)
+        return MAMA_MIDDLEWARE_IBMWFO;
+
+    if (strcasecmp (str, "activ") == 0)
+        return MAMA_MIDDLEWARE_ACTIV;
+
+    if (strcasecmp (str, "tick42rmds") == 0)
+        return MAMA_MIDDLEWARE_TICK42RMDS;
+
+    if (strcasecmp (str, "ums") == 0)
+        return MAMA_MIDDLEWARE_UMS;
+
+    if (strcasecmp (str, "vulcan") == 0)
+        return MAMA_MIDDLEWARE_VULCAN;
+
+    if (strcasecmp (str, "inrush") == 0)
+        return MAMA_MIDDLEWARE_INRUSH;
+
+    if (strcasecmp (str, "lbmkomodo") == 0)
+        return MAMA_MIDDLEWARE_LBMKOMODO;
+
+    return MAMA_MIDDLEWARE_UNKNOWN;
+}
+
+const char*
+mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware)
+{
+    switch (middleware)
+    {
+        case MAMA_MIDDLEWARE_WMW:
+            return "wmw";
+        case MAMA_MIDDLEWARE_LBM:
+            return "lbm";
+        case MAMA_MIDDLEWARE_TIBRV:
+            return "tibrv";
+        case MAMA_MIDDLEWARE_AVIS:
+            return "AVIS";
+        case MAMA_MIDDLEWARE_TICK42BLP:
+            return "tick42blp";
+        case MAMA_MIDDLEWARE_SOLACE:
+            return "SOLACE";
+        case MAMA_MIDDLEWARE_RAI:
+            return "rai";
+        case MAMA_MIDDLEWARE_QPID:
+            return "QPID";
+        case MAMA_MIDDLEWARE_EXEGY:
+            return "exegy";
+        case MAMA_MIDDLEWARE_IBMWFO:
+            return "ibmwfo";
+        case MAMA_MIDDLEWARE_ACTIV:
+            return "activ";
+	    case MAMA_MIDDLEWARE_TICK42RMDS:
+            return "tick42rmds";
+        case MAMA_MIDDLEWARE_UMS:
+            return "ums";
+        case MAMA_MIDDLEWARE_VULCAN:
+            return "vulcan";
+        case MAMA_MIDDLEWARE_INRUSH:
+            return "inrush";
+        case MAMA_MIDDLEWARE_LBMKOMODO:
+            return "lbmkomodo";
+        default:
+            return "unknown";
+    }
 }
 

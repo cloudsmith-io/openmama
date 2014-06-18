@@ -23,6 +23,7 @@
 
 #include <mama/types.h>
 #include "librarymanager.h"
+#include <mama/msg.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -48,6 +49,10 @@ mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
 extern mama_status
 mamaPayloadLibraryManager_getBridges (mamaPayloadBridge* bridges,
                                       mama_size_t*       size);
+
+/*Deprecated function for converting the payload enum to a string representation*/
+extern const char*
+mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType);
 
 #if defined(__cplusplus)
 }
