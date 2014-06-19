@@ -64,15 +64,6 @@ static mama_status
 mamaMiddlewareLibraryManagerImpl_getInstance (
         mamaMiddlewareLibraryManager* mwManager);
 
-static void*
-mamaMiddlewareLibraryManagerImpl_loadFunction (const char* libraryName,
-                                               LIB_HANDLE  libraryHandle,
-                                               const char* funcName);
-
-static void*
-mamaMiddlewareLibraryManagerImpl_loadLibraryFunction (mamaLibrary library,
-                                                      const char* funcName);
-
 static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle);
@@ -132,47 +123,14 @@ mamaMiddlewareLibraryManagerImpl_getInstance (
      return status;
 }
 
-static void*
-mamaMiddlewareLibraryManagerImpl_loadFunction (const char* libraryName,
-                                               LIB_HANDLE  libraryHandle,
-                                               const char* funcName)
-{
-    /* Build target function spec */
-    char funcSpec [MAX_LIBRARY_FUNCTION_NAME];
-    if (snprintf (funcSpec, MAX_LIBRARY_FUNCTION_NAME-1, "%s%%s",
-                  libraryName) < 0)
-    {
-        return NULL;
-    }
-
-    const char* funcAltSpec = "default%s";
-
-    return mamaLibraryManager_loadFunction (libraryHandle,
-                                            funcSpec,
-                                            funcName,
-                                            funcAltSpec,
-                                            NULL, /* funcAltName */
-                                            NULL  /* default */);
-}
-
-static void*
-mamaMiddlewareLibraryManagerImpl_loadLibraryFunction (mamaLibrary library,
-                                                      const char* funcName)
-{
-    return
-        mamaMiddlewareLibraryManagerImpl_loadFunction (library->mName,
-                                                       library->mHandle,
-                                                       funcName);
-}
-
 static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle)
 {
     void* func = 
-        mamaMiddlewareLibraryManagerImpl_loadFunction (libraryName,
-                                                       libraryHandle,
-                                                       "Bridge_createImpl");
+        mamaLibraryManager_loadLibraryFunction (libraryName,
+                                                libraryHandle,
+                                                "Bridge_createImpl");
     return *(bridge_createImpl*)&func;
 }
 
@@ -634,8 +592,8 @@ do {\
     if (MAMA_STATUS_OK == status)\
     {\
         void* func =\
-            mamaMiddlewareLibraryManagerImpl_loadLibraryFunction\
-                    (library, #funcName);\
+            mamaLibraryManager_loadLibraryFunction\
+                    (library->mName, library->mHandle, #funcName);\
         bridge->bridgeFuncName = *(funcSig*) &func;\
         if (!bridge->bridgeFuncName)\
         {\
@@ -1087,6 +1045,9 @@ mamaMiddlewareLibraryManager_loadBridge (const char* middlewareName,
                                          const char* path,
                                          mamaBridge* bridge)
 {
+    if (!bridge || !middlewareName)
+        return MAMA_STATUS_NULL_ARG;
+
     mamaLibrary library = NULL;
     mama_status status =
         mamaLibraryManager_loadLibrary (middlewareName,
@@ -1107,6 +1068,9 @@ mama_status
 mamaMiddlewareLibraryManager_getBridge (const char* middlewareName,
                                         mamaBridge* bridge)
 {
+    if (!bridge || !middlewareName)
+        return MAMA_STATUS_NULL_ARG;
+
     mamaLibrary library = NULL;
     mama_status status =
         mamaLibraryManager_getLibrary (middlewareName,

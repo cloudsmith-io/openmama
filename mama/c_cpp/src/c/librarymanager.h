@@ -267,31 +267,10 @@ extern mama_status
 mamaLibraryManager_unloadLibrary (const char*     libraryName,
                                   mamaLibraryType libraryType);
 
-/**
- * @brief Load a function from the specified library.
- *
- * Attempts to load a function from the library utilising the
- * function specification, which is in the form of "func_%s",
- * of which function name is interpolated into it.  If the
- * function cannot be found then the alternative is tried, and
- * if that isn't found the specified default is returned.
- *
- * @param lib The handle to the loaded shared library (or current process
- *            if the handle is NULL).
- * @param funcSpec String specification for function name.
- * @param funcName String to be interpolated into spec.
- * @param funcAltSpec Secondary string specification for function name.
- * @param funcAltName Secondary string to be interpolated into spec.
- * @param funcDefault Default function pointer to return if function not found.
- * @return A pointer to the loaded function, or default if not found.
- */
 extern void*
-mamaLibraryManager_loadFunction (LIB_HANDLE  lib,
-                                 const char* funcSpec,
-                                 const char* funcName,
-                                 const char* funcAltSpec,
-                                 const char* funcAltName,
-                                 void*       funcDefault);
+mamaLibraryManager_loadLibraryFunction (const char* libraryName,
+                                        LIB_HANDLE  libraryHandle,
+                                        const char* funcName);
 
 /*
  * @brief Lookup a library type manager.

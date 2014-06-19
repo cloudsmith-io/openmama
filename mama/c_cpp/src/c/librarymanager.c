@@ -138,6 +138,13 @@ static mama_status
 mamaLibraryManagerImpl_classifyLibraryType (const char*      libraryName,
                                             LIB_HANDLE       libraryHandle,
                                             mamaLibraryType* libraryType);
+static void*
+mamaLibraryManager_loadFunction (LIB_HANDLE  lib,
+                                 const char* funcSpec,
+                                 const char* funcName,
+                                 const char* funcAltSpec,
+                                 const char* funcAltName,
+                                 void*       funcDefault);
 
 static mama_status
 mamaLibraryManagerImpl_createLibrary (mamaLibraryTypeManager manager,
@@ -551,6 +558,52 @@ mamaLibraryManagerImpl_createLibrary (mamaLibraryTypeManager manager,
     return MAMA_STATUS_OK;
 }
 
+static void*
+mamaLibraryManager_loadFunction (LIB_HANDLE  lib,
+                                 const char* funcSpec,
+                                 const char* funcName,
+                                 const char* funcAltSpec,
+                                 const char* funcAltName,
+                                 void*       funcDefault)
+{
+    if (!funcName)
+        return NULL;
+
+    char buf [MAX_LIBRARY_FUNCTION_NAME];
+
+    /* Try primary function name */
+    if (snprintf (buf, MAX_LIBRARY_FUNCTION_NAME-1, funcSpec, funcName) < 0)
+        return NULL;
+
+    void* func = loadLibFunc (lib, buf);
+    if (func)
+        return func;
+
+    if (funcAltName || funcAltSpec)
+    {
+        /* Try alternative function name */
+
+        if (!funcAltName)
+            funcAltName = funcName;
+
+        if (!funcAltSpec)
+            funcAltSpec = funcSpec;
+
+        if (snprintf (buf, MAX_LIBRARY_FUNCTION_NAME-1, funcAltSpec, funcAltName) < 0)
+            return NULL;
+
+        /* FIXME: Alternative function loaded from process space, but if we 
+         * want to load from the same (or different) library, a new parameter
+         * is required. */
+        func = loadLibFunc (NULL, buf);
+        if (func)
+            return func;
+    }
+
+    /* Unresolved, assign default address */
+    return funcDefault;
+}
+
 static void
 mamaLibraryManagerImpl_destroyLibrary (mamaLibrary library)
 {
@@ -932,50 +985,26 @@ mamaLibraryManager_unloadLibrary (const char*     libraryName,
     return MAMA_STATUS_OK;
 }
 
-void*
-mamaLibraryManager_loadFunction (LIB_HANDLE  lib,
-                                 const char* funcSpec,
-                                 const char* funcName,
-                                 const char* funcAltSpec,
-                                 const char* funcAltName,
-                                 void*       funcDefault)
+void* 
+mamaLibraryManager_loadLibraryFunction (const char* libraryName,
+                                        LIB_HANDLE  libraryHandle,
+                                        const char* funcName)
 {
-    if (!funcName)
-        return NULL;
-
-    char buf [MAX_LIBRARY_FUNCTION_NAME];
-
-    /* Try primary function name */
-    if (snprintf (buf, MAX_LIBRARY_FUNCTION_NAME-1, funcSpec, funcName) < 0)
-        return NULL;
-
-    void* func = loadLibFunc (lib, buf);
-    if (func)
-        return func;
-
-    if (funcAltName || funcAltSpec)
+    char funcSpec [MAX_LIBRARY_FUNCTION_NAME];
+    if (snprintf (funcSpec, MAX_LIBRARY_FUNCTION_NAME-1, "%s%%s",
+                  libraryName) < 0)
     {
-        /* Try alternative function name */
-
-        if (!funcAltName)
-            funcAltName = funcName;
-
-        if (!funcAltSpec)
-            funcAltSpec = funcSpec;
-
-        if (snprintf (buf, MAX_LIBRARY_FUNCTION_NAME-1, funcAltSpec, funcAltName) < 0)
-            return NULL;
-
-        /* FIXME: Alternative function loaded from process space, but if we 
-         * want to load from the same (or different) library, a new parameter
-         * is required. */
-        func = loadLibFunc (NULL, buf);
-        if (func)
-            return func;
+        return NULL;
     }
 
-    /* Unresolved, assign default address */
-    return funcDefault;
+    const char* funcAltSpec = "default%s";
+
+    return mamaLibraryManager_loadFunction (libraryHandle,
+                                            funcSpec,
+                                            funcName,
+                                            funcAltSpec,
+                                            NULL, /* funcAltName */
+                                            NULL  /* default */);
 }
 
 mama_status

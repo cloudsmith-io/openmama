@@ -61,15 +61,6 @@ mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary*    libraries,
                                             mama_size_t*           size,
                                             mamaLibraryPredicateCb predicate);
 
-static void*
-mamaPayloadLibraryManagerImpl_loadFunction (const char* libraryName,
-                                            LIB_HANDLE  libraryHandle,
-                                            const char* funcName);
-
-static void*
-mamaPayloadLibraryManagerImpl_loadLibraryFunction (mamaLibrary library,
-                                                   const char* funcName);
-
 static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                              LIB_HANDLE  libraryHandle);
@@ -127,47 +118,14 @@ mamaPayloadLibraryManagerImpl_getInstance (
      return status;
 }
 
-static void*
-mamaPayloadLibraryManagerImpl_loadFunction (const char* libraryName,
-                                            LIB_HANDLE  libraryHandle,
-                                            const char* funcName)
-{
-    /* Build target function spec */
-    char funcSpec [MAX_LIBRARY_FUNCTION_NAME];
-    if (snprintf (funcSpec, MAX_LIBRARY_FUNCTION_NAME-1, "%s%%s",
-                  libraryName) < 0)
-    {
-        return NULL;
-    }
-
-    const char* funcAltSpec = "default%s";
-
-    return mamaLibraryManager_loadFunction (libraryHandle,
-                                            funcSpec,
-                                            funcName,
-                                            funcAltSpec,
-                                            NULL, /* funcAltName */
-                                            NULL  /* default */);
-}
-
-static void*
-mamaPayloadLibraryManagerImpl_loadLibraryFunction (mamaLibrary library,
-                                                   const char* funcName)
-{
-    return
-        mamaPayloadLibraryManagerImpl_loadFunction (library->mName,
-                                                    library->mHandle,
-                                                    funcName);
-}
-
 static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                              LIB_HANDLE  libraryHandle)
 {
     void* func = 
-        mamaPayloadLibraryManagerImpl_loadFunction (libraryName,
-                                                    libraryHandle,
-                                                    "Payload_createImpl");
+        mamaLibraryManager_loadFunction (libraryName,
+                                         libraryHandle,
+                                         "Payload_createImpl");
    return *(msgPayload_createImpl*) &func;
 }
 
@@ -176,11 +134,10 @@ mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
                                               LIB_HANDLE  libraryHandle)
 {
     void* func = 
-        mamaPayloadLibraryManagerImpl_loadFunction (libraryName,
-                                                    libraryHandle,
-                                                    "Payload_destroyImpl");
+        mamaLibraryManager_loadFunction (libraryName,
+                                         libraryHandle,
+                                         "Payload_destroyImpl");
  
-
     return *(msgPayload_destroyImpl*)&func;
 }
 
@@ -460,8 +417,8 @@ do {\
     if (MAMA_STATUS_OK == status)\
     {\
         void* func = \
-            mamaPayloadLibraryManagerImpl_loadLibraryFunction\
-                    (library, #funcName);\
+            mamaLibraryManager_loadLibraryFunction\
+                    (library->mName, library->mHandle, #funcName);\
         bridge->bridgeFuncName = *(msg ## funcName*) &func;\
         if (!bridge->bridgeFuncName)\
         {\
@@ -1141,6 +1098,9 @@ mamaPayloadLibraryManager_loadBridge (const char*        payloadName,
                                       const char*        path,
                                       mamaPayloadBridge* bridge)
 {
+    if (!bridge || !payloadName)
+        return MAMA_STATUS_NULL_ARG;
+    
     mamaLibrary library = NULL;
     mama_status status =
         mamaLibraryManager_loadLibrary (payloadName,
@@ -1161,6 +1121,9 @@ mama_status
 mamaPayloadLibraryManager_getBridge (const char*        payloadName,
                                      mamaPayloadBridge* bridge)
 {
+    if (!bridge || !payloadName)
+        return MAMA_STATUS_NULL_ARG;
+    
     mamaLibrary library = NULL;
     mama_status status =
         mamaLibraryManager_getLibrary (payloadName,
