@@ -368,13 +368,17 @@ mamaMsgImpl_getPayload (const mamaMsg msg, msgPayload* payload)
 const char*
 mamaPayload_convertToString (mamaPayloadType payloadType)
 {
-    const char* str    = NULL;
-    mama_status status = 
-        mamaPayloadLibraryManager_payloadIdToString(payloadType, &str);
+    const char* str = 
+        mamaPayloadLibraryManager_convertToString (payloadType);
 
-    if (MAMA_STATUS_OK != status)
-        return mamaPayloadLibraryManager_convertToString(payloadType);
+    if (NULL == str)
+    {
+        mama_status status = 
+            mamaPayloadLibraryManager_payloadIdToString (payloadType, &str);
 
+        if (MAMA_STATUS_OK != status)
+            return NULL;
+    }
     return str;
 }
 

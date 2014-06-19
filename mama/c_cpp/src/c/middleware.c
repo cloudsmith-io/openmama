@@ -29,26 +29,33 @@ mamaMiddleware_convertFromString (const char*  str)
     if (!str)
         return MAMA_MIDDLEWARE_UNKNOWN;
 
-    char middlewareId  = '\0';
-    mama_status status =
-        mamaMiddlewareLibraryManager_stringToMiddlewareId(str, &middlewareId);  
+    char Id = 
+        mamaMiddlewareLibraryManager_convertFromString (str);
 
-    if (MAMA_STATUS_OK != status)
-        return mamaMiddlewareLibraryManager_convertFromString(str);
+    if (MAMA_MIDDLEWARE_UNKNOWN == Id)
+    {
+        mama_status status =
+            mamaMiddlewareLibraryManager_stringToMiddlewareId (str, &Id);  
 
-    return middlewareId;
+        if (MAMA_STATUS_OK != status)
+            return MAMA_MIDDLEWARE_UNKNOWN; 
+    }
+    return Id;
 }
 
-/* Returns lowercase for use in library and function names */
 const char*
 mamaMiddleware_convertToString (mamaMiddleware  middleware)
 {
-    const char* str    = NULL;
-    mama_status status = 
-        mamaMiddlewareLibraryManager_middlewareIdToString(middleware, &str);
+    const char* str = 
+        mamaMiddlewareLibraryManager_convertToString (middleware);
 
-    if (MAMA_STATUS_OK != status)
-        return mamaMiddlewareLibraryManager_convertToString(middleware);
+    if (NULL == str)
+    {
+        mama_status status = 
+            mamaMiddlewareLibraryManager_middlewareIdToString (middleware, &str);
 
+        if (MAMA_STATUS_OK != status)
+            return NULL;
+    }
     return str;
 }
