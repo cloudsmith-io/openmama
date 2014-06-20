@@ -53,6 +53,13 @@ mamaMiddlewareLibraryManager_convertFromString (const char*  str);
 extern const char*
 mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware);
 
+/* FIXME - these are just temporary functions to allow us to still use functions taking mamaBridge
+ * which should be converted to mamaMiddlewareLibrary functions*/
+
+extern mama_status
+mamaMiddlewareLibraryManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
+                                                     mamaBridge*           bridge);
+
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

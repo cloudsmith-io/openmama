@@ -67,62 +67,50 @@ void MamaLibraryManagerTestC::TearDown(void)
 
 TEST_F (MamaLibraryManagerTestC, GetLoadedMiddlewares)
 {
-    mama_size_t numBridges = 256;
-    mamaBridge bridges [256];
+    mama_size_t           numBridges = 256;
+    mamaMiddlewareLibrary bridges [256];
 
-    mamaMiddlewareLibraryManager_getBridges (bridges, &numBridges);
+    mamaMiddlewareLibraryManager_getLibraries (bridges, &numBridges);
 
     EXPECT_EQ (1, numBridges);
-    EXPECT_EQ(mBridge, bridges[0]);
 }
 
-#if 0
 TEST_F (MamaLibraryManagerTestC, GetLoadedPayloads)
 {
     /*mama_open loads the default middleware for each bridge
      * so although we have not loaded one explicitly there
      * should be one payload bridge loaded at the very least.*/
 
-    mamaPayloadBridge* payloads    = NULL;
-    mama_size_t        numPayloads = 0;
+    mamaPayloadLibrary payloads[256];
+    mama_size_t        numPayloads = 256;
 
-    char** payloadName = NULL;
-    char*  payloadId   = NULL;
-
-    mamaLibraryManager_getLoadedPayloads (&payloads, &numPayloads);
-    mBridge->bridgeGetDefaultPayloadId(&payloadName, &payloadId);
+    mamaPayloadLibraryManager_getLibraries (payloads, &numPayloads);
 
     EXPECT_EQ (1, numPayloads);
-    EXPECT_EQ (payloadId[0], payloads[0]->msgPayloadGetType());
-
-    free (payloads);
 }
-#endif
 
 TEST_F (MamaLibraryManagerTestC, GetOpenMiddlewares)
 {
-    mama_size_t numBridges = 256;
-    mamaBridge bridges [256];
+    mama_size_t           numBridges = 256;
+    mamaMiddlewareLibrary bridges [256];
 
     mamaMiddlewareLibraryManager_getOpenedBridges (bridges, &numBridges);
     EXPECT_EQ (1, numBridges);
 }
 
-#if 0
 TEST_F (MamaLibraryManagerTestC, GetActiveMiddlewares)
 {
     /*We havent called mama_start on the bridge therefore it should not
      * be dispatching*/
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary bridges[256];
+    mama_size_t           numBridges = 256;
 
-    mamaLibraryManager_getActiveMiddlewares (&bridges, &numBridges);
+    mamaMiddlewareLibraryManager_getActiveBridges (bridges, &numBridges);
 
     EXPECT_EQ (0, numBridges);
-
-    free (bridges);
 }
 
+#if 0
 static void stopCb (mama_status status)
 {
 }
@@ -153,41 +141,39 @@ TEST_F (MamaLibraryManagerTestC, ActiveMiddlewares)
 
         mama_stop(mBridge);
 
-        free (bridges);
     }
 }
+#endif
 
 TEST_F (MamaLibraryManagerTestC, GetInactiveMiddlewares)
 {
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary  bridges[256];
+    mama_size_t numBridges = 256;
 
-    mamaLibraryManager_getInactiveMiddlewares (&bridges, &numBridges);
+    mamaMiddlewareLibraryManager_getInactiveBridges (bridges, &numBridges);
 
     EXPECT_EQ (1, numBridges);
-    EXPECT_EQ (mBridge, bridges[0]);
-
-    free (bridges);
 }
+
 TEST_F (MamaLibraryManagerTestC, GetMiddleware)
 {
-    mamaBridge bridge    = NULL;
+    mamaMiddlewareLibrary bridge   = NULL;
 
-    mamaLibraryManager_getMiddleware (getMiddleware(), &bridge);
+    mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
 
-    ASSERT_EQ (mBridge, bridge);
+    //ASSERT_EQ (mBridge, bridge);
 }
 
 TEST_F (MamaLibraryManagerTestC, GetPayload)
 {
-    mamaPayloadBridge payload = NULL;
-    mama_status       status  = MAMA_STATUS_OK;
+    mamaPayloadLibrary payload = NULL;
+    mama_status        status  = MAMA_STATUS_OK;
     char** payloadName = NULL;
     char*  payloadId   = NULL;
 
     mBridge->bridgeGetDefaultPayloadId (&payloadName, &payloadId);
 
-    status = mamaLibraryManager_getPayload (payloadName[0], &payload);
+    status = mamaPayloadLibraryManager_getLibrary (payloadName[0], &payload);
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
@@ -195,50 +181,31 @@ TEST_F (MamaLibraryManagerTestC, GetPayload)
 
 TEST_F (MamaLibraryManagerTestC, GetPayloadById)
 {
-    mamaPayloadBridge payload = NULL;
-    mama_status       status  = MAMA_STATUS_OK;
-    char** payloadName        = NULL;
-    char*  payloadId          = NULL;
+    mamaPayloadLibrary payload = NULL;
+    mama_status        status  = MAMA_STATUS_OK;
+    char** payloadName         = NULL;
+    char*  payloadId           = NULL;
 
     mBridge->bridgeGetDefaultPayloadId(&payloadName, &payloadId);
 
-    status = mamaLibraryManager_getPayloadById (payloadId[0], &payload);
+    status = mamaPayloadLibraryManager_getLibraryById (payloadId[0], &payload);
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
 }
 
-TEST_F (MamaLibraryManagerTestC, isActive)
-{
-    int active = 0;
-
-    ASSERT_EQ (MAMA_STATUS_OK,
-        mamaLibraryManager_isActive(mBridge, &active));
-
-    ASSERT_EQ(0, active);
-}
-
-TEST_F (MamaLibraryManagerTestC, isOpen)
-{
-    int open = 0;
-    ASSERT_EQ (MAMA_STATUS_OK,
-        mamaLibraryManager_isActive(mBridge, &open));
-
-    ASSERT_EQ(0, open);
-}
-
 TEST_F (MamaLibraryManagerTestC, NullTestGetLoadedMiddlewares)
 {
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary  bridges[256];
+    mama_size_t        numBridges = 256;
 
-    mamaLibraryManager_getLoadedMiddlewares (&bridges, &numBridges);
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getLoadedMiddlewares (&bridges, NULL));
+    mamaMiddlewareLibraryManager_getLibraries (bridges, &numBridges);
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getLoadedMiddlewares (NULL, &numBridges));
+        mamaMiddlewareLibraryManager_getLibraries (bridges, NULL));
+
+    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
+        mamaMiddlewareLibraryManager_getLibraries (NULL, &numBridges));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetLoadedPayloads)
@@ -247,105 +214,75 @@ TEST_F (MamaLibraryManagerTestC, NullTestGetLoadedPayloads)
      * so although we have not loaded one explicitly there
      * should be one payload bridge loaded at the very least.*/
 
-    mamaPayloadBridge* payloads    = NULL;
-    mama_size_t        numPayloads = 0;
+    mamaPayloadLibrary payloads[256];
+    mama_size_t    numPayloads = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getLoadedPayloads (&payloads, NULL));
+        mamaPayloadLibraryManager_getLibraries (payloads, NULL));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getLoadedPayloads (NULL, &numPayloads));
-
+        mamaPayloadLibraryManager_getLibraries (NULL, &numPayloads));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetOpenMiddlewares)
 {
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary  bridges[256];
+    mama_size_t        numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getOpenMiddlewares (NULL, &numBridges));
+        mamaMiddlewareLibraryManager_getOpenedBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getOpenMiddlewares (&bridges, NULL));
+        mamaMiddlewareLibraryManager_getOpenedBridges (bridges, NULL));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetActiveMiddlewares)
 {
     /*We havent called mama_start on the bridge therefore it should not
      * be dispatching*/
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary  bridges[256];
+    mama_size_t numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getActiveMiddlewares (NULL, &numBridges));
+        mamaMiddlewareLibraryManager_getActiveBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getActiveMiddlewares (&bridges, NULL));
+        mamaMiddlewareLibraryManager_getActiveBridges (bridges, NULL));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetInactiveMiddlewares)
 {
-    mamaBridge* bridges    = NULL;
-    mama_size_t numBridges = 0;
+    mamaMiddlewareLibrary  bridges[256];
+    mama_size_t        numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getInactiveMiddlewares (NULL, &numBridges));
+        mamaMiddlewareLibraryManager_getInactiveBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getInactiveMiddlewares (&bridges, NULL));
+        mamaMiddlewareLibraryManager_getInactiveBridges (bridges, NULL));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetMiddleware)
 {
-    mamaBridge bridge    = NULL;
+    mamaMiddlewareLibrary bridge    = NULL;
 
-    mamaLibraryManager_getMiddleware (getMiddleware(), &bridge);
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getMiddleware (getMiddleware(), NULL));
+    mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getMiddleware (NULL, &bridge));
+        mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), NULL));
+
+    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
+        mamaMiddlewareLibraryManager_getLibrary (NULL, &bridge));
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetPayload)
 {
-    mamaPayloadBridge payload = NULL;
+    mamaPayloadLibrary payload = NULL;
     const char* payloadName[] = {"ABC", "DEF"};
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getPayload (NULL, &payload));
+        mamaPayloadLibraryManager_getLibrary (NULL, &payload));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getPayload (payloadName[0], NULL));
+        mamaPayloadLibraryManager_getLibrary (payloadName[0], NULL));
 }
-
-TEST_F (MamaLibraryManagerTestC, NullTestGetPayloadById)
-{
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaLibraryManager_getPayloadById ('A', NULL));
-}
-
-TEST_F (MamaLibraryManagerTestC, NullResultisActive)
-{
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-     mamaLibraryManager_isActive(mBridge, NULL));
-
-    int result = 0;
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-     mamaLibraryManager_isActive(NULL, &result));
-}
-
-TEST_F (MamaLibraryManagerTestC, NullResultisOpen)
-{
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-     mamaLibraryManager_isOpen(mBridge, NULL));
-
-    int result = 0;
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-     mamaLibraryManager_isOpen(NULL, &result));
-}
-#endif

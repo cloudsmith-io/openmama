@@ -54,6 +54,11 @@ mamaPayloadLibraryManager_getBridges (mamaPayloadBridge* bridges,
 extern const char*
 mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType);
 
+/*Tempory method to convert payload library to payload bridge*/
+extern mama_status
+mamaPayloadLibraryManager_convertLibraryToPayload (mamaPayloadLibrary library,
+                                                   mamaPayloadBridge* bridge);
+
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

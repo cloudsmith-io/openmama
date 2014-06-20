@@ -271,7 +271,7 @@ mamaMiddlewareLibraryManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary)
     while (MAMA_STATUS_OK == status &&
            wInterlocked_read (&mwLibrary->mOpenCount) > 0)
     {
-        status = mamaMiddlewareLibraryManager_closeBridge (mwLibrary->mBridge);
+        status = mamaMiddlewareLibraryManager_closeBridge (mwLibrary);
     }
 
     if (MAMA_STATUS_OK != status)
@@ -293,7 +293,7 @@ mamaMiddlewareLibraryManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary)
     while (MAMA_STATUS_OK == status &&
            wInterlocked_read (&mwLibrary->mOpenCount) > 0)
     {
-        status = mamaMiddlewareLibraryManager_stopBridge (mwLibrary->mBridge);
+        status = mamaMiddlewareLibraryManager_stopBridge (mwLibrary);
     }
 
     if (MAMA_STATUS_OK != status)
@@ -353,7 +353,7 @@ mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
     {
         while (*payloadNames && *payloadIds)
         {
-            mamaPayloadBridge payloadBridge = NULL;
+            mamaPayloadLibrary payloadLibrary = NULL;
 
             const char* paths [2] = {
                 library->mPath,
@@ -364,9 +364,9 @@ mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
             for (mama_size_t k = 0; k < sizeof (paths)/sizeof (paths[0]); ++k)
             {
                 status =
-                    mamaPayloadLibraryManager_loadBridge (*payloadNames,
-                                                          paths[k],
-                                                          &payloadBridge);
+                    mamaPayloadLibraryManager_loadLibraryWithPath (*payloadNames,
+                                                                   paths[k],
+                                                                   &payloadLibrary);
 
                 if (MAMA_STATUS_OK == status)
                     break;
@@ -485,36 +485,6 @@ mamaMiddlewareLibraryManagerImpl_getLibraries (mamaMiddlewareLibrary* mwLibrarie
 
     for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
         mwLibraries[k] = (mamaMiddlewareLibrary)libraries[k]->mClosure;
-
-    if (librariesSize < *size)
-        *size = librariesSize;
-
-    return status;
-}
-
-static mama_status
-mamaMiddlewareLibraryManagerImpl_getBridges (mamaBridge*            bridges,
-                                             mama_size_t*           size,
-                                             mamaLibraryPredicateCb predicate)
-{
-    if (!bridges || !size)
-        return MAMA_STATUS_NULL_ARG;
-
-    mamaLibrary libraries [MAX_LIBRARIES];
-    mama_size_t librariesSize = MAX_LIBRARIES;
-
-    mama_status status =
-        mamaLibraryManager_getLibraries (libraries,
-                                         &librariesSize,
-                                         MAMA_MIDDLEWARE_LIBRARY,
-                                         predicate);
-
-    for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
-    {
-        mamaMiddlewareLibrary library = 
-            (mamaMiddlewareLibrary)libraries[k]->mClosure;
-        bridges[k] = library->mBridge;
-    }
 
     if (librariesSize < *size)
         *size = librariesSize;
@@ -1041,11 +1011,11 @@ mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
  */
 
 mama_status
-mamaMiddlewareLibraryManager_loadBridge (const char* middlewareName,
-                                         const char* path,
-                                         mamaBridge* bridge)
+mamaMiddlewareLibraryManager_loadLibraryWithPath (const char*            middlewareName,
+                                                  const char*            path,
+                                                  mamaMiddlewareLibrary* mwLibrary)
 {
-    if (!bridge || !middlewareName)
+    if (!mwLibrary || !middlewareName)
         return MAMA_STATUS_NULL_ARG;
 
     mamaLibrary library = NULL;
@@ -1057,18 +1027,17 @@ mamaMiddlewareLibraryManager_loadBridge (const char* middlewareName,
     if (MAMA_STATUS_OK != status)
         return status;
 
-    mamaMiddlewareLibrary mwLibrary =
+    *mwLibrary =
         (mamaMiddlewareLibrary) library->mClosure;
 
-    *bridge = mwLibrary->mBridge;
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getBridge (const char* middlewareName,
-                                        mamaBridge* bridge)
+mamaMiddlewareLibraryManager_getLibrary (const char*            middlewareName,
+                                         mamaMiddlewareLibrary* mwLibrary)
 {
-    if (!bridge || !middlewareName)
+    if (!mwLibrary || !middlewareName)
         return MAMA_STATUS_NULL_ARG;
 
     mamaLibrary library = NULL;
@@ -1080,20 +1049,19 @@ mamaMiddlewareLibraryManager_getBridge (const char* middlewareName,
     if (MAMA_STATUS_OK != status)
         return status;
 
-    mamaMiddlewareLibrary mwLibrary =
+    *mwLibrary =
         (mamaMiddlewareLibrary) library->mClosure;
 
-    *bridge = mwLibrary->mBridge;
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getDefaultBridge (mamaBridge* bridge)
+mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library)
 {
-    if (!bridge)
+    if (!library)
         return MAMA_STATUS_NULL_ARG;
 
-    *bridge = NULL;
+    *library = NULL;
 
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1113,9 +1081,8 @@ mamaMiddlewareLibraryManager_getDefaultBridge (mamaBridge* bridge)
 
         if (mwLibrary)
         {
-            *bridge = mwLibrary->mBridge;
-            status = MAMA_STATUS_OK;
-            break;
+            *library = mwLibrary;
+            return MAMA_STATUS_OK;
         }
     }
 
@@ -1131,54 +1098,47 @@ mamaMiddlewareLibraryManager_getLibraries (mamaMiddlewareLibrary* libraries,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getBridges (mamaBridge*  bridges,
-                                         mama_size_t* size)
-{
-    return mamaMiddlewareLibraryManagerImpl_getBridges (bridges, size, NULL);
-}
-
-mama_status
-mamaMiddlewareLibraryManager_getOpenedBridges (mamaBridge*  bridges,
-                                               mama_size_t* size)
+mamaMiddlewareLibraryManager_getOpenedBridges (mamaMiddlewareLibrary*  libraries,
+                                             mama_size_t*            size)
 {
     mamaLibraryPredicateCb predicate =
         mamaMiddlewareLibraryManagerImpl_isOpenedBridge;
-    return mamaMiddlewareLibraryManagerImpl_getBridges (bridges, size,
-                                                        predicate);
+    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
+                                                          predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getActiveBridges (mamaBridge*  bridges,
-                                               mama_size_t* size)
+mamaMiddlewareLibraryManager_getActiveBridges (mamaMiddlewareLibrary*  libraries,
+                                               mama_size_t*            size)
 {
     mamaLibraryPredicateCb predicate =
         mamaMiddlewareLibraryManagerImpl_isActiveBridge;
-    return mamaMiddlewareLibraryManagerImpl_getBridges (bridges, size,
-                                                        predicate);
+    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
+                                                          predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getInactiveBridges (mamaBridge*  bridges,
-                                                 mama_size_t* size)
+mamaMiddlewareLibraryManager_getInactiveBridges (mamaMiddlewareLibrary*  libraries,
+                                                 mama_size_t*            size)
 {
     mamaLibraryPredicateCb predicate =
         mamaMiddlewareLibraryManagerImpl_isInactiveBridge;
-    return mamaMiddlewareLibraryManagerImpl_getBridges (bridges, size,
-                                                        predicate);
+    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
+                                                          predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getClosedBridges (mamaBridge*  bridges,
-                                               mama_size_t* size)
+mamaMiddlewareLibraryManager_getClosedBridges (mamaMiddlewareLibrary*  bridges,
+                                               mama_size_t*            size)
 {
     mamaLibraryPredicateCb predicate =
         mamaMiddlewareLibraryManagerImpl_isClosedBridge;
-    return mamaMiddlewareLibraryManagerImpl_getBridges (bridges, size,
-                                                        predicate);
+    return mamaMiddlewareLibraryManagerImpl_getLibraries (bridges, size,
+                                                          predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumBridges (mama_size_t* size)
+mamaMiddlewareLibraryManager_getNumLibraries (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
@@ -1271,12 +1231,12 @@ mamaMiddlewareLibraryManager_getNumClosedBridges (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_openBridge (mamaBridge bridge)
+mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary mwLibrary)
 {
-    if (NULL == bridge)
+    if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
+    mamaBridge  bridge  = mwLibrary->mBridge;
     mamaLibrary library = mwLibrary->mParent;
 
     wlock_lock (library->mLock);
@@ -1298,12 +1258,12 @@ mamaMiddlewareLibraryManager_openBridge (mamaBridge bridge)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_closeBridge (mamaBridge bridge)
+mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary mwLibrary)
 {
-    if (NULL == bridge)
+    if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
+    mamaBridge  bridge  = mwLibrary->mBridge;
     mamaLibrary library = mwLibrary->mParent;
 
     wlock_lock (library->mLock);
@@ -1356,12 +1316,12 @@ mamaMiddlewareLibraryManager_closeBridge (mamaBridge bridge)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_startBridge (mamaBridge bridge)
+mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
 {
-    if (NULL == bridge)
+    if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
+    mamaBridge  bridge  = mwLibrary->mBridge;
     mamaLibrary library = mwLibrary->mParent;
 
     if (!bridge->mDefaultEventQueue)
@@ -1401,12 +1361,12 @@ mamaMiddlewareLibraryManager_startBridge (mamaBridge bridge)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_stopBridge (mamaBridge bridge)
+mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
 {
-    if (NULL == bridge)
+    if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
+    mamaBridge  bridge  = mwLibrary->mBridge;
     mamaLibrary library = mwLibrary->mParent;
 
     wlock_lock (library->mLock);
@@ -1457,30 +1417,28 @@ mamaMiddlewareLibraryManager_stopAllBridges ()
 }
 
 const char*
-mamaMiddlewareLibraryManager_getBridgeVersion (mamaBridge bridge)
+mamaMiddlewareLibraryManager_getLibraryVersion (mamaMiddlewareLibrary mwLibrary)
 {
-    if (!bridge)
+    if (!mwLibrary)
         return NULL;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
     mamaLibrary library = mwLibrary->mParent;
 
     const char* prop =
         mamaDefaultLibraryManager_getLibraryBridgeVersion (library);
 
     if (!(prop && *prop))
-        prop = bridge->bridgeGetVersion ();
+        prop = mwLibrary->mBridge->bridgeGetVersion ();
 
     return prop;
 }
 
 const char*
-mamaMiddlewareLibraryManager_getBridgeMamaVersion (mamaBridge bridge)
+mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary mwLibrary)
 {
-    if (!bridge)
+    if (!mwLibrary)
         return NULL;
 
-    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
     mamaLibrary library = mwLibrary->mParent;
 
     return mamaDefaultLibraryManager_getLibraryBridgeMamaVersion (library);
@@ -1596,15 +1554,14 @@ mamaMiddlewareLibraryManager_stringToMiddlewareId (const char*  str,
         return MAMA_STATUS_NULL_ARG;
 
     *middlewareId = 0;
-    mamaBridge bridge = NULL;
-
+    mamaMiddlewareLibrary library = NULL;
+    
     mama_status status =
-        mamaMiddlewareLibraryManager_getBridge (str, &bridge);
+        mamaMiddlewareLibraryManager_getLibrary (str, &library);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    mamaMiddlewareLibrary library = bridge->mLibrary;
     *middlewareId = library->mMiddlewareId;
     return status;
 }
@@ -1708,3 +1665,13 @@ mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware)
     }
 }
 
+mama_status
+mamaMiddlewareLibraryManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
+                                                     mamaBridge*           bridge)
+{
+    assert (library);
+    assert (bridge);
+
+    *bridge = library->mBridge;
+    return MAMA_STATUS_OK;
+}

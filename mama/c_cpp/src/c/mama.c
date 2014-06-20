@@ -47,6 +47,8 @@
 #include "transportimpl.h"
 
 #include "librarymanager.h"
+#include "middlewaremanager.h"
+#include "payloadmanager.h"
 #include "mama/middlewaremanager.h"
 #include "mama/payloadmanager.h"
 
@@ -148,7 +150,7 @@ int gCatchCallbackExceptions = 0;
 
 wproperty_t             gProperties      = 0;
 
-static mamaPayloadBridge    gDefaultPayload = NULL;
+static mamaPayloadLibrary  gDefaultPayload = NULL;
 
 static wthread_key_t last_err_key;
 static wthread_static_mutex_t  myLock = WSTATIC_MUTEX_INITIALIZER;
@@ -307,13 +309,14 @@ static int mamaInternal_statsPublishingEnabled (void)
 static mama_status
 mamaInternal_createStatsPublisher (void)
 {
-    mama_status     result                  = MAMA_STATUS_OK;
-    mamaBridge      bridge                  = NULL;
-    mamaQueue       queue                   = NULL;
-    mamaTransport   statsLogTport           = NULL;
-    const char*     userName                = NULL;
-    const char*     statsLogTportName       = NULL;
-    const char*     statsLogMiddlewareName  = NULL;
+    mama_status           result                  = MAMA_STATUS_OK;
+    mamaBridge            bridge                  = NULL;
+    mamaMiddlewareLibrary library                 = NULL;
+    mamaQueue             queue                   = NULL;
+    mamaTransport         statsLogTport           = NULL;
+    const char*           userName                = NULL;
+    const char*           statsLogTportName       = NULL;
+    const char*           statsLogMiddlewareName  = NULL;
 
     mama_log (MAMA_LOG_LEVEL_NORMAL, "Stats publishing enabled");
 
@@ -327,8 +330,14 @@ mamaInternal_createStatsPublisher (void)
         statsLogMiddlewareName = "wmw";
     }
 
-    result = mamaMiddlewareLibraryManager_getBridge (statsLogMiddlewareName,
-                                                     &bridge);
+    result = mamaMiddlewareLibraryManager_getLibrary (statsLogMiddlewareName,
+                                                      &library);
+    if (result != MAMA_STATUS_OK)
+        return result;
+
+    result = mamaMiddlewareLibraryManager_convertLibraryToBridge (library,
+                                                                  &bridge);
+
     if (result != MAMA_STATUS_OK)
         return result;
 
@@ -589,29 +598,37 @@ mamaInternal_getProperties()
 mamaBridge
 mamaInternal_findBridge ()
 {
-    mamaBridge bridge = NULL;
-    mamaMiddlewareLibraryManager_getDefaultBridge (&bridge);
+    mamaMiddlewareLibrary mwLibrary = NULL;
+    mamaBridge            bridge    = NULL;
+
+    mamaMiddlewareLibraryManager_getDefaultLibrary (&mwLibrary);
+    mamaMiddlewareLibraryManager_convertLibraryToBridge (mwLibrary, &bridge);
     return bridge;
 }
 
 mamaPayloadBridge
 mamaInternal_findPayload (char id)
 {
-    mamaPayloadBridge bridge = NULL;
-    mamaPayloadLibraryManager_getBridgeById (id, &bridge);
+    mamaPayloadLibrary library = NULL;
+    mamaPayloadBridge  bridge  = NULL;    
+
+    mamaPayloadLibraryManager_getLibraryById (id, &library);
+    mamaPayloadLibraryManager_convertLibraryToPayload (library, &bridge);
     return bridge;
 }
 
 mamaPayloadBridge
 mamaInternal_getDefaultPayload (void)
 {
-    return gDefaultPayload;
+    mamaPayloadBridge bridge = NULL;
+    mamaPayloadLibraryManager_convertLibraryToPayload (gDefaultPayload, &bridge);
+    return bridge;
 }
 
 void
-mamaInternal_setDefaultPayload (mamaPayloadBridge payloadBridge)
+mamaInternal_setDefaultPayload (mamaPayloadBridge bridge)
 {
-    gDefaultPayload = payloadBridge;
+    gDefaultPayload = bridge->mLibrary;
 }
 
 mama_bool_t
@@ -825,12 +842,17 @@ mama_statsInit (void)
         mamaInternal_enableStatsLogging();
 
         /* Enable stats for every active bridge */
-        mamaBridge bridges [MAX_LIBRARIES];
+        mamaMiddlewareLibrary libraries [MAX_LIBRARIES];
         mama_size_t numBridges = MAX_LIBRARIES;
-        mamaMiddlewareLibraryManager_getActiveBridges (bridges, &numBridges);
+        mamaMiddlewareLibraryManager_getActiveBridges (libraries, &numBridges);
 
         for (mama_size_t k = 0; k < numBridges; ++k)
-            mamaQueue_enableStats (bridges[k]->mDefaultEventQueue);
+        {
+            mamaBridge bridge = NULL;
+            mamaMiddlewareLibraryManager_convertLibraryToBridge(libraries[k], 
+                                                                     &bridge);
+            mamaQueue_enableStats (bridge->mDefaultEventQueue);
+        }
     }
     return MAMA_STATUS_OK;
 }
@@ -915,7 +937,7 @@ mama_setupStatsGenerator (void)
 mama_status
 mama_openBridge (mamaBridge bridge)
 {
-    return mamaMiddlewareLibraryManager_openBridge (bridge);
+    return mamaMiddlewareLibraryManager_openBridge (bridge->mLibrary);
 }
 
 mama_status
@@ -1029,7 +1051,7 @@ mama_getVersion (mamaBridge bridge)
         return NULL;
     }
 
-    return mamaMiddlewareLibraryManager_getBridgeVersion (bridge);
+    return mamaMiddlewareLibraryManager_getLibraryVersion (bridge->mLibrary);
 }
 
 static mama_status
@@ -1207,7 +1229,7 @@ mama_close (void)
 mama_status
 mama_start (mamaBridge bridge)
 {
-    return mamaMiddlewareLibraryManager_startBridge (bridge);
+    return mamaMiddlewareLibraryManager_startBridge (bridge->mLibrary);
 }
 
 struct startBackgroundClosure
@@ -1309,7 +1331,7 @@ mama_startBackgroundEx (mamaBridge bridgeImpl, mamaStopCBEx exCallback, void* cl
 mama_status
 mama_stop (mamaBridge bridgeImpl)
 {
-    return mamaMiddlewareLibraryManager_stopBridge (bridgeImpl);
+    return mamaMiddlewareLibraryManager_stopBridge (bridgeImpl->mLibrary);
 }
 
 /**
@@ -1618,14 +1640,14 @@ mama_setDefaultPayload (char id)
     if (id == '\0')
         return MAMA_STATUS_NULL_ARG;
 
-    mamaPayloadBridge payload = NULL;
+    mamaPayloadLibrary library = NULL;
     mama_status status =
-        mamaPayloadLibraryManager_getBridgeById (id, &payload);
+        mamaPayloadLibraryManager_getLibraryById (id, &library);
 
     if (status != MAMA_STATUS_OK)
         return status;
 
-    gDefaultPayload = payload;
+    gDefaultPayload = library;
     return MAMA_STATUS_OK;
 }
 
@@ -1649,8 +1671,11 @@ mama_loadBridgeWithPath (mamaBridge* bridge,
                          const char* middlewareName,
                          const char* path)
 {
+    mamaMiddlewareLibrary library = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManager_loadBridge (middlewareName, path, bridge);
+        mamaMiddlewareLibraryManager_loadLibraryWithPath (middlewareName, path, &library);
+
+    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, bridge);
 
     if (MAMA_STATUS_OK == status)
         status = mama_openBridge (*bridge);
@@ -1672,7 +1697,15 @@ mama_loadPayloadBridgeWithPath (mamaPayloadBridge* bridge,
                                 const char*        payloadName,
                                 const char*        path)
 {
-    return mamaPayloadLibraryManager_loadBridge (payloadName, path, bridge);
+    mamaPayloadLibrary library = NULL;
+    mama_status status = 
+        mamaPayloadLibraryManager_loadLibraryWithPath (payloadName, path, &library);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+    
+    mamaPayloadLibraryManager_convertLibraryToPayload (library, bridge);
+    return MAMA_STATUS_OK;
 }
 
 /*
