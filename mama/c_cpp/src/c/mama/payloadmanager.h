@@ -145,6 +145,23 @@ extern mama_status
 mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
                                                   void*         closure);
 
+/*
+ * @brief Set a property programmatically for a specific library.
+ * 
+ * Method to set a library property programmatically.
+ *
+ * @param[in] libraryName Name of the library for which 
+              the property will be set.
+ * @param[in] propertyName Property name e.g. ignore for 
+ *            mama.library.<library-name>.ignore.
+ * @param[in] value Value of the property
+ */
+MAMAExpDLL
+extern mama_status
+mamaPaylaodLibraryManager_setProperty (const char* libraryName,
+                                       const char* propertyName,
+                                       const char* value);
+
 /**
  * @brief Convert a mamaLibrary to a mamaPayloadLibrary.
  *

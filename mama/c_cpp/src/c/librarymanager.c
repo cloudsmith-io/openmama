@@ -1412,6 +1412,26 @@ mamaLibraryManagerImpl_dumpLibrariesCb (mamaLibrary library,
     return 1;
 }
 
+mama_status 
+mamaLibraryManager_setProperty (const char* libraryName,
+                                const char* propertyName,
+                                const char* value)
+{
+    char buf [MAX_PROPERTY_LEN];
+    int  res = 0;
+
+    if (!(libraryName && *libraryName))
+        libraryName = "default";
+
+    if (snprintf (buf, MAX_PROPERTY_LEN-1,
+                 "mama.library.%s.%s", libraryName, propertyName) < 0)
+    {
+        return MAMA_STATUS_NOMEM;
+    }
+
+    return mama_setProperty(buf, value); 
+}
+
 const char*
 mamaLibraryManager_getProperty (const char*     library,
                                 const char*     property,

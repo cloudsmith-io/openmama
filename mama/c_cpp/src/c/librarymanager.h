@@ -357,6 +357,11 @@ mamaLibraryManager_registerUnloadCallback (mamaLibraryTypeManager manager,
                                            mamaLibraryCb          cb,
                                            void*                  closure);
 
+extern mama_status
+mamaLibraryManager_setProperty (const char* libraryName,
+                                const char* propertyName,
+                                const char* value);
+
 /*
  * @brief Retrieve a library property based on hierarchy.
  *

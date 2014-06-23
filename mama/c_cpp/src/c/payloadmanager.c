@@ -1261,6 +1261,16 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
 }
 
 mama_status
+mamaPayloadLibraryManager_setProperty (const char* libraryName,
+                                       const char* propertyName,
+                                       const char* value)
+{
+    return mamaLibraryManager_setProperty (libraryName,
+                                           propertyName,
+                                           value);
+}
+
+mama_status
 mamaPayloadLibraryManager_libraryToPayloadLibrary (
         mamaLibrary         library,
         mamaPayloadLibrary* plLibrary)

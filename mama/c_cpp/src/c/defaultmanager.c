@@ -21,8 +21,6 @@
 #include "defaultmanager.h"
 #include <wombat/strutils.h>
 
-#define MAX_PROPERTY_LEN 300
-
 /*
  * Private implementation
  */

@@ -1585,6 +1585,16 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
 }
 
 mama_status
+mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
+                                          const char* propertyName,
+                                          const char* value)
+{
+    return mamaLibraryManager_setProperty (libraryName,
+                                           propertyName,
+                                           value);
+}
+
+mama_status
 mamaMiddlewareLibraryManager_libraryToMiddlewareLibrary (
         mamaLibrary            library,
         mamaMiddlewareLibrary* mwLibrary)

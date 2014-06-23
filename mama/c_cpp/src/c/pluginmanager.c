@@ -105,3 +105,14 @@ mamaPluginLibraryManager_loadBridge (const char*  pluginName,
     return MAMA_STATUS_OK;
 }
 
+mama_status
+mamaPluginLibraryManager_setProperty (const char* libraryName,
+                                      const char* propertyName,
+                                      const char* value)
+{
+    return mamaLibraryManager_setProperty (libraryName,
+                                           propertyName,
+                                           value);
+}
+
+
