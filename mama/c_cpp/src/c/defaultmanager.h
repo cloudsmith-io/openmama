@@ -40,6 +40,12 @@ mamaDefaultLibraryManager_loadLibrary (mamaLibrary library);
 extern void
 mamaDefaultLibraryManager_unloadLibrary (mamaLibrary library);
 
+extern void  
+mamaDefaultLibraryManager_dump (mamaLibraryTypeManager manager);
+
+extern void
+mamaDefaultLibraryManager_dumpLibrary (mamaLibrary library);
+
 extern mamaLibraryType
 mamaDefaultLibraryManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib);

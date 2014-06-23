@@ -216,7 +216,16 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
 
         if (!createImpl)
         {
+            mama_log (MAMA_LOG_LEVEL_ERROR,
+                      "mamaPayloadLibraryManager_createBridge(): "
+                      "Could not find either init or createImpl "
+                      "initialise method for %s library %s bridge",
+                      library->mTypeName, library->mName);
+            
+            free (bridge);
+            return MAMA_STATUS_NO_BRIDGE_IMPL;
         }
+
         /* FIXME: We might need to make a carbon copy of mamaPayloadBridge
          * and make it mamaPayloadOldBridge if we make any changes that
          * would affect binary-compatibility between structures, other than
@@ -254,7 +263,6 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
     }
 
     *bridge0 = bridge;
-
     return MAMA_STATUS_OK;
 }
 
@@ -1039,6 +1047,25 @@ mamaMiddlewareLibraryManager_unloadLibrary (mamaLibrary library)
     mwManager->mMiddleware[middlewareId] = NULL;
 }
 
+void mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager)
+{
+    mamaMiddlewareLibraryManager mwManager = 
+        (mamaMiddlewareLibraryManager) manager->mClosure;
+
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "Num Open [%d] Num Active [%d]", 
+        wInterlocked_read(&mwManager->mNumOpen), 
+        wInterlocked_read(&mwManager->mNumActive));
+}
+
+void mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library)
+{
+    mamaMiddlewareLibrary mwLibrary = 
+        (mamaMiddlewareLibrary) library->mClosure;
+
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "Middleware Id [%c]", 
+                                 mwLibrary->mMiddlewareId);    
+}
+
 mamaLibraryType
 mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
                                                   LIB_HANDLE  libraryLib)
@@ -1047,7 +1074,11 @@ mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
         mamaMiddlewareLibraryManagerImpl_getCreateImpl (libraryName,
                                                         libraryLib);
 
-    if (createImpl)
+    bridge_init init = 
+        mamaMiddlewareLibraryManagerImpl_getInit (libraryName,
+                                                  libraryLib);
+
+    if (createImpl || init)
         return MAMA_MIDDLEWARE_LIBRARY;
 
     return MAMA_UNKNOWN_LIBRARY;

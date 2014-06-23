@@ -940,6 +940,13 @@ mama_openBridge (mamaBridge bridge)
     return mamaMiddlewareLibraryManager_openBridge (bridge->mLibrary);
 }
 
+mama_status 
+mama_dumpLibraryManager ()
+{
+    /*FIXME is this the best place for this?*/
+    mamaLibraryManager_dump();
+}
+
 mama_status
 mama_open ()
 {

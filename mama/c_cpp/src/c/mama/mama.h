@@ -632,6 +632,14 @@ extern "C"
     extern mama_status
     mama_removeStatsCollector (mamaStatsCollector  statsCollector);
 
+    /*
+     * Dump all libraries and their associated meta-data.
+     */
+
+    MAMAExpDLL
+    extern mama_status
+    mama_dumpLibraryManager (void);
+
 #if defined(__cplusplus)
 }
 #endif

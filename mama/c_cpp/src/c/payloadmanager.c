@@ -1105,14 +1105,33 @@ mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
         mamaPayloadLibraryManagerImpl_getCreateImpl (libraryName,
                                                      libraryLib);
 
+    msgPayload_init init = 
+        mamaPayloadLibraryManagerImpl_getInit (libraryName,
+                                               libraryLib);
+
     msgPayload_destroyImpl destroyImpl =
         mamaPayloadLibraryManagerImpl_getDestroyImpl (libraryName,
                                                       libraryLib);
 
-    if (createImpl || destroyImpl)
+    if (init || createImpl || destroyImpl)
         return MAMA_PAYLOAD_LIBRARY;
 
     return MAMA_UNKNOWN_LIBRARY;
+}
+
+void mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager)
+{
+    mamaPayloadLibraryManager mwManager = 
+        (mamaPayloadLibraryManager) manager->mClosure;
+}
+
+void mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library)
+{
+    mamaPayloadLibrary plLibrary = 
+        (mamaPayloadLibrary) library->mClosure;
+
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "Payload Id [%c]", 
+                                plLibrary->mPayloadId);
 }
 
 /*

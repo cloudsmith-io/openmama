@@ -46,9 +46,11 @@ extern mamaLibraryType
 mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib);
 
-extern mama_status
-mamaPayloadLibraryManager_getBridges (mamaPayloadBridge* bridges,
-                                      mama_size_t*       size);
+extern void 
+mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager);
+
+extern void 
+mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library);
 
 /*Deprecated function for converting the payload enum to a string representation*/
 extern const char*

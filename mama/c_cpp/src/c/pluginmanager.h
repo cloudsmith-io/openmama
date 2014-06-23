@@ -44,6 +44,12 @@ extern mamaLibraryType
 mamaPluginLibraryManager_classifyLibraryType (const char* libraryName,
                                               LIB_HANDLE  libraryLib);
 
+extern void 
+mamaPluginLibraryManager_dump (mamaLibraryTypeManager manager);
+
+extern void 
+mamaPluginLibraryManager_dumpLibrary (mamaLibrary library);
+
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

@@ -134,6 +134,13 @@ static mama_bool_t
 mamaLibraryManagerImpl_cleanupLibrariesCb (mamaLibrary library,
                                            void*       closure);
 
+static mama_bool_t 
+mamaLibraryManagerImpl_dumpLibrariesCb (mamaLibrary library,
+                                        void*       closure);
+
+static mama_status
+mamaLibraryManagerImpl_dumpTypeManager (mamaLibraryType type);
+
 static mama_status
 mamaLibraryManagerImpl_classifyLibraryType (const char*      libraryName,
                                             LIB_HANDLE       libraryHandle,
@@ -405,6 +412,8 @@ mamaLibraryManagerImpl_createTypeManager (mamaLibraryTypeManagerInfo info)
     REGISTER_TYPE_MANAGER_FUNCTION (destroy);
     REGISTER_TYPE_MANAGER_FUNCTION (loadLibrary);
     REGISTER_TYPE_MANAGER_FUNCTION (unloadLibrary);
+    REGISTER_TYPE_MANAGER_FUNCTION (dump);
+    REGISTER_TYPE_MANAGER_FUNCTION (dumpLibrary);
     REGISTER_TYPE_MANAGER_FUNCTION (classifyLibraryType);
     REGISTER_TYPE_MANAGER_FUNCTION (getLibraryProperty);
     REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBoolProperty);
@@ -854,6 +863,22 @@ mamaLibraryManagerImpl_iterateLibrariesCb (wtable_t    table,
     /* FIXME: No current method to stop iteration in wtable? */
     if (cl->mOk)
         cl->mOk = cl->mCb (library, cl->mClosure);
+}
+
+mama_status
+mamaLibraryManagerImpl_dumpTypeManager (mamaLibraryType libraryType)
+{
+    mamaLibraryTypeManager manager = NULL;
+    mama_status status             = 
+            mamaLibraryManager_getTypeManager(libraryType, &manager);
+ 
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "%s Libraries: No. Libraries[%d] ",
+              manager->mTypeName, wInterlocked_read(&manager->mNumLibraries));
+    
+    manager->mFuncs->dump(manager);
 }
 
 /*
@@ -1324,6 +1349,67 @@ mamaLibraryManager_registerUnloadCallback (mamaLibraryTypeManager manager,
     return mamaLibraryManager_createCallbackSlot (manager, 
                                                   manager->mUnloadSignal,
                                                   cb, closure);
+}
+
+void
+mamaLibraryManager_dump ()
+{
+    mama_log (MAMA_LOG_LEVEL_NORMAL, 
+        "mamaLibraryManager_dump(): Loaded Libraries:");
+
+    for (mama_size_t k = 0; k < MAX_LIBRARY_TYPE; ++k)
+    {
+        mamaLibraryType libraryType    = gManagers[k].mType;
+        mama_status status             = 
+            mamaLibraryManagerImpl_dumpTypeManager (libraryType);
+ 
+        if (MAMA_STATUS_OK != status)
+            continue;
+
+        mamaLibraryManager_iterateLibraries (libraryType, 
+                                             mamaLibraryManagerImpl_dumpLibrariesCb,
+                                             NULL);               
+    }
+}
+
+mama_bool_t
+mamaLibraryManagerImpl_dumpLibrariesCb (mamaLibrary library,
+                                        void*       closure)
+{
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "%s:\n\tName [%s] Path[%s]", 
+        library->mName, library->mName, library->mPath);    
+
+    mamaLibraryTypeManager manager = NULL;
+    mama_status status =
+        mamaLibraryManager_getTypeManager (library->mType, &manager);
+
+    if (MAMA_STATUS_OK != status)
+        return 0;
+
+    manager->mFuncs->dumpLibrary (library);
+
+    static const char* properties[] = {"ignore", "name" , "description",
+                                       "author", "uri", "license", "version",
+                                       "mama_version", "bridge_author", 
+                                       "bridge_uri", "bridge_license", 
+                                       "bridge_version", "bridge_mama_version"};
+
+    mama_log (MAMA_LOG_LEVEL_NORMAL, "Bridge Properties: ");
+
+    for (mama_size_t i = 0; 
+        i < sizeof(properties)/sizeof(properties[0]); ++i)
+    {
+        const char* prop = 
+            manager->mFuncs->getLibraryProperty (library,
+                                                 properties[i]);
+    
+        if (prop)
+        {
+            mama_log (MAMA_LOG_LEVEL_NORMAL, "Property [%s] Value [%s]", 
+                properties[i], prop);
+        }
+    }
+    return 1;
 }
 
 const char*

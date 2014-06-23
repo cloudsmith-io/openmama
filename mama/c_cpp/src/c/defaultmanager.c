@@ -21,6 +21,8 @@
 #include "defaultmanager.h"
 #include <wombat/strutils.h>
 
+#define MAX_PROPERTY_LEN 300
+
 /*
  * Private implementation
  */
@@ -46,6 +48,16 @@ mamaDefaultLibraryManager_create (mamaLibraryTypeManager manager)
 
 void
 mamaDefaultLibraryManager_destroy (void)
+{
+}
+
+void
+mamaDefaultLibraryManager_dump (mamaLibraryTypeManager manager)
+{
+}
+
+void
+mamaDefaultLibraryManager_dumpLibrary (mamaLibrary library)
 {
 }
 
@@ -194,4 +206,3 @@ mamaDefaultLibraryManager_getLibraryBridgeMamaVersion (mamaLibrary library)
 
     return (prop ? prop : manager->mFuncs->getLibraryMamaVersion (library));
 }
-

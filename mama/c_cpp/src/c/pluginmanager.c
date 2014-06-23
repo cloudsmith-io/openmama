@@ -85,6 +85,14 @@ mamaPluginLibraryManager_classifyLibraryType (const char* libraryName,
     return MAMA_UNKNOWN_LIBRARY;
 }
 
+void mamaPluginLibraryManager_dump (mamaLibraryTypeManager manager)
+{
+}
+
+void mamaPluginLibraryManager_dumpLibrary (mamaLibrary library)
+{
+}
+
 /*
  * Public implementation
  */

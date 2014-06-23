@@ -45,6 +45,12 @@ extern mamaLibraryType
 mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
                                                   LIB_HANDLE  libraryLib);
 
+extern void 
+mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager);
+
+extern void 
+mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library);
+
 /*Deprecated convert from middleware name to mamaMiddleware enum string*/
 extern mamaMiddleware
 mamaMiddlewareLibraryManager_convertFromString (const char*  str);

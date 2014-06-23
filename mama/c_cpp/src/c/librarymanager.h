@@ -70,6 +70,12 @@ typedef mama_status
 typedef void
 (*mamaLibraryTypeManager_unloadLibrary) (mamaLibrary library);
 
+typedef void
+(*mamaLibraryTypeManager_dump) (mamaLibraryTypeManager manager);
+
+typedef void 
+(*mamaLibraryTypeManager_dumpLibrary) (mamaLibrary library);
+
 typedef mamaLibraryType
 (*mamaLibraryTypeManager_classifyLibraryType) (const char* libraryName,
                                                LIB_HANDLE  libraryHandle);
@@ -168,6 +174,8 @@ typedef struct mamaLibraryTypeManagerBridgeImpl_
     mamaLibraryTypeManager_destroy                     destroy;
     mamaLibraryTypeManager_loadLibrary                 loadLibrary;
     mamaLibraryTypeManager_unloadLibrary               unloadLibrary;
+    mamaLibraryTypeManager_dump                        dump;
+    mamaLibraryTypeManager_dumpLibrary                 dumpLibrary;
     mamaLibraryTypeManager_classifyLibraryType         classifyLibraryType;
     mamaLibraryTypeManager_getLibraryProperty          getLibraryProperty;
     mamaLibraryTypeManager_getLibraryBoolProperty      getLibraryBoolProperty;
@@ -271,6 +279,13 @@ extern void*
 mamaLibraryManager_loadLibraryFunction (const char* libraryName,
                                         LIB_HANDLE  libraryHandle,
                                         const char* funcName);
+
+/*
+ * @brief Dump the libraries and their assocaited meta-data. 
+ *
+ */
+extern void
+mamaLibraryManager_dump (void);
 
 /*
  * @brief Lookup a library type manager.
