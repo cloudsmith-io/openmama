@@ -427,6 +427,9 @@ typedef void
 
 typedef mamaPayloadType
 (*msgPayload_getType)         (void);
+
+typedef mama_status
+(*msgPayload_init)            (char* identifier);
 /*===================================================================
  =              msgPayload bridge function pointers                 =
  ====================================================================*/

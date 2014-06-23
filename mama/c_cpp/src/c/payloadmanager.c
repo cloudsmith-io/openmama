@@ -70,11 +70,17 @@ static msgPayload_destroyImpl
 mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
                                               LIB_HANDLE  libraryHandle);
 
+static msgPayload_init
+mamaPayloadLibraryManagerImpl_getInit (const char* libraryName,
+                                       LIB_HANDLE  libraryHandle);
 static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
 static msgPayload_destroyImpl
 mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library);
+
+static msgPayload_init
+mamaPayloadLibraryManagerImpl_getLibraryInit (mamaLibrary library);
 
 static mama_status
 mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
@@ -141,6 +147,17 @@ mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
     return *(msgPayload_destroyImpl*)&func;
 }
 
+static msgPayload_init
+mamaPayloadLibraryManagerImpl_getInit (const char* libraryName,
+                                       LIB_HANDLE  libraryHandle)
+{
+    void* func = 
+        mamaLibraryManager_loadLibraryFunction (libraryName,
+                                                libraryHandle,
+                                                "Payload_init");
+    return *(msgPayload_init*)&func;
+}
+
 static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
 {
@@ -155,6 +172,14 @@ mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library)
     return (msgPayload_destroyImpl)
         mamaPayloadLibraryManagerImpl_getDestroyImpl (library->mName,
                                                       library->mHandle);
+}
+
+static msgPayload_init
+mamaPayloadLibraryManagerImpl_getLibraryInit (mamaLibrary library)
+{
+    return (msgPayload_init)
+        mamaPayloadLibraryManagerImpl_getInit (library->mName,
+                                               library->mHandle);
 }
 
 static mama_status
@@ -176,36 +201,6 @@ mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
 
     for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
         plLibraries[k] = (mamaPayloadLibrary)libraries[k]->mClosure;
-
-    if (librariesSize < *size)
-        *size = librariesSize;
-
-    return status;
-}
-
-static mama_status
-mamaPayloadLibraryManagerImpl_getBridges (mamaPayloadBridge*     bridges,
-                                          mama_size_t*           size,
-                                          mamaLibraryPredicateCb predicate)
-{
-    if (!bridges || !size)
-        return MAMA_STATUS_NULL_ARG;
-
-    mamaLibrary libraries [MAX_LIBRARIES];
-    mama_size_t librariesSize = MAX_LIBRARIES;
-
-    mama_status status =
-        mamaLibraryManager_getLibraries (libraries,
-                                         &librariesSize,
-                                         MAMA_PAYLOAD_LIBRARY,
-                                         predicate);
-
-    for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
-    {
-        mamaPayloadLibrary library = 
-            (mamaPayloadLibrary)libraries[k]->mClosure;
-        bridges[k] = library->mBridge;
-    }
 
     if (librariesSize < *size)
         *size = librariesSize;
@@ -239,15 +234,46 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
     if (!bridge)
         return MAMA_STATUS_NOMEM;
 
-    msgPayload_createImpl createImpl =
-        mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (library);
+    msgPayload_init init = 
+        mamaPayloadLibraryManagerImpl_getLibraryInit (library);
 
-    if (createImpl)
+    if (init)
     {
+        mama_status status = init (payloadId);
+
+        if (MAMA_STATUS_OK != status)
+        {
+             mama_log (MAMA_LOG_LEVEL_ERROR,
+                      "mamaPayloadLibraryManager_createBridge(): "
+                      "Could not initialise %s library %s bridge using "
+                      "new-style initialisation.",
+                      library->mTypeName, library->mName);
+
+            free (bridge);
+            return MAMA_STATUS_NO_BRIDGE_IMPL;
+        }
+    }
+    else
+    {
+        msgPayload_createImpl createImpl =
+            mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (library);
+
+        if (!createImpl)
+        {
+            mama_log (MAMA_LOG_LEVEL_ERROR,
+                      "mamaPayloadLibraryManager_createBridge(): "
+                      "Could not find either init or createImpl "
+                      "initialise method for %s library %s bridge",
+                      library->mTypeName, library->mName);
+            
+            free (bridge);
+            return MAMA_STATUS_NO_BRIDGE_IMPL;
+        }
+            
         /* FIXME: We might need to make a carbon copy of mamaPayloadBridge
-         * and make it mamaPayloadOldBridge if we make any changes that
-         * would affect binary-compatibility between structures, other than
-         * adding things on to the end of the structure. */
+        * and make it mamaPayloadOldBridge if we make any changes that
+        * would affect binary-compatibility between structures, other than
+        * adding things on to the end of the structure. */
         mamaPayloadBridge oldBridge = NULL;
         mama_status status = createImpl (&oldBridge, payloadId);
 

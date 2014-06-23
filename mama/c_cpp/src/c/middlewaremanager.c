@@ -68,8 +68,15 @@ static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle);
 
+static bridge_init
+mamaMiddlewareLibraryManager_getInit (const char* libraryName,
+                                      LIB_HANDLE  libraryHandle);
+
 static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
+
+static bridge_init
+mamaMiddlewareLibraryManagerImpl_getLibraryInit (mamaLibrary library);
 
 static mama_status
 mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
@@ -141,6 +148,24 @@ mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
                                                            library->mHandle);
 }
 
+static bridge_init
+mamaMiddlewareLibraryManagerImpl_getInit (const char* libraryName,
+                                          LIB_HANDLE  libraryHandle)
+{
+    void* func = 
+        mamaLibraryManager_loadLibraryFunction (libraryName,
+                                                libraryHandle,
+                                                "Bridge_init");
+    return *(bridge_init*)&func;
+}
+
+static bridge_init
+mamaMiddlewareLibraryManagerImpl_getLibraryInit (mamaLibrary library)
+{
+    return mamaMiddlewareLibraryManagerImpl_getInit (library->mName,
+                                                     library->mHandle);
+}
+
 /*
  * @brief Initialise library bridge.
  *
@@ -165,11 +190,33 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
     if (!bridge)
         return MAMA_STATUS_NOMEM;
 
-    bridge_createImpl createImpl =
-        mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (library);
-
-    if (createImpl)
+    bridge_init init = 
+        mamaMiddlewareLibraryManagerImpl_getLibraryInit (library);
+    
+    if (init)
     {
+       mama_status status = init ();
+
+        if (MAMA_STATUS_OK != status)
+        {
+            mama_log (MAMA_LOG_LEVEL_ERROR,
+                      "mamaPayloadLibraryManager_createBridge(): "
+                      "Could not initialise %s library %s bridge using "
+                      "new-style initialisation.",
+                      library->mTypeName, library->mName);
+
+            free (bridge);
+            return MAMA_STATUS_NO_BRIDGE_IMPL;
+        } 
+    }
+    else
+    {
+        bridge_createImpl createImpl =
+            mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (library);
+
+        if (!createImpl)
+        {
+        }
         /* FIXME: We might need to make a carbon copy of mamaPayloadBridge
          * and make it mamaPayloadOldBridge if we make any changes that
          * would affect binary-compatibility between structures, other than

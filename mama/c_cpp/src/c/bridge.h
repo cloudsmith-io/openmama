@@ -258,6 +258,9 @@ while(0)                                                                       \
 /*Called when loading/creating a bridge */
 typedef void (*bridge_createImpl)(mamaBridge* result);
 
+/*Called when initializing a bridge*/
+typedef mama_status (*bridge_init)(void);
+
 /*Called by mama_open()*/
 typedef mama_status (*bridge_open)(mamaBridge bridgeImpl);
 
