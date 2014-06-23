@@ -37,6 +37,31 @@ extern mama_status
 mamaPluginLibraryManager_loadBridge (const char* pluginName,
                                      const char* path,
                                      mamaPlugin* plugin);
+/**
+ * @brief Retrieve the name of a library.
+ *
+ * Method to retrieve the name of a library.
+ *
+ * @param[in] library A mamaPluginLibrary from which to get the name.
+ *
+ * @return A null terminated string of the name - do NOT free this..
+ */
+MAMAExpDLL
+extern const char* 
+mamaPluginLibraryManager_getName (mamaPluginLibrary library);
+
+/**
+ * @brief Retrieve the path from where a library was loaded.
+ *
+ * Method to retrieve the path from where a library was loaded.
+ *
+ * @param[in] library A mamaPluginLibrary.
+ *
+ * @return A null terminated string of the path - do NOT free this.
+ */
+MAMAExpDLL
+extern const char*
+mamaPluginLibraryManager_getPath (mamaPluginLibrary library);
 
 /*
  * @brief Set a property programmatically for a specific library.

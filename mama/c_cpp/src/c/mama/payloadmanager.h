@@ -163,6 +163,34 @@ mamaPaylaodLibraryManager_setProperty (const char* libraryName,
                                        const char* value);
 
 /**
+ * @brief Retrieve the name of a library.
+ *
+ * Method to retrieve the name of a library.
+ *
+ * @param[in] library A mamaPayloadLibrary from which to get the name.
+ *
+ * @return A null terminated string of the name - do NOT free this..
+ */
+MAMAExpDLL
+extern const char* 
+mamaPayloadLibraryManager_getName (mamaPayloadLibrary library);
+
+/**
+ * @brief Retrieve the path from where a library was loaded.
+ *
+ * Method to retrieve the path from where a library was loaded.
+ *
+ * @param[in] library A mamaPayloadLibrary.
+ *
+ * @return A null terminated string of the path - do NOT free this.
+ */
+MAMAExpDLL
+extern const char*
+mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library);
+
+
+
+/**
  * @brief Convert a mamaLibrary to a mamaPayloadLibrary.
  *
  * Method to convert a mamaLibrary to a mamaPayloadLibrary.

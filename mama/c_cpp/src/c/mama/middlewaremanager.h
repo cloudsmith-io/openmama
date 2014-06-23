@@ -438,6 +438,33 @@ extern mama_status
 mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
                                           const char* propertyName,
                                           const char* value);
+
+/**
+ * @brief Retrieve the name of a library.
+ *
+ * Method to retrieve the name of a library.
+ *
+ * @param[in] library A mamaMiddlewareLibrary from which to get the name.
+ *
+ * @return A null terminated string of the name - do NOT free this..
+ */
+MAMAExpDLL
+extern const char* 
+mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library);
+
+/**
+ * @brief Retrieve the path from where a library was loaded.
+ *
+ * Method to retrieve the path from where a library was loaded.
+ *
+ * @param[in] library A mamaMiddlewareLibrary.
+ *
+ * @return A null terminated string of the path - do NOT free this.
+ */
+MAMAExpDLL
+extern const char*
+mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library);
+
 /**
  * @brief Convert a mamaLibrary to a mamaMiddlewareLibrary.
  *

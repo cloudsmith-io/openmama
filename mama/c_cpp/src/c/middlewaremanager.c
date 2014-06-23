@@ -1594,6 +1594,18 @@ mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
                                            value);
 }
 
+const char* 
+mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library)
+{
+    return mamaLibrary_getName(library->mParent);
+}
+
+const char*
+mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library)
+{
+    return mamaLibrary_getPath(library->mParent);
+}
+
 mama_status
 mamaMiddlewareLibraryManager_libraryToMiddlewareLibrary (
         mamaLibrary            library,

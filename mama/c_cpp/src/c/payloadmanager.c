@@ -449,7 +449,7 @@ do {\
         if (!bridge->bridgeFuncName)\
         {\
             mama_log (MAMA_LOG_LEVEL_ERROR,\
-                      "mamaLibraryMiddlewareManager_loadLibrary(): "\
+                      "mamaLibraryPayloadManager_loadLibrary(): "\
                       "Could not load %s library %s because "\
                       "required function [%s] is missing in bridge.",\
                       library->mTypeName, library->mName,\
@@ -1268,6 +1268,18 @@ mamaPayloadLibraryManager_setProperty (const char* libraryName,
     return mamaLibraryManager_setProperty (libraryName,
                                            propertyName,
                                            value);
+}
+
+const char* 
+mamaPayloadLibraryManager_getName (mamaPayloadLibrary library)
+{
+    return mamaLibrary_getName(library->mParent);
+}
+
+const char*
+mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library)
+{
+    return mamaLibrary_getPath(library->mParent);
 }
 
 mama_status

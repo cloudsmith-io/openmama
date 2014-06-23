@@ -32,13 +32,20 @@
  * Private types
  */
 
+typedef struct mamaPluginLibraryManagerImpl* mamaPluginLibraryManager;
+
+typedef struct mamaPluginLibraryImpl_
+{
+    mamaLibrary                 mParent;
+    mamaPlugin                  mBridge;
+    mamaPluginLibraryManager    mManager;
+} mamaPluginLibraryImpl;
+
 typedef struct mamaPluginLibraryManagerImpl
 {
     mamaLibraryTypeManager mParent;
     mamaLibrary            mPlugins [MAX_LIBRARIES];
 } mamaPluginLibraryManagerImpl;
-
-typedef mamaPluginLibraryManagerImpl* mamaPluginLibraryManager;
 
 /*
  * Private declarations
@@ -115,4 +122,15 @@ mamaPluginLibraryManager_setProperty (const char* libraryName,
                                            value);
 }
 
+const char* 
+mamaPluginLibraryManager_getName (mamaPluginLibrary library)
+{
+    return mamaLibrary_getName(library->mParent);
+}
+
+const char*
+mamaPluginLibraryManager_getPath (mamaPluginLibrary library)
+{
+    return mamaLibrary_getPath(library->mParent);
+}
 
