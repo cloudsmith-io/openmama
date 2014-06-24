@@ -26,10 +26,11 @@ verH.write("""
 #define MAMA_VERSION_MAJOR %s
 #define MAMA_VERSION_MINOR %s
 #define MAMA_VERSION_RELEASE %s
+#define MAMA_VERSION_STR "%s"
 #define MAMA_VERSION "mama %s"
 extern const char* mama_version;
 #endif
-""" % (major,minor,release,releaseString) )
+""" % (major,minor,release,releaseString, releaseString) )
 
 modules = []
 modules.append( 'src/c' )

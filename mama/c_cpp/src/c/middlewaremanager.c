@@ -192,12 +192,10 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
 
     bridge_init init = 
         mamaMiddlewareLibraryManagerImpl_getLibraryInit (library);
-    
+   
     if (init)
     {
-       mama_status status = init ();
-
-        if (MAMA_STATUS_OK != status)
+        if (MAMA_STATUS_OK != init ())
         {
             mama_log (MAMA_LOG_LEVEL_ERROR,
                       "mamaPayloadLibraryManager_createBridge(): "
@@ -260,6 +258,15 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
         /* FIXME: Might need to hold on to memory here */
         free (oldBridge->mLock);
         free (oldBridge);
+    }
+
+    mama_status status = 
+        mamaLibraryManager_compareMamaVersion (library);
+
+    if (MAMA_STATUS_OK != status)
+    {
+        free (bridge);
+        return status;
     }
 
     *bridge0 = bridge;

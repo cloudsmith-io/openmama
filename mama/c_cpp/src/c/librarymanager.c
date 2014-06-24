@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include <mama/mama.h>
+#include <mama/version.h>
 #include <mamainternal.h>
 #include <platform.h>
 #include <wombat/directory.h>
@@ -1507,6 +1508,31 @@ mamaLibraryManager_getLibraryBoolProperty (mamaLibrary library,
     return mamaLibraryManager_getBoolProperty (library->mName,
                                                property,
                                                library->mType);
+}
+
+mama_status 
+mamaLibraryManager_compareMamaVersion (mamaLibrary library)
+{
+    if (!library)
+        return MAMA_STATUS_NULL_ARG;
+
+    mamaLibraryTypeManager manager = library->mManager;
+
+    const char* prop = 
+        manager->mFuncs->getLibraryBridgeMamaVersion (library);
+
+    /*What should we do if it is not set? - return OK for now*/
+    if (!prop)
+        return MAMA_STATUS_OK;
+  
+    if (strcmp(prop, MAMA_VERSION_STR) < 0)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "MAMA bridge version [%s]" 
+            "is greater than current application version [%s]",
+            prop, MAMA_VERSION_STR);
+        return MAMA_STATUS_PLATFORM;
+    } 
+    return MAMA_STATUS_OK;    
 }
 
 mamaLibraryType

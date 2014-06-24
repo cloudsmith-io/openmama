@@ -403,6 +403,10 @@ extern mama_bool_t
 mamaLibraryManager_getLibraryBoolProperty (mamaLibrary library,
                                            const char* property);
 
+
+extern mama_status 
+mamaLibraryManager_compareMamaVersion (mamaLibrary library);
+
 /**
  * @brief Return the library type enumeration value converted from string.
  *

@@ -234,12 +234,14 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
     if (!bridge)
         return MAMA_STATUS_NOMEM;
 
+    mama_status status = MAMA_STATUS_OK;
+    
     msgPayload_init init = 
         mamaPayloadLibraryManagerImpl_getLibraryInit (library);
 
     if (init)
     {
-        mama_status status = init (payloadId);
+        status = init (payloadId);
 
         if (MAMA_STATUS_OK != status)
         {
@@ -275,7 +277,7 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
         * would affect binary-compatibility between structures, other than
         * adding things on to the end of the structure. */
         mamaPayloadBridge oldBridge = NULL;
-        mama_status status = createImpl (&oldBridge, payloadId);
+        status = createImpl (&oldBridge, payloadId);
 
         if (MAMA_STATUS_OK != status || !oldBridge)
         {
@@ -305,6 +307,13 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
             destroyImpl (oldBridge);
         else
             free (oldBridge);
+    }
+
+    status = mamaLibraryManager_compareMamaVersion (library);
+    if (MAMA_STATUS_OK != status)
+    {
+        free (bridge);
+        return status;
     }
 
     *bridge0 = bridge;
