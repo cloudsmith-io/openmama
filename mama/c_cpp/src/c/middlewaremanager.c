@@ -1603,6 +1603,64 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
 }
 
 mama_status
+mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
+{
+    mamaMiddlewareLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_deregisterLoadCallback (mwManager->mParent,
+                                                      cb);
+}
+
+mama_status
+mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
+{
+    mamaMiddlewareLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_deregisterUnloadCallback (mwManager->mParent,
+                                                        cb);
+}
+
+mama_status
+mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb)
+{
+    mamaMiddlewareLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_destroyCallbackSlot (mwManager->mParent,
+                                                   mwManager->mStartSignal,
+                                                   cb);
+}
+
+mama_status
+mamaMiddlewareLibraryManager_deregisterStopCallback (mamaLibraryCb cb)
+{ 
+    mamaMiddlewareLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_destroyCallbackSlot (mwManager->mParent,
+                                                   mwManager->mStopSignal,
+                                                   cb);
+}
+
+mama_status
 mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
                                           const char* propertyName,
                                           const char* value)

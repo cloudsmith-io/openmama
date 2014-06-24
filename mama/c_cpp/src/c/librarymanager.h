@@ -351,6 +351,12 @@ extern mama_status
 mamaLibraryManager_registerLoadCallback (mamaLibraryTypeManager manager,
                                          mamaLibraryCb          cb,
                                          void*                  closure);
+extern mama_status
+mamaLibraryManager_deregisterLoadCallback (mamaLibraryTypeManager manager,
+                                           mamaLibraryCb          cb);
+extern mama_status
+mamaLibraryManager_deregisterUnloadCallback (mamaLibraryTypeManager manager,
+                                             mamaLibraryCb          cb);
 
 extern mama_status
 mamaLibraryManager_registerUnloadCallback (mamaLibraryTypeManager manager,

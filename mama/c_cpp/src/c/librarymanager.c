@@ -1351,6 +1351,24 @@ mamaLibraryManager_registerUnloadCallback (mamaLibraryTypeManager manager,
                                                   cb, closure);
 }
 
+mama_status
+mamaLibraryManager_deregisterLoadCallback (mamaLibraryTypeManager manager,
+                                           mamaLibraryCb          cb)
+{
+    return mamaLibraryManager_destroyCallbackSlot (manager, 
+                                                   manager->mLoadSignal,
+                                                   cb);
+}
+
+mama_status
+mamaLibraryManager_deregisterUnloadCallback (mamaLibraryTypeManager manager,
+                                             mamaLibraryCb          cb)
+{
+    return mamaLibraryManager_destroyCallbackSlot (manager, 
+                                                   manager->mUnloadSignal,
+                                                   cb);
+}
+
 void
 mamaLibraryManager_dump ()
 {

@@ -157,6 +157,38 @@ extern mama_status
 mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
                                                   void*         closure);
 
+/**
+ * @brief Deregister a callback to be triggered when a new payload 
+ *        library is loaded.
+ *
+ * Method to deregister a callback to be triggered on a new payload 
+ * library load.
+ *
+ * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ *               load of a new payload.
+ *
+ * @return A mama_status indicating the success or failure of the registration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
+
+/**
+ * @brief Deregister a callback to be triggered when a payload 
+ * library is unloaded.
+ *
+ * Method to deregister a callback to be triggered when a payload 
+ * library is unloaded.
+ *
+ * @param[in] cb A mamaLibraryCb function pointer that was previously
+ *               registered.
+ *
+ * @return A mama_status indicating the success or failure of the registration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaPayloadLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb);
+
 /*
  * @brief Set a property programmatically for a specific library.
  * 

@@ -415,7 +415,6 @@ MAMAExpDLL
 extern mama_status
 mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
                                                     void*         closure);
-
 /**
  * @brief Register a callback to be triggered when stop is called
  *        on an a middleware bridge.
@@ -433,6 +432,69 @@ MAMAExpDLL
 extern mama_status
 mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
                                                    void*         closure);
+
+/**
+ * @brief Deregister a callback to be triggered when a new middleware 
+ *        library is loaded.
+ *
+ * Method to deregister a callback to be triggered on a new middleware 
+ * library load.
+ *
+ * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ *               load of a new middleware.
+ *
+ * @return A mama_status indicating the success or failure of the registration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
+
+/**
+ * @brief Deregister a callback to be triggered when a middleware 
+ * library is unloaded.
+ *
+ * Method to deregister a callback to be triggered when a middleware 
+ * library is unloaded.
+ *
+ * @param[in] cb A mamaLibraryCb function pointer that was previously
+ *               registered.
+ *
+ * @return A mama_status indicating the success or failure of the registration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb);
+
+/**
+ * @brief Deregister a callback to be triggered when start is called
+ *        on an a middleware bridge.
+ *
+ * Method to deregister a callback to be triggered when start is called
+ * on a middleware bridge.
+ *
+ * @param[in] cb A mamaLibraryCb function pointer that was previously
+ *               registered. 
+ *
+ * @return A mama_status indicating the success or failure of the registration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb);
+
+/**
+ * @brief Remove a callback to be triggered when stop is called
+ *        on an a middleware bridge.
+ *
+ * Method to remove a callback to be triggered when stop is called
+ * on a middleware bridge.
+ *
+ * @param[in] cb An existing mamaLibraryCb that was previosuly registered. 
+ *
+ * @return A mama_status indicating the success or failure of the deregistration.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_deregisterStopCallback (mamaLibraryCb cb);
 
 /*
  * @brief Set a property programmatically for a specific library.

@@ -1268,6 +1268,34 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
 }
 
 mama_status
+mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
+{
+    mamaPayloadLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaPayloadLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_deregisterLoadCallback (mwManager->mParent,
+                                                      cb);
+}
+
+mama_status
+mamaPayloadLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
+{
+    mamaPayloadLibraryManager mwManager = NULL;
+    mama_status status =
+        mamaPayloadLibraryManagerImpl_getInstance (&mwManager);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_deregisterUnloadCallback (mwManager->mParent,
+                                                        cb);
+}
+
+mama_status
 mamaPayloadLibraryManager_setProperty (const char* libraryName,
                                        const char* propertyName,
                                        const char* value)
