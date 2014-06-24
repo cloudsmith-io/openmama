@@ -38,6 +38,19 @@ mamaPluginLibraryManager_loadBridge (const char* pluginName,
                                      const char* path,
                                      mamaPlugin* plugin);
 /**
+ * @brief Unload a specific plugin library.
+ *
+ * Method to unload a specific plugin library. 
+ *
+ * @param[in] library The library to be unloaded.
+ * 
+ *@return A mama_status indicating the success or failure of the unload.
+ */
+MAMAExpDLL
+extern mama_status
+mamaPluginLibraryManager_unloadLib (mamaPluginLibrary library);
+
+/**
  * @brief Retrieve the name of a library.
  *
  * Method to retrieve the name of a library.

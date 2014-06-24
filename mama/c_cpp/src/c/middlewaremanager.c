@@ -1112,6 +1112,24 @@ mamaMiddlewareLibraryManager_loadLibraryWithPath (const char*            middlew
 }
 
 mama_status
+mamaMiddlewareLibraryManager_unloadLib (mamaMiddlewareLibrary library)
+{
+    mama_status status = 
+        mamaMiddlewareLibraryManagerImpl_stopFull (library);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    status = mamaMiddlewareLibraryManagerImpl_closeFull (library);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    return mamaLibraryManager_unloadLibrary(
+        mamaMiddlewareLibraryManager_getName(library), MAMA_MIDDLEWARE_LIBRARY);
+}
+
+mama_status
 mamaMiddlewareLibraryManager_getLibrary (const char*            middlewareName,
                                          mamaMiddlewareLibrary* mwLibrary)
 {

@@ -51,6 +51,19 @@ mamaMiddlewareLibraryManager_loadLibraryWithPath (const char* middlewareName,
                                                   mamaMiddlewareLibrary* library);
 
 /**
+ * @brief Unload a specific middleware bridge.
+ *
+ * Method to unload a specific middleware bridge. 
+ *
+ * @param[in] library The library to be unloaded.
+ * 
+ *@return A mama_status indicating the success or failure of the unload.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_unloadLib (mamaMiddlewareLibrary library);
+
+/**
  * @brief Retrieve a specific middleware library.
  *
  * Method to return a specific middleware library based on name.

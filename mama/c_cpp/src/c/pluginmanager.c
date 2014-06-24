@@ -72,6 +72,12 @@ mamaPluginLibraryManager_loadLibrary (mamaLibrary library)
     return MAMA_STATUS_OK;
 }
 
+mama_status
+mamaPluginLibraryManager_unloadLib (mamaPluginLibrary library)
+{
+    return MAMA_STATUS_OK;
+}
+
 void
 mamaPluginLibraryManager_unloadLibrary (mamaLibrary library)
 {

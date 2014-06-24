@@ -49,6 +49,18 @@ extern mama_status
 mamaPayloadLibraryManager_loadLibraryWithPath (const char* payloadName,
                                                const char* path,
                                                mamaPayloadLibrary* library);
+/**
+ * @brief Unload a specific payload bridge.
+ *
+ * Method to unload a specific payload bridge. 
+ *
+ * @param[in] library The library to be unloaded.
+ * 
+ *@return A mama_status indicating the success or failure of the unload.
+ */
+MAMAExpDLL
+extern mama_status
+mamaPayloadLibraryManager_unloadLib (mamaPayloadLibrary library);
 
 /**
  * @brief Retrieve a specific payload library.

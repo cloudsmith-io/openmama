@@ -1162,6 +1162,13 @@ mamaPayloadLibraryManager_loadLibraryWithPath (const char*         payloadName,
 }
 
 mama_status
+mamaPayloadLibraryManager_unloadLib (mamaPayloadLibrary library)
+{
+    return mamaLibraryManager_unloadLibrary (
+        mamaPayloadLibraryManager_getName(library), MAMA_PAYLOAD_LIBRARY);
+}
+
+mama_status
 mamaPayloadLibraryManager_getLibrary (const char*         payloadName,
                                       mamaPayloadLibrary* plLibrary)
 {
