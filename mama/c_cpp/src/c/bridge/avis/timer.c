@@ -35,7 +35,8 @@ typedef struct avisTimerImpl_
     void*         mClosure;
     mamaTimer     mParent;
     mamaQueue     mQueue;
-
+    uint8_t       mDestroying;
+    
     /* This callback will be invoked whenever the timer has been completely destroyed. */
     mamaTimerCb     mOnTimerDestroyed;
 
@@ -74,20 +75,23 @@ timerCb (timerElement  timer,
     timeout.tv_sec = (time_t)impl->mInterval;
     timeout.tv_usec = ((impl->mInterval- timeout.tv_sec) * 1000000.0);
 
-    if (0 != createTimer (&impl->mTimerElement,
-                          gTimerHeap,
-                          timerCb,
-                          &timeout,
-                          impl))
+    if (impl->mDestroying == 0)
     {
-        mama_log (MAMA_LOG_LEVEL_ERROR,
-              "%s Failed to create Avis timer.",
-              "mamaTimer_create ():");
-    }
+        if (0 != createTimer (&impl->mTimerElement,
+                              gTimerHeap,
+                              timerCb,
+                              &timeout,
+                              impl))
+        {
+            mama_log (MAMA_LOG_LEVEL_ERROR,
+                  "%s Failed to create Avis timer.",
+                "mamaTimer_create ():");
+        }
 
-    mamaQueue_enqueueEvent (impl->mQueue, 
-                            timerQueueCb,
-                            (void*)impl);
+        mamaQueue_enqueueEvent (impl->mQueue, 
+                                timerQueueCb,
+                                (void*)impl);
+    }
 }
 
 mama_status
@@ -119,6 +123,7 @@ avisBridgeMamaTimer_create (timerBridge* result,
     impl->mAction   = action;
     impl->mClosure  = closure;
     impl->mInterval = interval;
+    impl->mDestroying = 0;
 
     mamaTimer_getQueue (parent, &impl->mQueue);
 
@@ -155,6 +160,7 @@ avisBridgeMamaTimer_destroy (timerBridge timer)
     impl = (avisTimerImpl*)timer;
 
     impl->mAction = NULL;
+    impl->mDestroying = 1;
     mama_log (MAMA_LOG_LEVEL_FINEST,
               "%s Entering for 0x%x",
               "avisMamaTimer_destroy ():", impl);
