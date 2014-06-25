@@ -415,6 +415,7 @@ mamaLibraryManagerImpl_createTypeManager (mamaLibraryTypeManagerInfo info)
     REGISTER_TYPE_MANAGER_FUNCTION (unloadLibrary);
     REGISTER_TYPE_MANAGER_FUNCTION (dump);
     REGISTER_TYPE_MANAGER_FUNCTION (dumpLibrary);
+    REGISTER_TYPE_MANAGER_FUNCTION (forwardCallback);
     REGISTER_TYPE_MANAGER_FUNCTION (classifyLibraryType);
     REGISTER_TYPE_MANAGER_FUNCTION (getLibraryProperty);
     REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBoolProperty);
@@ -1322,7 +1323,7 @@ mamaLibraryManager_raiseCallbackSignal (mamaLibrary library,
         for (mama_size_t k = 0; k < signal->mSize && 0 != ok; ++k)
         {
             mamaLibraryCallbackSlot* slot = &signal->mSlots[k];
-            ok = slot->mCb (library, slot->mClosure);
+            manager->mFuncs->forwardCallback (slot->mCb, library, slot->mClosure);
         }
 
         status = MAMA_STATUS_OK;
@@ -1354,7 +1355,7 @@ mamaLibraryManager_registerUnloadCallback (mamaLibraryTypeManager manager,
 
 mama_status
 mamaLibraryManager_deregisterLoadCallback (mamaLibraryTypeManager manager,
-                                           mamaLibraryCb          cb)
+                                           mamaLibraryCb               cb)
 {
     return mamaLibraryManager_destroyCallbackSlot (manager, 
                                                    manager->mLoadSignal,
@@ -1363,7 +1364,7 @@ mamaLibraryManager_deregisterLoadCallback (mamaLibraryTypeManager manager,
 
 mama_status
 mamaLibraryManager_deregisterUnloadCallback (mamaLibraryTypeManager manager,
-                                             mamaLibraryCb          cb)
+                                             mamaLibraryCb               cb)
 {
     return mamaLibraryManager_destroyCallbackSlot (manager, 
                                                    manager->mUnloadSignal,
@@ -1508,6 +1509,30 @@ mamaLibraryManager_getLibraryBoolProperty (mamaLibrary library,
     return mamaLibraryManager_getBoolProperty (library->mName,
                                                property,
                                                library->mType);
+}
+
+const char* 
+mamaLibraryManager_getName (mamaLibrary library)
+{
+    return library->mPath;
+}
+
+const char*
+mamaLibraryManager_getPath (mamaLibrary library)
+{
+    return library->mName;
+}
+
+void
+mamaLibraryManager_lock (mamaLibrary library)
+{
+    wlock_lock (library->mLock);
+}
+
+void 
+mamaLibraryManager_unlock (mamaLibrary library)
+{
+    wlock_unlock (library->mLock);
 }
 
 mama_status 

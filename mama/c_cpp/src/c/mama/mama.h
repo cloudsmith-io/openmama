@@ -67,7 +67,7 @@ extern "C"
 #define MAMA_MAX_SYMBOL_LEN        128
 #define MAMA_MAX_SOURCE_LEN        64
 #define MAMA_MAX_TRANSPORT_LEN     64
-
+#define MAMA_MAX_LIBRARIES         256
     /**
      * \mainpage Middleware Agnostic Messaging API (MAMA) C API
      *

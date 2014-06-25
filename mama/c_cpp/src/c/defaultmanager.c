@@ -77,6 +77,14 @@ mamaDefaultLibraryManager_classifyLibraryType (const char* libraryName,
     return MAMA_UNKNOWN_LIBRARY;
 }
 
+mama_bool_t
+mamaDefaultLibraryManager_forwardCallback (mamaLibraryCb cb,
+                                           mamaLibrary   library,
+                                           void*         closure)
+{
+    return 0;
+}
+
 const char*
 mamaDefaultLibraryManager_getLibraryProperty (mamaLibrary library,
                                               const char* property)

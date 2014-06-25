@@ -842,8 +842,8 @@ mama_statsInit (void)
         mamaInternal_enableStatsLogging();
 
         /* Enable stats for every active bridge */
-        mamaMiddlewareLibrary libraries [MAX_LIBRARIES];
-        mama_size_t numBridges = MAX_LIBRARIES;
+        mamaMiddlewareLibrary libraries [MAMA_MAX_LIBRARIES];
+        mama_size_t numBridges = MAMA_MAX_LIBRARIES;
         mamaMiddlewareLibraryManager_getActiveBridges (libraries, &numBridges);
 
         for (mama_size_t k = 0; k < numBridges; ++k)

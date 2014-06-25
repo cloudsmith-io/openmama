@@ -24,7 +24,6 @@
 #include <wlock.h>
 #include <wombat/wtable.h>
 #include <wombat/wInterlocked.h>
-#include "mama/library.h"
 #include "mama/status.h"
 #include "mama/types.h"
 
@@ -41,6 +40,25 @@ extern "C"
 typedef struct mamaLibraryTypeManagerImpl_*       mamaLibraryTypeManager;
 typedef struct mamaLibraryTypeManagerBridgeImpl_* mamaLibraryTypeManagerBridge;
 typedef struct mamaLibraryManagerImpl_*           mamaLibraryManager;
+typedef struct mamaLibraryImpl_*                  mamaLibrary;
+
+/*********************************************************
+ * Enum definition
+ *********************************************************/
+typedef enum mamaLibraryType_ {
+    MAMA_MIDDLEWARE_LIBRARY,
+    MAMA_PAYLOAD_LIBRARY,
+    MAMA_PLUGIN_LIBRARY,
+    MAMA_UNKNOWN_LIBRARY,
+    MAX_LIBRARY_TYPE = MAMA_UNKNOWN_LIBRARY
+} mamaLibraryType;
+
+/*********************************************************
+ * Generic function typedef
+ *********************************************************/
+
+typedef mama_bool_t
+(*mamaLibraryCb) (void* library, void* closure);
 
 /*********************************************************
  * Predicate typedef for "get" functions 
@@ -75,6 +93,11 @@ typedef void
 
 typedef void 
 (*mamaLibraryTypeManager_dumpLibrary) (mamaLibrary library);
+
+typedef mama_bool_t
+(*mamaLibraryTypeManager_forwardCallback) (mamaLibraryCb  cb, 
+                                           mamaLibrary    library, 
+                                           void*          closure);
 
 typedef mamaLibraryType
 (*mamaLibraryTypeManager_classifyLibraryType) (const char* libraryName,
@@ -134,8 +157,8 @@ typedef const char*
 
 typedef struct mamaLibraryCallbackSlot
 {
-    mamaLibraryCb mCb;
-    void*         mClosure;
+    mamaLibraryCb  mCb;
+    void*          mClosure;
 } mamaLibraryCallbackSlot;
 
 
@@ -176,6 +199,7 @@ typedef struct mamaLibraryTypeManagerBridgeImpl_
     mamaLibraryTypeManager_unloadLibrary               unloadLibrary;
     mamaLibraryTypeManager_dump                        dump;
     mamaLibraryTypeManager_dumpLibrary                 dumpLibrary;
+    mamaLibraryTypeManager_forwardCallback             forwardCallback;
     mamaLibraryTypeManager_classifyLibraryType         classifyLibraryType;
     mamaLibraryTypeManager_getLibraryProperty          getLibraryProperty;
     mamaLibraryTypeManager_getLibraryBoolProperty      getLibraryBoolProperty;
@@ -341,7 +365,7 @@ mamaLibraryManager_createCallbackSlot (mamaLibraryTypeManager manager,
 extern mama_status
 mamaLibraryManager_destroyCallbackSlot (mamaLibraryTypeManager manager,
                                         mama_size_t            signalId,
-                                        mamaLibraryCb          cb);
+                                        mamaLibraryCb               cb);
 
 extern mama_status
 mamaLibraryManager_raiseCallbackSignal (mamaLibrary library,
@@ -402,6 +426,18 @@ mamaLibraryManager_getLibraryProperty (mamaLibrary library,
 extern mama_bool_t
 mamaLibraryManager_getLibraryBoolProperty (mamaLibrary library,
                                            const char* property);
+
+extern const char*
+mamaLibraryManager_getName (mamaLibrary library);
+
+extern const char*
+mamaLibraryManager_getPath (mamaLibrary library);
+
+extern void
+mamaLibraryManager_lock (mamaLibrary library);
+
+extern void
+mamaLibraryManager_unlock (mamaLibrary library);
 
 
 extern mama_status 

@@ -45,7 +45,7 @@ typedef struct mamaPayloadLibraryImpl_
 typedef struct mamaPayloadLibraryManagerImpl
 {
     mamaLibraryTypeManager mParent;
-    mamaPayloadLibrary     mPayloads [MAX_LIBRARIES];
+    mamaPayloadLibrary     mPayloads [MAMA_MAX_LIBRARIES];
 } mamaPayloadLibraryManagerImpl;
 
 /*
@@ -190,8 +190,8 @@ mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
     if (!plLibraries || !size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaLibrary libraries [MAX_LIBRARIES];
-    mama_size_t librariesSize = MAX_LIBRARIES;
+    mamaLibrary libraries [MAMA_MAX_LIBRARIES];
+    mama_size_t librariesSize = MAMA_MAX_LIBRARIES;
 
     mama_status status =
         mamaLibraryManager_getLibraries (libraries,
@@ -254,6 +254,14 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
             free (bridge);
             return MAMA_STATUS_NO_BRIDGE_IMPL;
         }
+        
+        status = mamaLibraryManager_compareMamaVersion (library);
+        
+        if (MAMA_STATUS_OK != status)
+        {
+            free (bridge);
+            return status;
+        }
     }
     else
     {
@@ -307,13 +315,6 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
             destroyImpl (oldBridge);
         else
             free (oldBridge);
-    }
-
-    status = mamaLibraryManager_compareMamaVersion (library);
-    if (MAMA_STATUS_OK != status)
-    {
-        free (bridge);
-        return status;
     }
 
     *bridge0 = bridge;
@@ -1128,6 +1129,18 @@ mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
     return MAMA_UNKNOWN_LIBRARY;
 }
 
+mama_bool_t
+mamaPayloadLibraryManager_forwardCallback (mamaLibraryCb cb, 
+                                           mamaLibrary   library, 
+                                           void*         closure)
+{
+    mamaPayloadLibraryCb plCb      = (mamaPayloadLibraryCb)cb;
+    mamaPayloadLibrary   plLibrary = 
+        (mamaPayloadLibrary)library->mClosure;
+
+    return plCb (plLibrary, closure);
+}
+
 void mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager)
 {
     mamaPayloadLibraryManager mwManager = 
@@ -1247,8 +1260,8 @@ mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
 }
 
 mama_status
-mamaPayloadLibraryManager_registerLoadCallback (mamaLibraryCb cb,
-                                                void*         closure)
+mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
+                                                void*           closure)
 {
     mamaPayloadLibraryManager plManager = NULL;
     mama_status status =
@@ -1258,12 +1271,12 @@ mamaPayloadLibraryManager_registerLoadCallback (mamaLibraryCb cb,
         return status;
 
     return mamaLibraryManager_registerLoadCallback (plManager->mParent,
-                                                    cb, closure);
+                                                    (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
-                                                  void*         closure)
+mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
+                                                  void*           closure)
 {
     mamaPayloadLibraryManager plManager = NULL;
     mama_status status =
@@ -1273,11 +1286,11 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
         return status;
 
     return mamaLibraryManager_registerUnloadCallback (plManager->mParent,
-                                                      cb, closure);
+                                                      (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
+mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb)
 {
     mamaPayloadLibraryManager mwManager = NULL;
     mama_status status =
@@ -1287,11 +1300,11 @@ mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
         return status;
 
     return mamaLibraryManager_deregisterLoadCallback (mwManager->mParent,
-                                                      cb);
+                                                      (mamaLibraryCb)cb);
 }
 
 mama_status
-mamaPayloadLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
+mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb)
 {
     mamaPayloadLibraryManager mwManager = NULL;
     mama_status status =
@@ -1301,7 +1314,7 @@ mamaPayloadLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
         return status;
 
     return mamaLibraryManager_deregisterUnloadCallback (mwManager->mParent,
-                                                        cb);
+                                                        (mamaLibraryCb)cb);
 }
 
 mama_status
@@ -1317,13 +1330,13 @@ mamaPayloadLibraryManager_setProperty (const char* libraryName,
 const char* 
 mamaPayloadLibraryManager_getName (mamaPayloadLibrary library)
 {
-    return mamaLibrary_getName(library->mParent);
+    return mamaLibraryManager_getName(library->mParent);
 }
 
 const char*
 mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library)
 {
-    return mamaLibrary_getPath(library->mParent);
+    return mamaLibraryManager_getPath(library->mParent);
 }
 
 mama_status

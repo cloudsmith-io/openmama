@@ -21,6 +21,7 @@
 #include "pluginmanager.h"
 #include "mama/pluginmanager.h"
 
+#include <mama/mama.h>
 #include <assert.h>
 #include <platform.h>
 #include <wombat/wInterlocked.h>
@@ -44,7 +45,7 @@ typedef struct mamaPluginLibraryImpl_
 typedef struct mamaPluginLibraryManagerImpl
 {
     mamaLibraryTypeManager mParent;
-    mamaLibrary            mPlugins [MAX_LIBRARIES];
+    mamaLibrary            mPlugins [MAMA_MAX_LIBRARIES];
 } mamaPluginLibraryManagerImpl;
 
 /*
@@ -131,12 +132,12 @@ mamaPluginLibraryManager_setProperty (const char* libraryName,
 const char* 
 mamaPluginLibraryManager_getName (mamaPluginLibrary library)
 {
-    return mamaLibrary_getName(library->mParent);
+    return mamaLibraryManager_getName(library->mParent);
 }
 
 const char*
 mamaPluginLibraryManager_getPath (mamaPluginLibrary library)
 {
-    return mamaLibrary_getPath(library->mParent);
+    return mamaLibraryManager_getPath(library->mParent);
 }
 

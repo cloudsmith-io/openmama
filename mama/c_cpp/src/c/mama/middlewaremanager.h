@@ -21,7 +21,6 @@
 #ifndef MamaMiddlewareManagerH__
 #define MamaMiddlewareManagerH__
 
-#include <mama/library.h>
 #include <mama/types.h>
 #include <mama/status.h>
 
@@ -29,6 +28,10 @@
 extern "C"
 {
 #endif /* __cplusplus */
+
+typedef mama_bool_t
+(*mamaMiddlewareLibraryCb) (mamaMiddlewareLibrary library,
+                            void*                 closure);
 
 /**
  * @brief Load a specific middleware bridge (if not already loaded).
@@ -370,7 +373,7 @@ mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary librar
  * Method to register a callback to be triggered on a new middleware 
  * library load.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -378,8 +381,8 @@ mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary librar
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerLoadCallback (mamaLibraryCb cb,
-                                                   void*         closure);
+mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
+                                                   void*              closure);
 
 /**
  * @brief Register a callback to be triggered when a middleware 
@@ -388,7 +391,7 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaLibraryCb cb,
  * Method to register a callback to be triggered when a middleware 
  * library is unloaded.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
  *               unload of a middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -396,8 +399,8 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
-                                                     void*         closure);
+mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
+                                                     void*              closure);
 /**
  * @brief Register a callback to be triggered when start is called
  *        on an a middleware bridge.
@@ -405,7 +408,7 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
  * Method to register a callback to be triggered when start is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -413,8 +416,8 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
-                                                    void*         closure);
+mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
+                                                    void*              closure);
 /**
  * @brief Register a callback to be triggered when stop is called
  *        on an a middleware bridge.
@@ -422,7 +425,7 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
  * Method to register a callback to be triggered when stop is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -430,8 +433,8 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
-                                                   void*         closure);
+mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
+                                                   void*              closure);
 
 /**
  * @brief Deregister a callback to be triggered when a new middleware 
@@ -440,14 +443,14 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
  * Method to deregister a callback to be triggered on a new middleware 
  * library load.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
  *               load of a new middleware.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
+mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when a middleware 
@@ -456,14 +459,14 @@ mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
  * Method to deregister a callback to be triggered when a middleware 
  * library is unloaded.
  *
- * @param[in] cb A mamaLibraryCb function pointer that was previously
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer that was previously
  *               registered.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb);
+mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when start is called
@@ -472,14 +475,14 @@ mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb);
  * Method to deregister a callback to be triggered when start is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaLibraryCb function pointer that was previously
+ * @param[in] cb A mamaMiddlewareLibraryCb function pointer that was previously
  *               registered. 
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb);
+mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb);
 
 /**
  * @brief Remove a callback to be triggered when stop is called
@@ -488,13 +491,13 @@ mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb);
  * Method to remove a callback to be triggered when stop is called
  * on a middleware bridge.
  *
- * @param[in] cb An existing mamaLibraryCb that was previosuly registered. 
+ * @param[in] cb An existing mamaMiddlewareLibraryCb that was previosuly registered. 
  *
  * @return A mama_status indicating the success or failure of the deregistration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterStopCallback (mamaLibraryCb cb);
+mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb);
 
 /*
  * @brief Set a property programmatically for a specific library.
@@ -539,23 +542,6 @@ mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library);
 MAMAExpDLL
 extern const char*
 mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library);
-
-/**
- * @brief Convert a mamaLibrary to a mamaMiddlewareLibrary.
- *
- * Method to convert a mamaLibrary to a mamaMiddlewareLibrary.
- *
- * @param[in] library A mamaLibrary to be converted to a mamaMiddlewareLibrary.
- * @param[out] plLibrary Pointer to mamaMiddlewareLibrary where the converted 
- *             library should be put. 
- *
- * @return A mama_status indicating the success of the conversion.
- */
-MAMAExpDLL
-extern mama_status
-mamaMiddlewareLibraryManager_libraryToMiddlewareLibrary (
-        mamaLibrary            library,
-        mamaMiddlewareLibrary* mwLibrary);
 
 /**
  * @brief Get a string representation of a middleware Id.

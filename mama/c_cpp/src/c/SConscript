@@ -16,7 +16,6 @@ InstMamaInclude = \
     mama/fielddesc.h
     mama/inbox.h
     mama/io.h
-    mama/library.h
     mama/log.h
     mama/mama.h
     mama/marketdata.h
@@ -90,7 +89,6 @@ libmama_sources = \
     error.c
     fielddesc.c
     imagerequest.c
-    library.c
     librarymanager.c
     listenermsgcallback.c
     log.c

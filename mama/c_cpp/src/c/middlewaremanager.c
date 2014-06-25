@@ -49,7 +49,7 @@ typedef struct mamaMiddlewareLibraryImpl_
 typedef struct mamaMiddlewareLibraryManagerImpl_
 {
     mamaLibraryTypeManager mParent;
-    mamaMiddlewareLibrary  mMiddleware [MAX_LIBRARIES];
+    mamaMiddlewareLibrary  mMiddleware [MAMA_MAX_LIBRARIES];
     wInterlockedInt        mNumOpen;
     wInterlockedInt        mNumActive;
     mama_size_t            mStartSignal;
@@ -206,6 +206,15 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
             free (bridge);
             return MAMA_STATUS_NO_BRIDGE_IMPL;
         } 
+        
+        mama_status status = 
+            mamaLibraryManager_compareMamaVersion (library);
+
+        if (MAMA_STATUS_OK != status)
+        {
+            free (bridge);
+            return status;
+        }
     }
     else
     {
@@ -258,15 +267,6 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
         /* FIXME: Might need to hold on to memory here */
         free (oldBridge->mLock);
         free (oldBridge);
-    }
-
-    mama_status status = 
-        mamaLibraryManager_compareMamaVersion (library);
-
-    if (MAMA_STATUS_OK != status)
-    {
-        free (bridge);
-        return status;
     }
 
     *bridge0 = bridge;
@@ -481,7 +481,7 @@ mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
     mama_status status = MAMA_STATUS_SYSTEM_ERROR;
 
     /* Select next free slot */
-    for (mama_size_t k = 0; k < MAX_LIBRARIES; ++k)
+    for (mama_size_t k = 0; k < MAMA_MAX_LIBRARIES; ++k)
     {
         if (!mwManager->mMiddleware[k])
         {
@@ -536,8 +536,8 @@ mamaMiddlewareLibraryManagerImpl_getLibraries (mamaMiddlewareLibrary* mwLibrarie
     if (!mwLibraries || !size)
         return MAMA_STATUS_NULL_ARG;
  
-    mamaLibrary libraries [MAX_LIBRARIES];
-    mama_size_t librariesSize = MAX_LIBRARIES;
+    mamaLibrary libraries [MAMA_MAX_LIBRARIES];
+    mama_size_t librariesSize = MAMA_MAX_LIBRARIES;
 
     mama_status status =
         mamaLibraryManager_getLibraries (libraries,
@@ -1091,6 +1091,18 @@ mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
     return MAMA_UNKNOWN_LIBRARY;
 }
 
+mama_bool_t
+mamaMiddlewareLibraryManager_forwardCallback (mamaLibraryCb cb, 
+                                              mamaLibrary   library, 
+                                              void*         closure)
+{
+    mamaMiddlewareLibraryCb mwCb      = (mamaMiddlewareLibraryCb)cb;
+    mamaMiddlewareLibrary   mwLibrary = 
+        (mamaMiddlewareLibrary)library->mClosure;
+
+    return mwCb (mwLibrary, closure);
+}
+
 /*
  * Public implementation
  */
@@ -1178,7 +1190,7 @@ mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library)
 
     /* Find first bridge */
     status = MAMA_STATUS_NOT_FOUND;
-    for (mama_size_t k = 0; k < MAX_LIBRARIES; ++k)
+    for (mama_size_t k = 0; k < MAMA_MAX_LIBRARIES; ++k)
     {
         mamaMiddlewareLibrary mwLibrary = mwManager->mMiddleware[k];
 
@@ -1548,8 +1560,8 @@ mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary mwLibr
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerLoadCallback (mamaLibraryCb cb,
-                                                   void*         closure)
+mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
+                                                   void*              closure)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1559,12 +1571,12 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaLibraryCb cb,
         return status;
 
     return mamaLibraryManager_registerLoadCallback (mwManager->mParent,
-                                                    cb, closure);
+                                                    (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
-                                                     void*         closure)
+mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
+                                                     void*              closure)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1574,12 +1586,12 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
         return status;
 
     return mamaLibraryManager_registerUnloadCallback (mwManager->mParent,
-                                                      cb, closure);
+                                                      (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
-                                                    void*         closure)
+mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
+                                                    void*              closure)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1590,12 +1602,12 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaLibraryCb cb,
 
     return mamaLibraryManager_createCallbackSlot (mwManager->mParent,
                                                   mwManager->mStartSignal,
-                                                  cb, closure);
+                                                  (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
-                                                   void*         closure)
+mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
+                                                   void*             closure)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1606,11 +1618,11 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaLibraryCb cb,
 
     return mamaLibraryManager_createCallbackSlot (mwManager->mParent,
                                                   mwManager->mStopSignal,
-                                                  cb, closure);
+                                                  (mamaLibraryCb)cb, closure);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
+mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1620,11 +1632,11 @@ mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaLibraryCb cb)
         return status;
 
     return mamaLibraryManager_deregisterLoadCallback (mwManager->mParent,
-                                                      cb);
+                                                      (mamaLibraryCb)cb);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
+mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb cb)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1634,11 +1646,11 @@ mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb)
         return status;
 
     return mamaLibraryManager_deregisterUnloadCallback (mwManager->mParent,
-                                                        cb);
+                                                        (mamaLibraryCb)cb);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb)
+mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb)
 {
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1649,11 +1661,11 @@ mamaMiddlewareLibraryManager_deregisterStartCallback (mamaLibraryCb cb)
 
     return mamaLibraryManager_destroyCallbackSlot (mwManager->mParent,
                                                    mwManager->mStartSignal,
-                                                   cb);
+                                                   (mamaLibraryCb)cb);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterStopCallback (mamaLibraryCb cb)
+mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb)
 { 
     mamaMiddlewareLibraryManager mwManager = NULL;
     mama_status status =
@@ -1664,7 +1676,7 @@ mamaMiddlewareLibraryManager_deregisterStopCallback (mamaLibraryCb cb)
 
     return mamaLibraryManager_destroyCallbackSlot (mwManager->mParent,
                                                    mwManager->mStopSignal,
-                                                   cb);
+                                                   (mamaLibraryCb)cb);
 }
 
 mama_status
@@ -1680,13 +1692,13 @@ mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
 const char* 
 mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library)
 {
-    return mamaLibrary_getName(library->mParent);
+    return mamaLibraryManager_getName(library->mParent);
 }
 
 const char*
 mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library)
 {
-    return mamaLibrary_getPath(library->mParent);
+    return mamaLibraryManager_getPath(library->mParent);
 }
 
 mama_status
@@ -1852,8 +1864,8 @@ mama_status
 mamaMiddlewareLibraryManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
                                                      mamaBridge*           bridge)
 {
-    assert (library);
-    assert (bridge);
+    if (!library || !bridge)
+        return MAMA_STATUS_NULL_ARG;
 
     *bridge = library->mBridge;
     return MAMA_STATUS_OK;

@@ -50,6 +50,11 @@ extern mamaLibraryType
 mamaDefaultLibraryManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib);
 
+extern mama_bool_t
+mamaDefaultLibraryManager_forwardCallback (mamaLibraryCb cb,
+                                           mamaLibrary   library,
+                                           void*         closure);
+
 extern const char*
 mamaDefaultLibraryManager_getLibraryProperty (mamaLibrary library,
                                               const char* property);

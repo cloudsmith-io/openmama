@@ -21,7 +21,6 @@
 #ifndef MamaPayloadManagerH__
 #define MamaPayloadManagerH__
 
-#include <mama/library.h>
 #include <mama/types.h>
 #include <mama/status.h>
 
@@ -29,6 +28,10 @@
 extern "C"
 {
 #endif /* __cplusplus */
+
+typedef mama_bool_t
+(*mamaPayloadLibraryCb) (mamaPayloadLibrary library,
+                         void*              closure);
 
 /**
  * @brief Load a specific payload bridge (if not already loaded).
@@ -132,30 +135,32 @@ mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
  *
  * Method to register a callback to be triggered on a new payload load.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on load of a new payload.
+ * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger 
+ *               on load of a new payload.
  * @param[in] closure Data to pass to the callback function. 
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_registerLoadCallback (mamaLibraryCb cb,
-                                                void*         closure);
+mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
+                                                void*           closure);
 
 /**
  * @brief Register a callback to be triggered when a payload library is unloaded.
  *
  * Method to register a callback to be triggered when a payload is unloaded.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on unload of a payload.
+ * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger 
+ *               on unload of a payload.
  * @param[in] closure Data to pass to the callback function. 
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
-                                                  void*         closure);
+mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
+                                                  void*           closure);
 
 /**
  * @brief Deregister a callback to be triggered when a new payload 
@@ -164,14 +169,14 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaLibraryCb cb,
  * Method to deregister a callback to be triggered on a new payload 
  * library load.
  *
- * @param[in] cb A mamaLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger on 
  *               load of a new payload.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
+mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when a payload 
@@ -180,14 +185,14 @@ mamaPayloadLibraryManager_deregisterLoadCallback (mamaLibraryCb cb);
  * Method to deregister a callback to be triggered when a payload 
  * library is unloaded.
  *
- * @param[in] cb A mamaLibraryCb function pointer that was previously
+ * @param[in] cb A mamaPayloadLibraryCb function pointer that was previously
  *               registered.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_deregisterUnloadCallback (mamaLibraryCb cb);
+mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb);
 
 /*
  * @brief Set a property programmatically for a specific library.
@@ -231,26 +236,6 @@ mamaPayloadLibraryManager_getName (mamaPayloadLibrary library);
 MAMAExpDLL
 extern const char*
 mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library);
-
-
-
-/**
- * @brief Convert a mamaLibrary to a mamaPayloadLibrary.
- *
- * Method to convert a mamaLibrary to a mamaPayloadLibrary.
- *
- * @param[in] library A mamaLibrary to be converted to a mamaPayloadLibrary.
- * @param[out] plLibrary Pointer to mamaPayloadLibrary where the converted 
- *             library should be put. 
- *
- * @return A mama_status indicating the success of the conversion.
- */
-MAMAExpDLL
-extern mama_status
-mamaPayloadLibraryManager_libraryToPayloadLibrary (
-        mamaLibrary         library,
-        mamaPayloadLibrary* plLibrary);
-
 
 /**
  * @brief Get a string representation of a payload Id.

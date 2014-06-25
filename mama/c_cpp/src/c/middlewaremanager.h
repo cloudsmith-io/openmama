@@ -45,6 +45,10 @@ extern mamaLibraryType
 mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
                                                   LIB_HANDLE  libraryLib);
 
+extern mama_bool_t
+mamaMiddlewareLibraryManager_forwardCallback (mamaLibraryCb cb, 
+                                              mamaLibrary   library, 
+                                              void*         closure);
 extern void 
 mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager);
 
