@@ -29,6 +29,8 @@ extern "C"
 {
 #endif /* __cplusplus */
 
+/* Generic callback defintion for any middleware library callback*/
+
 typedef mama_bool_t
 (*mamaMiddlewareLibraryCb) (mamaMiddlewareLibrary library,
                             void*                 closure);
@@ -264,7 +266,7 @@ extern mama_status
 mamaMiddlewareLibraryManager_getNumClosedBridges (mama_size_t* size);
 
 /**
- * @brief Open the bridge represent by the mamaMiddlewareLibrary handle.
+ * @brief Open the bridge represented by the mamaMiddlewareLibrary handle.
  *
  * Method to open the bridge associated with the provided mamaMiddlewareLibrary,
  * defers the opening to the middleware library's specific implementation of the 
@@ -279,7 +281,7 @@ extern mama_status
 mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary library);
 
 /**
- * @brief Close the bridge represent by the mamaMiddlewareLibrary handle.
+ * @brief Close the bridge represented by the mamaMiddlewareLibrary handle.
  *
  * Method to close the bridge associated with the provided mamaMiddlewareLibrary,
  * defers the closing to the middleware library's specific implementation of the 
@@ -294,7 +296,7 @@ extern mama_status
 mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary library);
 
 /**
- * @brief Start the middleware bridge represent by the mamaMiddlewareLibrary handle.
+ * @brief Start the middleware bridge represented by the mamaMiddlewareLibrary handle.
  *
  * Method to start the middleware bridge associated with the provided 
  * mamaMiddlewareLibrary, defers the start to the middleware library's 
@@ -308,6 +310,30 @@ mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary library);
 MAMAExpDLL
 extern mama_status
 mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary library);
+
+/**
+ * @brief Start the middleware bridge represented by the mamaMiddlewareLibrary handle
+ *        on another thread.
+ *
+ * Method to start (in the background) the middleware bridge associated with the 
+ * provided mamaMiddlewareLibrary, defers the start to the middleware library's 
+ * specific implementation of the close function.
+ *
+ * @param[in] library A mamaMiddlewareLibrary handle to the middleware bridge 
+ *                    to be started.
+ *
+ * @param[in] cb A callback to be fired if the background call to the bridge specific 
+ *              start fails for any reason.
+ *
+ * @param[in] closure A pointer to any data to be passed to the structure.
+ *
+ * @return A mama_status indicating the success or failure of the bridge start.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_startBridgeBackground (mamaMiddlewareLibrary   library,
+                                                    mamaMiddlewareLibraryCb cb,
+                                                    void*                   closure);
 
 /**
  * @brief Stop the middleware bridge represent by the mamaMiddlewareLibrary handle.

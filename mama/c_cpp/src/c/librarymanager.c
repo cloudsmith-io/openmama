@@ -881,6 +881,7 @@ mamaLibraryManagerImpl_dumpTypeManager (mamaLibraryType libraryType)
               manager->mTypeName, wInterlocked_read(&manager->mNumLibraries));
     
     manager->mFuncs->dump(manager);
+    return status;
 }
 
 /*

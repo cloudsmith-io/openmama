@@ -35,6 +35,7 @@
  */
 
 typedef struct mamaMiddlewareLibraryManagerImpl_* mamaMiddlewareLibraryManager;
+typedef struct mamaMiddlewareStartBgClosureImpl_* mamaMiddlewareStartBgClosure; 
 
 typedef struct mamaMiddlewareLibraryImpl_
 {
@@ -55,6 +56,24 @@ typedef struct mamaMiddlewareLibraryManagerImpl_
     mama_size_t            mStartSignal;
     mama_size_t            mStopSignal;
 } mamaMiddlewareLibraryManagerImpl;
+
+typedef struct mamaMiddlewareStartBgClosureImpl_
+{
+    mamaMiddlewareLibraryCb mCb;
+    
+    /* FIXME remove the below callbacks they should not be
+     * needed not, if the API user wants a callback to say the
+     * bridge failed to start use the above one, otherwise
+     * for a callback indicating the bridge has stopped,
+     * a callback should be registered using registerCallback
+     */
+    mamaStopCB              mStopCallback;
+    mamaStopCBEx            mStopCallbackEx;
+    mamaMiddlewareLibrary   mLibrary;
+    void*                   mClosure;
+}mamaMiddlewareStartBgClosureImpl;
+
+
 
 /*
  * Private declarations
@@ -106,6 +125,9 @@ mamaMiddlewareLibraryManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary);
 
 static mama_status
 mamaMiddlewareLibraryManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary);
+
+static void* 
+mamaMiddlewareLibraryManagerImpl_startThread (void* closure);
 
 /*
  * Private implementation
@@ -323,6 +345,31 @@ mamaMiddlewareLibraryManagerImpl_createLibrary (
 
     *mwLibrary0 = mwLibrary;
     return MAMA_STATUS_OK;
+}
+
+static void* 
+mamaMiddlewareLibraryManagerImpl_startThread (void* closure)
+{
+    mama_status                  status = MAMA_STATUS_OK;          
+    mamaMiddlewareStartBgClosure cb     = 
+        (mamaMiddlewareStartBgClosure) closure; 
+
+    if (!cb)
+        return NULL;
+
+    status = mamaMiddlewareLibraryManager_startBridge (cb->mLibrary);
+
+    if (cb->mStopCallback)
+        cb->mStopCallback (status);
+   
+    if (cb->mStopCallbackEx)
+        cb->mStopCallbackEx (status, cb->mLibrary->mBridge, cb->mClosure);
+
+    if ((MAMA_STATUS_OK != status) && cb->mCb)
+        cb->mCb (cb->mLibrary, cb->mClosure);
+
+    free (cb);
+    return NULL;
 }
 
 static mama_status
@@ -1436,8 +1483,9 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
     if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge  bridge  = mwLibrary->mBridge;
-    mamaLibrary library = mwLibrary->mParent;
+    mamaBridge                   bridge  = mwLibrary->mBridge;
+    mamaLibrary                  library = mwLibrary->mParent;
+    mamaMiddlewareLibraryManager manager = mwLibrary->mManager;
 
     if (!bridge->mDefaultEventQueue)
     {
@@ -1455,8 +1503,11 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
     if (0 == wInterlocked_read (&mwLibrary->mStartCount))
     {
         wInterlocked_increment (&mwLibrary->mStartCount);
-        wInterlocked_increment (&mwLibrary->mManager->mNumActive);
+        wInterlocked_increment (&manager->mNumActive);
         wlock_unlock (library->mLock);
+
+        mamaLibraryManager_raiseCallbackSignal (library, 
+                                                manager->mStartSignal);
 
         /* FIXME: Possible race condition here - Unfortunately we
          * can't hold the lock here due to bridgeStart blocking. */
@@ -1467,7 +1518,7 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
         if (MAMA_STATUS_OK != status)
         {
             wInterlocked_decrement (&mwLibrary->mStartCount);
-            wInterlocked_decrement (&mwLibrary->mManager->mNumActive);
+            wInterlocked_decrement (&manager->mNumActive);
         }
     }
 
@@ -1476,14 +1527,79 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
 }
 
 mama_status
+mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
+                                                    mamaMiddlewareLibraryCb cb,
+                                                    mamaStopCB              callback,
+                                                    mamaStopCBEx            exCallback,
+                                                    void*                   closure)
+{
+    if (!library)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "startBackgroundHelper: NULL library");
+        return MAMA_STATUS_NO_BRIDGE_IMPL;
+    }
+
+    if (!callback && !exCallback)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "startBackgroundHelper: No "
+                  "stop callback or extended stop callback specified.");
+        return MAMA_STATUS_INVALID_ARG;
+    }
+
+    if (callback && exCallback)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "startBackgroundHelper: Both "
+                "stop callback and extended stop callback specified.");
+        return MAMA_STATUS_INVALID_ARG;
+    }
+
+    mamaMiddlewareStartBgClosure data = 
+        calloc (1, (sizeof (mamaMiddlewareStartBgClosure)));
+
+    if (!data)
+        return MAMA_STATUS_NOMEM;
+
+    data->mCb             = cb;
+    data->mStopCallback   = callback;
+    data->mStopCallbackEx = exCallback;
+    data->mLibrary        = library;
+    data->mClosure        = closure;
+
+    wthread_t thread = 0;
+    if (0 != wthread_create(&thread, NULL, 
+            mamaMiddlewareLibraryManagerImpl_startThread, (void*) data))
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "Could not start background MAMA "
+                  "thread.");
+        return MAMA_STATUS_SYSTEM_ERROR;
+    }
+
+    return MAMA_STATUS_OK;
+}
+
+mama_status
+mamaMiddlewareLibraryManager_startBridgeBackground (mamaMiddlewareLibrary   library,
+                                                    mamaMiddlewareLibraryCb callback,
+                                                    void*                   closure)
+{
+   return mamaMiddlewareLibraryManager_startBackgroundHelper (library,
+                                                              callback,
+                                                              NULL,
+                                                              NULL,
+                                                              closure);
+}
+
+
+mama_status
 mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
 {
     if (NULL == mwLibrary)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge  bridge  = mwLibrary->mBridge;
-    mamaLibrary library = mwLibrary->mParent;
-
+    mamaBridge                   bridge  = mwLibrary->mBridge;
+    mamaLibrary                  library = mwLibrary->mParent;
+    mamaMiddlewareLibraryManager manager = mwLibrary->mManager;
+    
     wlock_lock (library->mLock);
     mama_status status = MAMA_STATUS_OK;
 
@@ -1492,9 +1608,13 @@ mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
         if (1 == wInterlocked_read (&mwLibrary->mStartCount))
         {
             status = bridge->bridgeStop (bridge->mDefaultEventQueue);
+            
+            mamaLibraryManager_raiseCallbackSignal (library,
+                                                    manager->mStopSignal);
+
             mamaBridgeImpl_stopInternalEventQueue (bridge);
             wInterlocked_decrement (&mwLibrary->mStartCount);
-            wInterlocked_decrement (&mwLibrary->mManager->mNumActive);
+            wInterlocked_decrement (&manager->mNumActive);
         }
     }
     else
@@ -1699,21 +1819,6 @@ const char*
 mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library)
 {
     return mamaLibraryManager_getPath(library->mParent);
-}
-
-mama_status
-mamaMiddlewareLibraryManager_libraryToMiddlewareLibrary (
-        mamaLibrary            library,
-        mamaMiddlewareLibrary* mwLibrary)
-{
-    if (!library || !mwLibrary)
-        return MAMA_STATUS_NULL_ARG;
-
-    if (MAMA_MIDDLEWARE_LIBRARY != library->mType)
-        return MAMA_STATUS_INVALID_ARG;
-
-    *mwLibrary = (mamaMiddlewareLibrary) library->mClosure;
-    return MAMA_STATUS_OK;
 }
 
 mama_status

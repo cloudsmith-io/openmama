@@ -207,10 +207,9 @@ mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb);
  */
 MAMAExpDLL
 extern mama_status
-mamaPaylaodLibraryManager_setProperty (const char* libraryName,
+mamaPayloadLibraryManager_setProperty (const char* libraryName,
                                        const char* propertyName,
                                        const char* value);
-
 /**
  * @brief Retrieve the name of a library.
  *

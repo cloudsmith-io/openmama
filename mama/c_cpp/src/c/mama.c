@@ -940,7 +940,7 @@ mama_openBridge (mamaBridge bridge)
     return mamaMiddlewareLibraryManager_openBridge (bridge->mLibrary);
 }
 
-mama_status 
+void
 mama_dumpLibraryManager ()
 {
     /*FIXME is this the best place for this?*/
@@ -1239,99 +1239,28 @@ mama_start (mamaBridge bridge)
     return mamaMiddlewareLibraryManager_startBridge (bridge->mLibrary);
 }
 
-struct startBackgroundClosure
-{
-    mamaStopCB   mStopCallback;
-    mamaStopCBEx mStopCallbackEx;
-    mamaBridge   mBridgeImpl;
-    void*        mClosure;
-};
-
-static void* mamaStartThread (void* closure)
-{
-    struct startBackgroundClosure* cb =
-                (struct startBackgroundClosure*)closure;
-    mama_status rval = MAMA_STATUS_OK;
-
-    if (!cb) return NULL;
-
-    rval = mama_start (cb->mBridgeImpl);
-
-    if (cb->mStopCallback)
-        cb->mStopCallback (rval);
-
-    if (cb->mStopCallbackEx)
-        cb->mStopCallbackEx (rval, cb->mBridgeImpl, cb->mClosure);
-
-    /* Free the closure object */
-    free(cb);
-
-    return NULL;
-}
-
-static mama_status
-mama_startBackgroundHelper (mamaBridge   bridgeImpl,
-                            mamaStopCB   callback,
-                            mamaStopCBEx exCallback,
-                            void*        closure)
-{
-    struct startBackgroundClosure*  closureData;
-    wthread_t       t = 0;
-
-    if (!bridgeImpl)
-    {
-        mama_log (MAMA_LOG_LEVEL_ERROR, "mama_startBackgroundHelper(): NULL bridge "
-                  " impl.");
-        return MAMA_STATUS_NO_BRIDGE_IMPL;
-    }
-
-    if (!callback && !exCallback)
-    {
-        mama_log (MAMA_LOG_LEVEL_ERROR, "mama_startBackgroundHelper(): No "
-                  "stop callback or extended stop callback specified.");
-        return MAMA_STATUS_INVALID_ARG;
-    }
-
-    if (callback && exCallback)
-    {
-        mama_log (MAMA_LOG_LEVEL_ERROR, "mama_startBackgroundHelper(): Both "
-                "stop callback and extended stop callback specified.");
-        return MAMA_STATUS_INVALID_ARG;
-    }
-
-    closureData = calloc (1, (sizeof (struct startBackgroundClosure)));
-
-    if (!closureData)
-        return MAMA_STATUS_NOMEM;
-
-    closureData->mStopCallback   = callback;
-    closureData->mStopCallbackEx = exCallback;
-    closureData->mBridgeImpl    = bridgeImpl;
-    closureData->mClosure        = closure;
-
-    if (0 != wthread_create(&t, NULL, mamaStartThread, (void*) closureData))
-    {
-        mama_log (MAMA_LOG_LEVEL_ERROR, "Could not start background MAMA "
-                  "thread.");
-        return MAMA_STATUS_SYSTEM_ERROR;
-    }
-
-    return MAMA_STATUS_OK;
-}
-
 mama_status
 mama_startBackground (mamaBridge bridgeImpl, mamaStartCB callback)
 {
     /* Passing these NULLs tells mama_startBackgroundHelper to use old functionality */
-    return mama_startBackgroundHelper (bridgeImpl, (mamaStopCB)callback, NULL, NULL);
+    return mamaMiddlewareLibraryManager_startBackgroundHelper (bridgeImpl->mLibrary,
+                                                               NULL,
+                                                               callback,
+                                                               NULL,
+                                                               NULL);
 }
 
 mama_status
 mama_startBackgroundEx (mamaBridge bridgeImpl, mamaStopCBEx exCallback, void* closure)
 {
     /* Passing this NULL tells mama_StartBackgroundHelper to use new functionality */
-    return mama_startBackgroundHelper (bridgeImpl, NULL, exCallback, closure);
+    return mamaMiddlewareLibraryManager_startBackgroundHelper (bridgeImpl->mLibrary,
+                                                               NULL,
+                                                               NULL,
+                                                               exCallback,
+                                                               closure);
 }
+
 /**
  * Stop processing messages
  */

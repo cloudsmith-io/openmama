@@ -1340,21 +1340,6 @@ mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library)
 }
 
 mama_status
-mamaPayloadLibraryManager_libraryToPayloadLibrary (
-        mamaLibrary         library,
-        mamaPayloadLibrary* plLibrary)
-{
-    if (!library || !plLibrary)
-        return MAMA_STATUS_NULL_ARG;
-
-    if (MAMA_PAYLOAD_LIBRARY != library->mType)
-        return MAMA_STATUS_INVALID_ARG;
-
-    *plLibrary = (mamaPayloadLibrary) library->mClosure;
-    return MAMA_STATUS_OK;
-}
-
-mama_status
 mamaPayloadLibraryManager_payloadIdToString (char         payloadId,
                                              const char** str)
 {

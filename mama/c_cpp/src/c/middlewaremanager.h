@@ -22,7 +22,9 @@
 #define MamaMiddlewareLibraryManagerH__
 
 #include "librarymanager.h"
+#include <mama/mama.h>
 #include <mama/middleware.h>
+#include <mama/middlewaremanager.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -54,6 +56,13 @@ mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager);
 
 extern void 
 mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library);
+
+extern mama_status
+mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
+                                                    mamaMiddlewareLibraryCb cb,
+                                                    mamaStopCB              callback,
+                                                    mamaStopCBEx            exCallback,
+                                                    void*                   closure);
 
 /*Deprecated convert from middleware name to mamaMiddleware enum string*/
 extern mamaMiddleware

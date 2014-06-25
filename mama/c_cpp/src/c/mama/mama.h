@@ -637,7 +637,7 @@ extern "C"
      */
 
     MAMAExpDLL
-    extern mama_status
+    extern void
     mama_dumpLibraryManager (void);
 
 #if defined(__cplusplus)
