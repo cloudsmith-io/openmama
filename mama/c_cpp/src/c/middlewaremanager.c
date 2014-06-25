@@ -1593,7 +1593,7 @@ mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   libr
     }
 
     mamaMiddlewareStartBgClosure data = 
-        calloc (1, (sizeof (mamaMiddlewareStartBgClosure)));
+        calloc (1, (sizeof (mamaMiddlewareStartBgClosureImpl)));
 
     if (!data)
         return MAMA_STATUS_NOMEM;
