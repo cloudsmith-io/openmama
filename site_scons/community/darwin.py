@@ -111,12 +111,15 @@ class Darwin:
         env.Log("Building for Mac OSX " + osxversion)
 
         #env.Append( CPPDEFINES = ['HAVE_CONFIG_H'] )
-        env.Append( CCFLAGS = ['-fcolor-diagnostics','-arch','x86_64',minversion,'-isysroot',sysroot,'-g','-O2','-pedantic-errors'])
+        env.Append( CCFLAGS = ['-fcolor-diagnostics','-arch','x86_64',minversion,'-isysroot',sysroot,'-g','-pedantic-errors'])
         env.Append( CFLAGS = ['-std=gnu99','-Wmissing-prototypes','-Wstrict-prototypes','-Wno-int-conversion'])
         env.Append( CXXFLAGS = ['-Wall','-Wno-long-long','-stdlib=libc++','-std=gnu++11'] )
         env.Append( CPPPATH = ['/usr/include','/usr/local/include'] )
         env.Append( LIBPATH = ['/usr/local/lib'] )
         env.Append( LINKFLAGS = ['-stdlib=libc++','-arch','x86_64',minversion,'-isysroot',sysroot] )
+
+        if env['debug'] == False:
+            env.Append( CCFLAGS = ['-O2'] )
 
         if os.environ.has_key('CCFLAGS'):
             print 'Setting User defined CCFLAGS: ' + os.environ['CCFLAGS']

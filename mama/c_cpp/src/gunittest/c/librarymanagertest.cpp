@@ -39,15 +39,19 @@ protected:
     virtual void TearDown ();
 public:
     MamaLibraryManagerTestC *m_this;
-    mamaBridge mBridge;
-
+    mamaMiddlewareLibrary  mLibrary;
 };
 
 void MamaLibraryManagerTestC::SetUp(void)
 {
     m_this = this;
 
-    mama_loadBridge (&mBridge, getMiddleware());
+    mamaMiddlewareLibraryManager_loadLibraryWithPath (getMiddleware(),
+                                                      NULL,
+                                                      &mLibrary);
+    
+    mamaMiddlewareLibraryManager_openBridge (mLibrary);
+    
     mama_open ();
 }
 
@@ -72,7 +76,8 @@ TEST_F (MamaLibraryManagerTestC, GetLoadedMiddlewares)
 
     mamaMiddlewareLibraryManager_getLibraries (bridges, &numBridges);
 
-    EXPECT_EQ (1, numBridges);
+    EXPECT_EQ (1,        numBridges);
+    EXPECT_EQ (mLibrary, bridges[0]);
 }
 
 TEST_F (MamaLibraryManagerTestC, GetLoadedPayloads)
@@ -161,19 +166,15 @@ TEST_F (MamaLibraryManagerTestC, GetMiddleware)
 
     mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
 
-    //ASSERT_EQ (mBridge, bridge);
+    ASSERT_EQ (mLibrary, bridge);
 }
 
 TEST_F (MamaLibraryManagerTestC, GetPayload)
 {
     mamaPayloadLibrary payload = NULL;
     mama_status        status  = MAMA_STATUS_OK;
-    char** payloadName = NULL;
-    char*  payloadId   = NULL;
 
-    mBridge->bridgeGetDefaultPayloadId (&payloadName, &payloadId);
-
-    status = mamaPayloadLibraryManager_getLibrary (payloadName[0], &payload);
+    status = mamaPayloadLibraryManager_getLibrary (getPayload(), &payload);
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
@@ -183,15 +184,20 @@ TEST_F (MamaLibraryManagerTestC, GetPayloadById)
 {
     mamaPayloadLibrary payload = NULL;
     mama_status        status  = MAMA_STATUS_OK;
-    char** payloadName         = NULL;
-    char*  payloadId           = NULL;
 
-    mBridge->bridgeGetDefaultPayloadId(&payloadName, &payloadId);
-
-    status = mamaPayloadLibraryManager_getLibraryById (payloadId[0], &payload);
-
+    status = mamaPayloadLibraryManager_getLibrary (getPayload(), &payload);
+    
+    ASSERT_EQ   (MAMA_STATUS_OK, status);
     ASSERT_TRUE (NULL != payload);
-    ASSERT_EQ (MAMA_STATUS_OK, status);
+
+    char payloadId = 
+        mamaPayloadLibraryManager_getId (payload);
+
+    mamaPayloadLibrary payload0 = NULL;
+    
+    status = mamaPayloadLibraryManager_getLibraryById (payloadId, &payload0);
+
+    ASSERT_EQ (payload, payload0);
 }
 
 TEST_F (MamaLibraryManagerTestC, NullTestGetLoadedMiddlewares)

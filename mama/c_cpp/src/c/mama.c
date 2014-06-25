@@ -621,7 +621,8 @@ mamaPayloadBridge
 mamaInternal_getDefaultPayload (void)
 {
     mamaPayloadBridge bridge = NULL;
-    mamaPayloadLibraryManager_convertLibraryToPayload (gDefaultPayload, &bridge);
+    if (gDefaultPayload)
+        mamaPayloadLibraryManager_convertLibraryToPayload (gDefaultPayload, &bridge);
     return bridge;
 }
 

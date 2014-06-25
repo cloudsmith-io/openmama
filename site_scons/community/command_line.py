@@ -60,6 +60,7 @@ def get_command_line_opts( host, products, VERSIONS ):
             PathVariable('qpid_home','Path to QPID Proton Libraries', 
                 '/usr/local/', PathVariable.PathIsDir),
             PathVariable('cache_dir','Path to object cache', None, PathVariable.PathIsDir),
+            BoolVariable('debug', 'Whether to build a debug or optimized build', False),
             EnumVariable('product', 'Product to be built', 'mamda',
                          #mamda all is a windows only build
                          allowed_values=( [ x for x in products if x != "mamdaall" ] )),
@@ -73,6 +74,7 @@ def get_command_line_opts( host, products, VERSIONS ):
             PathVariable('qpid_home','Path to QPID Proton Libraries',
                 '/usr/local/', PathVariable.PathIsDir),
             PathVariable('cache_dir','Path to object cache', None, PathVariable.PathIsDir),
+            BoolVariable('debug', 'Whether to build a debug or optimized build', False),
             EnumVariable('product', 'Product to be built', 'mamda',
                          #mamda all is a windows only build
                          allowed_values=( [ x for x in products if x != "mamdaall" ] )),

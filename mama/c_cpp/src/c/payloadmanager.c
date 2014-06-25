@@ -1212,7 +1212,7 @@ mamaPayloadLibraryManager_loadLibraryWithPath (const char*         payloadName,
                                                const char*         path,
                                                mamaPayloadLibrary* plLibrary0)
 {
-    if (!*plLibrary0 || !payloadName)
+    if (!plLibrary0 || !payloadName)
         return MAMA_STATUS_NULL_ARG;
     
     mamaLibrary library = NULL;
@@ -1378,6 +1378,12 @@ const char*
 mamaPayloadLibraryManager_getName (mamaPayloadLibrary library)
 {
     return mamaLibraryManager_getName(library->mParent);
+}
+
+char 
+mamaPayloadLibraryManager_getId (mamaPayloadLibrary library)
+{
+    return library->mPayloadId;
 }
 
 const char*

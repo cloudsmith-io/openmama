@@ -105,10 +105,13 @@ class Linux:
     # Configures all the necessary environment variables for Linux
     def configure(self, env ):
         env.Append( CPPDEFINES = ['HAVE_CONFIG_H','_GNU_SOURCE'] )
-        env.Append( CCFLAGS = ['-g','-O2','-pedantic-errors'] )
+        env.Append( CCFLAGS = ['-g','-pedantic-errors'] )
         env.Append( CFLAGS = ['-std=gnu99','-Wmissing-prototypes','-Wstrict-prototypes'] )
         env.Append( CXXFLAGS = ['-Wall','-Wno-long-long'] )
 
+        if env['debug'] == False:
+            env.Append( CCFLAGS = ['-O2'] )
+        
         if os.environ.has_key('CCFLAGS'):
             print 'Setting User defined CCFLAGS: ' + os.environ['CCFLAGS']
             env.Append( CCFLAGS = Split( os.environ['CCFLAGS'] ) )

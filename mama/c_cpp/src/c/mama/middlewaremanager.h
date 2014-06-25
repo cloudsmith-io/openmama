@@ -557,6 +557,19 @@ extern const char*
 mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library);
 
 /**
+ * @brief Retrieve the Id of a library.
+ *
+ * Method to retrieve the Id of a library.
+ *
+ * @param[in] library A mamaMiddlewareLibrary from which to get the name.
+ *
+ * @return A character representing the ID.
+ */
+MAMAExpDLL
+extern char 
+mamaMiddlewareLibraryManager_getId (mamaMiddlewareLibrary library);
+
+/**
  * @brief Retrieve the path from where a library was loaded.
  *
  * Method to retrieve the path from where a library was loaded.

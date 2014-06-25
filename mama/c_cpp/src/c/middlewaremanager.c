@@ -448,7 +448,7 @@ mamaMiddlewareLibraryManagerImpl_destroyLibrary (
     if (!mwLibrary)
         return;
 
-    mamaLibrary library = (mamaLibrary) mwLibrary;
+    mamaLibrary library = mwLibrary->mParent;
 
     /* Complain if bridge is still open */
     if (0 != wInterlocked_read (&mwLibrary->mOpenCount))
@@ -1852,6 +1852,12 @@ const char*
 mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library)
 {
     return mamaLibraryManager_getName(library->mParent);
+}
+
+char 
+mamaMiddlewareLibraryManager_getId (mamaMiddlewareLibrary library)
+{
+    return library->mMiddlewareId;
 }
 
 const char*
