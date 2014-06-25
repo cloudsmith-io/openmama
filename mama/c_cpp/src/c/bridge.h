@@ -252,14 +252,19 @@ do                                                                             \
 }                                                                              \
 while(0)                                                                       \
 
+/*Called when creating a bridge - should be used as a chance to programmatically
+ * set any properties or create data for the bridge closure*/
+typedef mama_status (*bridge_load)(mamaBridge bridgeImpl);
+
+/*Called when creating a bridge - should be used a chance to clean
+ * up anything created in the load.*/
+typedef mama_status (*bridge_unload)(mamaBridge bridgeImpl);
+
 /*===================================================================
  =                      Used in mama.c                              =
  ====================================================================*/
 /*Called when loading/creating a bridge */
 typedef void (*bridge_createImpl)(mamaBridge* result);
-
-/*Called when initializing a bridge*/
-typedef mama_status (*bridge_init)(void);
 
 /*Called by mama_open()*/
 typedef mama_status (*bridge_open)(mamaBridge bridgeImpl);

@@ -87,15 +87,22 @@ static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle);
 
-static bridge_init
-mamaMiddlewareLibraryManager_getInit (const char* libraryName,
+static bridge_load
+mamaMiddlewareLibraryManager_getLoad (const char* libraryName,
                                       LIB_HANDLE  libraryHandle);
+
+static bridge_unload
+mamaMiddlewareLibraryManager_getUnload (const char* libraryName,
+                                        LIB_HANDLE  libraryHandle);
 
 static bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
-static bridge_init
-mamaMiddlewareLibraryManagerImpl_getLibraryInit (mamaLibrary library);
+static bridge_load
+mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library);
+
+static bridge_unload
+mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library);
 
 static mama_status
 mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
@@ -170,22 +177,40 @@ mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
                                                            library->mHandle);
 }
 
-static bridge_init
-mamaMiddlewareLibraryManagerImpl_getInit (const char* libraryName,
+static bridge_load
+mamaMiddlewareLibraryManagerImpl_getLoad (const char* libraryName,
                                           LIB_HANDLE  libraryHandle)
 {
     void* func = 
         mamaLibraryManager_loadLibraryFunction (libraryName,
                                                 libraryHandle,
-                                                "Bridge_init");
-    return *(bridge_init*)&func;
+                                                "Bridge_load");
+    return *(bridge_load*)&func;
 }
 
-static bridge_init
-mamaMiddlewareLibraryManagerImpl_getLibraryInit (mamaLibrary library)
+static bridge_load
+mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library)
 {
-    return mamaMiddlewareLibraryManagerImpl_getInit (library->mName,
+    return mamaMiddlewareLibraryManagerImpl_getLoad (library->mName,
                                                      library->mHandle);
+}
+
+static bridge_unload
+mamaMiddlewareLibraryManagerImpl_getUnload (const char* libraryName,
+                                          LIB_HANDLE  libraryHandle)
+{
+    void* func = 
+        mamaLibraryManager_loadLibraryFunction (libraryName,
+                                                libraryHandle,
+                                                "Bridge_unload");
+    return *(bridge_unload*)&func;
+}
+
+static bridge_unload
+mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library)
+{
+    return mamaMiddlewareLibraryManagerImpl_getUnload (library->mName,
+                                                       library->mHandle);
 }
 
 /*
@@ -212,12 +237,12 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
     if (!bridge)
         return MAMA_STATUS_NOMEM;
 
-    bridge_init init = 
-        mamaMiddlewareLibraryManagerImpl_getLibraryInit (library);
+    bridge_load load = 
+        mamaMiddlewareLibraryManagerImpl_getLibraryLoad (library);
    
-    if (init)
+    if (load)
     {
-        if (MAMA_STATUS_OK != init ())
+        if (MAMA_STATUS_OK != load (bridge))
         {
             mama_log (MAMA_LOG_LEVEL_ERROR,
                       "mamaPayloadLibraryManager_createBridge(): "
@@ -435,6 +460,20 @@ mamaMiddlewareLibraryManagerImpl_destroyLibrary (
                   library->mTypeName, library->mName);
 
         mamaMiddlewareLibraryManagerImpl_closeFull (mwLibrary);
+    }
+
+    bridge_unload unload = 
+        mamaMiddlewareLibraryManagerImpl_getLibraryUnload (library);
+    
+    if (unload)
+    {
+        if (MAMA_STATUS_OK != unload (mwLibrary->mBridge))
+        {
+            mama_log (MAMA_LOG_LEVEL_ERROR, 
+                      "mamaMiddlewareLibraryManagerImpl_destroyLibrary(): "
+                      "Error unloading %s library %s", library->mTypeName, 
+                      library->mName);
+        }
     }
 
     mamaMiddlewareLibraryManagerImpl_destroyBridge (mwLibrary->mBridge);
@@ -1128,11 +1167,11 @@ mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
         mamaMiddlewareLibraryManagerImpl_getCreateImpl (libraryName,
                                                         libraryLib);
 
-    bridge_init init = 
-        mamaMiddlewareLibraryManagerImpl_getInit (libraryName,
+    bridge_load load = 
+        mamaMiddlewareLibraryManagerImpl_getLoad (libraryName,
                                                   libraryLib);
 
-    if (createImpl || init)
+    if (createImpl || load)
         return MAMA_MIDDLEWARE_LIBRARY;
 
     return MAMA_UNKNOWN_LIBRARY;

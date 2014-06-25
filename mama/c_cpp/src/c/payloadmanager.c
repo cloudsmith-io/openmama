@@ -65,22 +65,27 @@ static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                              LIB_HANDLE  libraryHandle);
 
-
 static msgPayload_destroyImpl
 mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
                                               LIB_HANDLE  libraryHandle);
 
-static msgPayload_init
-mamaPayloadLibraryManagerImpl_getInit (const char* libraryName,
+static msgPayload_load
+mamaPayloadLibraryManagerImpl_getLoad (const char* libraryName,
                                        LIB_HANDLE  libraryHandle);
+static msgPayload_unload
+mamaPayloadLibraryManagerImpl_getUnload (const char* libraryName,
+                                         LIB_HANDLE  libraryHandle);
 static msgPayload_createImpl
 mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
 static msgPayload_destroyImpl
 mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library);
 
-static msgPayload_init
-mamaPayloadLibraryManagerImpl_getLibraryInit (mamaLibrary library);
+static msgPayload_load
+mamaPayloadLibraryManagerImpl_getLibraryLoad (mamaLibrary library);
+
+static msgPayload_unload
+mamaPayloadLibraryManagerImpl_getLibraryUnload (mamaLibrary library);
 
 static mama_status
 mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
@@ -147,15 +152,26 @@ mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
     return *(msgPayload_destroyImpl*)&func;
 }
 
-static msgPayload_init
-mamaPayloadLibraryManagerImpl_getInit (const char* libraryName,
+static msgPayload_load
+mamaPayloadLibraryManagerImpl_getLoad (const char* libraryName,
                                        LIB_HANDLE  libraryHandle)
 {
     void* func = 
         mamaLibraryManager_loadLibraryFunction (libraryName,
                                                 libraryHandle,
-                                                "Payload_init");
-    return *(msgPayload_init*)&func;
+                                                "Payload_load");
+    return *(msgPayload_load*)&func;
+}
+
+static msgPayload_unload
+mamaPayloadLibraryManagerImpl_getUnload (const char* libraryName,
+                                         LIB_HANDLE  libraryHandle)
+{
+    void* func = 
+        mamaLibraryManager_loadLibraryFunction (libraryName,
+                                                libraryHandle,
+                                                "Payload_unload");
+    return *(msgPayload_unload*)&func;
 }
 
 static msgPayload_createImpl
@@ -174,12 +190,20 @@ mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library)
                                                       library->mHandle);
 }
 
-static msgPayload_init
-mamaPayloadLibraryManagerImpl_getLibraryInit (mamaLibrary library)
+static msgPayload_load
+mamaPayloadLibraryManagerImpl_getLibraryLoad (mamaLibrary library)
 {
-    return (msgPayload_init)
-        mamaPayloadLibraryManagerImpl_getInit (library->mName,
+    return (msgPayload_load)
+        mamaPayloadLibraryManagerImpl_getLoad (library->mName,
                                                library->mHandle);
+}
+
+static msgPayload_unload
+mamaPayloadLibraryManagerImpl_getLibraryUnload (mamaLibrary library)
+{
+    return (msgPayload_unload)
+        mamaPayloadLibraryManagerImpl_getUnload (library->mName,
+                                                 library->mHandle);
 }
 
 static mama_status
@@ -236,12 +260,12 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
 
     mama_status status = MAMA_STATUS_OK;
     
-    msgPayload_init init = 
-        mamaPayloadLibraryManagerImpl_getLibraryInit (library);
+    msgPayload_load load = 
+        mamaPayloadLibraryManagerImpl_getLibraryLoad (library);
 
-    if (init)
+    if (load)
     {
-        status = init (payloadId);
+        status = load (bridge, payloadId);
 
         if (MAMA_STATUS_OK != status)
         {
@@ -376,9 +400,25 @@ static void
 mamaPayloadLibraryManagerImpl_destroyLibrary (
         mamaPayloadLibrary plLibrary)
 {
+    mamaLibrary library = plLibrary->mParent;
+
+    msgPayload_unload unload = 
+        mamaPayloadLibraryManagerImpl_getLibraryUnload (library);
+
+    if (unload)
+    {
+        if (MAMA_STATUS_OK != unload (plLibrary->mBridge))
+        {
+            mama_log (MAMA_LOG_LEVEL_ERROR, 
+                      "mamaMiddlewareLibraryManagerImpl_destroyLibrary(): "
+                      "Error unloading %s library %s", library->mTypeName, 
+                      library->mName);
+        }
+    }
+
     mamaPayloadLibraryManager_destroyBridge (plLibrary->mBridge);
 
-    plLibrary->mParent->mClosure = NULL;
+    library->mClosure = NULL;
     free (plLibrary);
 }
 
@@ -1111,19 +1151,26 @@ mamaLibraryType
 mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib)
 {
+    msgPayload_load load = 
+        mamaPayloadLibraryManagerImpl_getLoad (libraryName,
+                                               libraryLib);
+
+    msgPayload_unload unload = 
+        mamaPayloadLibraryManagerImpl_getUnload (libraryName,
+                                                 libraryLib);
+
+    if (load || unload)
+        return MAMA_PAYLOAD_LIBRARY;
+
     msgPayload_createImpl createImpl =
         mamaPayloadLibraryManagerImpl_getCreateImpl (libraryName,
                                                      libraryLib);
-
-    msgPayload_init init = 
-        mamaPayloadLibraryManagerImpl_getInit (libraryName,
-                                               libraryLib);
 
     msgPayload_destroyImpl destroyImpl =
         mamaPayloadLibraryManagerImpl_getDestroyImpl (libraryName,
                                                       libraryLib);
 
-    if (init || createImpl || destroyImpl)
+    if (createImpl || destroyImpl)
         return MAMA_PAYLOAD_LIBRARY;
 
     return MAMA_UNKNOWN_LIBRARY;
