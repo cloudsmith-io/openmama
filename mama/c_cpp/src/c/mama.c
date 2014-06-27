@@ -150,8 +150,6 @@ int gCatchCallbackExceptions = 0;
 
 wproperty_t             gProperties      = 0;
 
-static mamaPayloadLibrary  gDefaultPayload = NULL;
-
 static wthread_key_t last_err_key;
 static wthread_static_mutex_t  myLock = WSTATIC_MUTEX_INITIALIZER;
 static unsigned int myRefCount        = 0;
@@ -592,46 +590,6 @@ mamaInternal_getProperties()
   return gProperties;
 }
 
-/**
- * Get first available middleware.
- */
-mamaBridge
-mamaInternal_findBridge ()
-{
-    mamaMiddlewareLibrary mwLibrary = NULL;
-    mamaBridge            bridge    = NULL;
-
-    mamaMiddlewareLibraryManager_getDefaultLibrary (&mwLibrary);
-    mamaMiddlewareLibraryManager_convertLibraryToBridge (mwLibrary, &bridge);
-    return bridge;
-}
-
-mamaPayloadBridge
-mamaInternal_findPayload (char id)
-{
-    mamaPayloadLibrary library = NULL;
-    mamaPayloadBridge  bridge  = NULL;    
-
-    mamaPayloadLibraryManager_getLibraryById (id, &library);
-    mamaPayloadLibraryManager_convertLibraryToPayload (library, &bridge);
-    return bridge;
-}
-
-mamaPayloadBridge
-mamaInternal_getDefaultPayload (void)
-{
-    mamaPayloadBridge bridge = NULL;
-    if (gDefaultPayload)
-        mamaPayloadLibraryManager_convertLibraryToPayload (gDefaultPayload, &bridge);
-    return bridge;
-}
-
-void
-mamaInternal_setDefaultPayload (mamaPayloadBridge bridge)
-{
-    gDefaultPayload = bridge->mLibrary;
-}
-
 mama_bool_t
 mamaInternal_getAllowMsgModify (void)
 {
@@ -886,7 +844,8 @@ mama_setupStatsGenerator (void)
            in mama.properties.  Instead, check through loaded bridges */
         if (!mamaInternal_statsPublishingEnabled())
         {
-            mamaBridgeImpl* impl = (mamaBridgeImpl*) mamaInternal_findBridge ();
+            mamaBridgeImpl* impl =  
+                mamaMiddlewareLibraryManager_findBridge ();
 
             if (impl != NULL)
             {
@@ -1202,8 +1161,6 @@ mama_closeCount (unsigned int* count)
         }
 
         cleanupReservedFields();
-
-        gDefaultPayload = NULL;
 
         /* The properties must not be closed down until after the bridges have been destroyed. */
         if (gProperties != 0)
@@ -1571,23 +1528,6 @@ mamaInternal_registerBridge (mamaBridge     bridge,
     /*With the latest implementation this function has become a noop*/
 }
 
-mama_status
-mama_setDefaultPayload (char id)
-{
-    if (id == '\0')
-        return MAMA_STATUS_NULL_ARG;
-
-    mamaPayloadLibrary library = NULL;
-    mama_status status =
-        mamaPayloadLibraryManager_getLibraryById (id, &library);
-
-    if (status != MAMA_STATUS_OK)
-        return status;
-
-    gDefaultPayload = library;
-    return MAMA_STATUS_OK;
-}
-
 int
 mamaInternal_generateLbmStats ()
 {
@@ -1612,10 +1552,10 @@ mama_loadBridgeWithPath (mamaBridge* bridge,
     mama_status status =
         mamaMiddlewareLibraryManager_loadLibraryWithPath (middlewareName, path, &library);
 
-    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, bridge);
-
     if (MAMA_STATUS_OK == status)
-        status = mama_openBridge (*bridge);
+        status = mamaMiddlewareLibraryManager_openBridge (library);
+
+    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, bridge);
  
     return status;
 }
@@ -1640,7 +1580,13 @@ mama_loadPayloadBridgeWithPath (mamaPayloadBridge* bridge,
 
     if (MAMA_STATUS_OK != status)
         return status;
-    
+   
+    status = 
+        mamaPayloadLibraryManager_activateLibrary (library);
+
+    if (MAMA_STATUS_OK != status)
+        return status;
+ 
     mamaPayloadLibraryManager_convertLibraryToPayload (library, bridge);
     return MAMA_STATUS_OK;
 }

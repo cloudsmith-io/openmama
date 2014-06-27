@@ -429,10 +429,10 @@ typedef mamaPayloadType
 (*msgPayload_getType)         (void);
 
 typedef mama_status 
-(*msgPayload_load)            (mamaPayloadBridge bridge, char* identifier);
+(*msgPayload_load)            (char* identifier);
 
 typedef mama_status 
-(*msgPayload_unload)          (mamaPayloadBridge bridge);
+(*msgPayload_unload)          ();
 
 /*===================================================================
  =              msgPayload bridge function pointers                 =

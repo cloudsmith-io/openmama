@@ -21,18 +21,11 @@
 
 #include "wombat/port.h"
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <limits.h>
-
 #include "platform.h"
-#include "wombat/wincompat.h"
 
 /**
  * Functions relating to DLLs/shared objects
  */
-char errorBuf[25];
 LIB_HANDLE openSharedLib (const char* libName, const char* path)
 {
     char fileName[FILENAME_MAX];

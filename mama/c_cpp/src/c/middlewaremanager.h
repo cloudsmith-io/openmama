@@ -64,6 +64,13 @@ mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   libr
                                                     mamaStopCBEx            exCallback,
                                                     void*                   closure);
 
+
+/*
+ * Get first available middleware
+ */
+extern mamaBridge
+mamaMiddlewareLibraryManager_findBridge (void);
+
 /*Deprecated convert from middleware name to mamaMiddleware enum string*/
 extern mamaMiddleware
 mamaMiddlewareLibraryManager_convertFromString (const char*  str);

@@ -57,6 +57,18 @@ mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager);
 extern void 
 mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library);
 
+extern mamaPayloadBridge
+mamaPayloadLibraryManager_findPayload (char id);
+
+extern mamaPayloadBridge
+mamaPayloadLibraryManager_getDefaultPayload (void);
+
+extern void
+mamaPayloadLibraryManager_setDefaultPayload (mamaPayloadLibrary library);
+
+extern mama_status
+mamaPayloadLibraryManager_activateLibrary (mamaPayloadLibrary library);
+
 /*Deprecated function for converting the payload enum to a string representation*/
 extern const char*
 mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType);

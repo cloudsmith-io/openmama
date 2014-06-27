@@ -53,13 +53,6 @@ MAMAExpDLL
 extern wproperty_t
 mamaInternal_getProperties (void);
 
-/* Used by the bridges to register themselves with MAMA. Should not
-   be called from anywhere else */
-MAMAExpDLL
-extern void
-mamaInternal_registerBridge (mamaBridge     bridge,
-                             const char*    middleware);
-
 /**
  * getVersion for use when mama is wrapped
  */
@@ -82,21 +75,14 @@ MAMAExpBridgeDLL
 extern int
 mamaInternal_generateLbmStats (void);
 
-MAMAExpBridgeDLL
-mamaBridge
-mamaInternal_findBridge (void);
-
-mamaPayloadBridge
-mamaInternal_findPayload (char id);
-
-mamaPayloadBridge
-mamaInternal_getDefaultPayload (void);
-
-void
-mamaInternal_setDefaultPayload (mamaPayloadBridge payloadBridge);
-
 mama_bool_t
 mamaInternal_getAllowMsgModify (void);
+
+MAMAExpDLL
+extern void
+mamaInternal_registerBridge (mamaBridge     bridge,
+                             const char*    middleware);
+
 
 #if defined(__cplusplus)
 }

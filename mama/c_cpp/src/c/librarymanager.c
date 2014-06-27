@@ -1409,6 +1409,9 @@ mamaLibraryManagerImpl_dumpLibrariesCb (mamaLibrary library,
 
     manager->mFuncs->dumpLibrary (library);
 
+    /*FIXME - instead of explicitly listing the properties to retrieve
+     * this should be a property substring match so that can retrieve all
+     * properties of the form mama.library.<libraryname>.*/
     static const char* properties[] = {"ignore", "name" , "description",
                                        "author", "uri", "license", "version",
                                        "mama_version", "bridge_author", 

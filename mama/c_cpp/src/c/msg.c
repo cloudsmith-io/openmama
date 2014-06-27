@@ -437,7 +437,8 @@ mamaMsg_createForTemplate (mamaMsg* msg, mama_u32_t templateId)
 mama_status
 mamaMsg_createForPayload (mamaMsg* msg,  const char id)
 {
-    return mamaMsg_createForPayloadBridge (msg, mamaInternal_findPayload(id));
+    return mamaMsg_createForPayloadBridge (msg, 
+      mamaPayloadLibraryManager_findPayload(id));
 }
 
 mama_status
@@ -517,7 +518,7 @@ mamaMsgImpl_setMsgBuffer(mamaMsg     msg,
     if (id == '\0')
         id = (char) ((const char*)data) [0];
 
-    impl->mPayloadBridge = mamaInternal_findPayload(id);
+    impl->mPayloadBridge = mamaPayloadLibraryManager_findPayload(id);
     impl->mPayload = impl->mPayloads[(uint8_t)id];
 
     if (!impl->mPayloadBridge) return MAMA_STATUS_NO_BRIDGE_IMPL;
@@ -745,7 +746,7 @@ mama_status
 mamaMsg_create (mamaMsg* msg)
 {
     mama_status       status  = MAMA_STATUS_OK;
-    mamaPayloadBridge bridge  = mamaInternal_getDefaultPayload ();
+    mamaPayloadBridge bridge  = mamaPayloadLibraryManager_getDefaultPayload ();
     msgPayload        payload = NULL;
 
     if (bridge)
@@ -3174,7 +3175,8 @@ mamaMsg_setNewBuffer (mamaMsg msg, void* buffer,
 
     if (!impl) return MAMA_STATUS_NULL_ARG;
 
-    impl->mPayloadBridge = mamaInternal_findPayload( (char) ((const char*)buffer) [0]);
+    impl->mPayloadBridge = 
+        mamaPayloadLibraryManager_findPayload( ((const char*)buffer) [0]);
 
     if (impl->mPayloadBridge)
     {

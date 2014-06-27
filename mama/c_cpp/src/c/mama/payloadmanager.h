@@ -250,6 +250,19 @@ extern const char*
 mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library);
 
 /**
+ * @brief set the default payload by ID.
+ *
+ * Method to set the default payload by ID.
+ *
+ * @param[in] id ID of the payload to set as the default.
+ *
+ * @return A mama_status indicating success or otherwise.
+ */
+MAMAExpDLL
+extern mama_status
+mamaPayloadLibraryManager_setDefaultPayloadbyId (char id);
+
+/**
  * @brief Get a string representation of a payload Id.
  *
  * Method to get a string representation of a payload Id.
