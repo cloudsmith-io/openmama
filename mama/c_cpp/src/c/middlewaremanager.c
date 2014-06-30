@@ -649,7 +649,7 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
     bridge_createImpl createImpl =
         mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (library);
 
-    if (!createImpl)
+    if (createImpl)
     {
         /* FIXME: We might need to make a carbon copy of mamaPayloadBridge
          * and make it mamaPayloadOldBridge if we make any changes that
