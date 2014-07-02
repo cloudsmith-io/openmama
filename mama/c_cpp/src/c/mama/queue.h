@@ -100,10 +100,22 @@ MAMAExpDLL
 extern mama_status
 mamaQueue_create (mamaQueue* queue, mamaBridge bridgeImpl);
 
+MAMAExpDLL
+extern mama_status
+mamaQueue_createWithLibrary (mamaQueue* queue, mamaMiddlewareLibrary library);
 
 MAMAExpDLL
 extern mama_status
-mamaQueue_create_usingNative (mamaQueue* queue, mamaBridge bridgeImpl, void* nativeQueue);
+mamaQueue_create_usingNative (mamaQueue* queue, 
+                              mamaBridge bridgeImpl, 
+                              void*      nativeQueue);
+
+MAMAExpDLL
+extern mama_status
+mamaQueue_createWithLibrary_usingNative (mamaQueue*            queue, 
+                                         mamaMiddlewareLibrary library, 
+                                         void*                 nativeQueue);
+
 
 /**
  * Check to see if a queue can be destroyed. The queue cannot be destroyed if there are

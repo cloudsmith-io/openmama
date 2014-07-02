@@ -43,6 +43,7 @@
 #include "statsgeneratorinternal.h"
 #include "mama/statscollector.h"
 #include "wombat/strutils.h"
+#include "middlewaremanager.h"
 
 extern int gGenerateTransportStats;
 extern int gGenerateLbmStats;
@@ -591,6 +592,24 @@ static void setGroupSizeHint (mamaTransport transport, const char* middleware)
     }
     else
         self->mGroupSizeHint = DEFAULT_GROUP_SIZE_HINT;
+}
+
+mama_status
+mamaTransport_createWithLibrary (mamaTransport         transport,
+                                 const char*           name,
+                                 mamaMiddlewareLibrary library)
+{
+    mamaBridge bridge = NULL;
+    
+    if (!library)
+        return MAMA_STATUS_NULL_ARG;
+
+    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, 
+                                                        &bridge);
+
+    return mamaTransport_create (transport, 
+                                 name,
+                                 bridge);
 }
 
 /**

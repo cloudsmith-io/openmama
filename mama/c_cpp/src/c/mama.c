@@ -1241,25 +1241,9 @@ mama_status
 mama_getDefaultEventQueue (mamaBridge bridgeImpl,
                            mamaQueue* defaultQueue)
 {
-    mamaBridgeImpl* impl =  (mamaBridgeImpl*)bridgeImpl;
-
-    if (!impl)
-    {
-        mama_log (MAMA_LOG_LEVEL_WARN, "mama_getDefaultEventQueue(): "
-                  "No bridge implementation specified");
-        return MAMA_STATUS_NO_BRIDGE_IMPL;
-    }
-
-    if (!impl->mDefaultEventQueue)
-    {
-        mama_log (MAMA_LOG_LEVEL_WARN, "mama_getDefaultEventQueue (): "
-                  "NULL default queue for bridge impl. Has mama_open() been "
-                  "called?");
-        return MAMA_STATUS_INVALID_QUEUE;
-    }
-
-    *defaultQueue = impl->mDefaultEventQueue;
-    return MAMA_STATUS_OK;
+    return mamaMiddlewareLibraryManager_getDefaultEventQueue (
+                                           bridgeImpl->mLibrary,
+                                           defaultQueue);
 }
 
 mama_status
@@ -1532,6 +1516,12 @@ int
 mamaInternal_generateLbmStats ()
 {
 	return gGenerateLbmStats;
+}
+
+mama_status
+mama_load ()
+{
+    return mamaLibraryManager_loadAll ();
 }
 
 mama_status

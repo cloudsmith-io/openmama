@@ -123,7 +123,15 @@ extern "C"
 	mama_status
 	mama_setDefaultPayload (char id);
 
-   /** Load the bridge specified by middleware string.
+    /** Attempts to search the provided path in "mama.library.default.path"
+     *  for libraries to load.
+     * @return mama_status whether the call was successful or not.
+     */
+
+    mama_status
+    mama_load (void);   
+
+    /** Load the bridge specified by middleware string.
      * If the bridge has already been loaded then the existing bridge instance
      * will be returned.
      * @param impl The bridge object

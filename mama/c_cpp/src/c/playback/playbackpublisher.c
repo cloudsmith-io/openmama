@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include "playbackpublisher.h"
 #include <mama/conflation/connection.h>
+#include "middlewaremanager.h"
 
 #define FOUND_CREATE_PUBLISHER    1
 #define FOUND_CREATE_TRANSPORT    1
@@ -388,6 +389,19 @@ mama_status mamaPlayback_setBridge (mamaPlaybackPublisher mamaPlayback,
     
     if (impl == NULL) return MAMA_STATUS_NULL_ARG;
     impl->myBridge = bridge;
+  
+    return MAMA_STATUS_OK;
+}
+
+mama_status mamaPlayback_setMiddlewareLibrary (mamaPlaybackPublisher mamaPlayback,
+                                               mamaMiddlewareLibrary library)
+{
+    mamaFilePlaybackImpl* impl = (mamaFilePlaybackImpl*)mamaPlayback;
+
+    if (impl == NULL) return MAMA_STATUS_NULL_ARG;
+
+    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, 
+                                         &impl->myBridge);
   
     return MAMA_STATUS_OK;
 }

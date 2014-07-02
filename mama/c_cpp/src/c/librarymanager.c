@@ -1518,13 +1518,13 @@ mamaLibraryManager_getLibraryBoolProperty (mamaLibrary library,
 const char* 
 mamaLibraryManager_getName (mamaLibrary library)
 {
-    return library->mPath;
+    return library->mName;
 }
 
 const char*
 mamaLibraryManager_getPath (mamaLibrary library)
 {
-    return library->mName;
+    return library->mPath;
 }
 
 void

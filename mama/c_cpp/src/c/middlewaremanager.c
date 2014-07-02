@@ -1587,7 +1587,7 @@ mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   libr
         return MAMA_STATUS_NO_BRIDGE_IMPL;
     }
 
-    if (!callback && !exCallback)
+    if (!callback && !exCallback && !cb)
     {
         mama_log (MAMA_LOG_LEVEL_ERROR, "startBackgroundHelper: No "
                   "stop callback or extended stop callback specified.");
@@ -1696,6 +1696,33 @@ mamaMiddlewareLibraryManager_stopAllBridges ()
     mamaLibraryIterateCb cb = mamaMiddlewareLibraryManagerImpl_stopAllCb;
     mamaLibraryManager_iterateLibraries (MAMA_MIDDLEWARE_LIBRARY, cb, NULL);
 
+    return MAMA_STATUS_OK;
+}
+
+mama_status 
+mamaMiddlewareLibraryManager_getDefaultEventQueue (mamaMiddlewareLibrary library,
+                                                   mamaQueue*            defaultQueue)
+{
+    if (!library)
+    {
+        mama_log (MAMA_LOG_LEVEL_WARN, 
+            "mamaMiddlewareLibraryManager_getDefaultEventQueue(): "
+            "No library implementation specified");
+        return MAMA_STATUS_NO_BRIDGE_IMPL;
+    }
+
+    mamaBridge bridge = library->mBridge;
+
+    if (!bridge || !bridge->mDefaultEventQueue)
+    {
+        mama_log (MAMA_LOG_LEVEL_WARN, 
+            "mamaMiddlewareLibraryManager_getDefaultEventQueue (): "
+            "NULL default queue for bridge impl. Has "
+            "mamaMiddlewareLibraryManager_openBridge() been called?");
+        return MAMA_STATUS_INVALID_QUEUE;
+ 
+    }
+    *defaultQueue = bridge->mDefaultEventQueue;
     return MAMA_STATUS_OK;
 }
 

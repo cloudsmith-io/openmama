@@ -363,6 +363,21 @@ extern mama_status
 mamaMiddlewareLibraryManager_stopAllBridges (void);
 
 /**
+ * Get a reference to the internal default event queue in use for the specified
+ * middleware.
+ *
+ * @param bridgeImpl The middleware for which the default event queue is being
+ * obtained.
+ * @param defaultQueue Address to which the defaultQueue is to be written.
+ *
+ * @return MAMA_STATUS_OK if the function returns successfully.
+ */
+MAMAExpDLL
+extern mama_status
+mamaMiddlewareLibraryManager_getDefaultEventQueue (mamaMiddlewareLibrary library,
+                                                   mamaQueue* defaultQueue);
+
+/**
  * @brief Gets a string representing the library version.
  *
  * Method to return a string library version.
