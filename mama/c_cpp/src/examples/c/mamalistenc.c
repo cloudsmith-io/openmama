@@ -788,11 +788,6 @@ void initializeMama (void)
         }
     }
 
-    if (MAMA_STATUS_OK != mama_load ())
-    {
-        
-    } 
-
     status = 
         mamaMiddlewareLibraryManager_getLibrary (gMiddleware,
                                                  &gMamaMiddlewareLib);

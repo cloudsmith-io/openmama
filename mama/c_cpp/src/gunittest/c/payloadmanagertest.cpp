@@ -117,6 +117,17 @@ TYPED_TEST_P (PayloadManagerTestC, GetLoadedPayloads)
     EXPECT_EQ (this->mLibrary, payloads[0]);
 }
 
+TYPED_TEST_P (PayloadManagerTestC, GetDefaultPayload)
+{
+    mamaPayloadLibrary payload = NULL;
+    mama_status        status  = MAMA_STATUS_OK;
+
+    status = mamaPayloadLibraryManager_getDefaultLibrary (&payload);
+
+    ASSERT_TRUE (NULL != payload);
+    ASSERT_EQ (MAMA_STATUS_OK, status);
+}
+
 TYPED_TEST_P (PayloadManagerTestC, GetPayload)
 {
     mamaPayloadLibrary payload = NULL;
@@ -126,6 +137,12 @@ TYPED_TEST_P (PayloadManagerTestC, GetPayload)
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
+
+    payload = NULL;
+    status = mamaPayloadLibraryManager_getLibrary ("foobar", &payload);
+
+    ASSERT_TRUE (NULL == payload);
+    ASSERT_EQ   (MAMA_STATUS_NOT_FOUND, status);
 }
 
 TYPED_TEST_P (PayloadManagerTestC, GetPayloadById)
@@ -146,6 +163,12 @@ TYPED_TEST_P (PayloadManagerTestC, GetPayloadById)
     status = mamaPayloadLibraryManager_getLibraryById (payloadId, &payload0);
 
     ASSERT_EQ (payload, payload0);
+    ASSERT_EQ (MAMA_STATUS_OK, status);
+
+    status = mamaPayloadLibraryManager_getLibraryById ('\r', &payload0);
+
+    ASSERT_TRUE (NULL == payload0);
+    ASSERT_EQ (MAMA_STATUS_NO_BRIDGE_IMPL, status);
 }
 
 TYPED_TEST_P (PayloadManagerTestC, NullTestGetLoadedPayloads)
@@ -182,10 +205,60 @@ TYPED_TEST_P (PayloadManagerTestC, NullTestGetPayloadById)
         mamaPayloadLibraryManager_getLibraryById (payloadId, NULL));
 }
 
-REGISTER_TYPED_TEST_CASE_P (PayloadManagerTestC,       GetLoadedPayloads, 
-                            GetPayload,                GetPayloadById,            
-                            NullTestGetLoadedPayloads, NullTestGetPayload,
-                            NullTestGetPayloadById);
+REGISTER_TYPED_TEST_CASE_P (PayloadManagerTestC, GetLoadedPayloads, 
+                            GetPayload,          GetDefaultPayload,
+                            GetPayloadById,      NullTestGetLoadedPayloads, 
+                            NullTestGetPayload,  NullTestGetPayloadById);
 
 typedef ::testing::Types<OldMethodPayloadLoader, NewMethodPayloadLoader> MyTypes;
 INSTANTIATE_TYPED_TEST_CASE_P (Mama, PayloadManagerTestC, MyTypes);
+
+class MamaPropertiesPayloadManagerTestC : public ::testing::Test
+{
+protected:
+    MamaPropertiesPayloadManagerTestC() {};
+    virtual ~MamaPropertiesPayloadManagerTestC() {};
+
+    void SetUp();
+    void TearDown ();
+public:
+    mamaPayloadLibrary                 mLibrary;
+};
+
+void MamaPropertiesPayloadManagerTestC::SetUp()
+{
+    mamaPayloadBridge bridge;
+    mama_loadPayloadBridge (&bridge, getPayload ());
+    mLibrary = bridge->mLibrary;
+}
+
+void MamaPropertiesPayloadManagerTestC::TearDown ()
+{
+}
+
+TEST_F (MamaPropertiesPayloadManagerTestC, setProperty)
+{
+    ASSERT_EQ (MAMA_STATUS_OK,    
+        mamaPayloadLibraryManager_setProperty  (
+            mamaPayloadLibraryManager_getName (mLibrary),
+            "description", "TEST"));
+
+    char property[256];
+    snprintf (property, 256, "mama.library.%s.%s", 
+        mamaPayloadLibraryManager_getName (mLibrary),
+        "description");
+
+    ASSERT_STREQ ("TEST", mama_getProperty (property));
+}
+
+TEST_F (MamaPropertiesPayloadManagerTestC, getName)
+{
+    ASSERT_STREQ (getPayload (),
+        mamaPayloadLibraryManager_getName (mLibrary));
+}
+
+TEST_F (MamaPropertiesPayloadManagerTestC, getPath)
+{
+    ASSERT_EQ (NULL,
+        mamaPayloadLibraryManager_getPath (mLibrary));
+}

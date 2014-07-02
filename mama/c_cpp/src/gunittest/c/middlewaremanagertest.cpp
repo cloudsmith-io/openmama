@@ -238,10 +238,18 @@ TYPED_TEST_P (MiddlewareManagerTestC, GetClosedMiddlewares)
 TYPED_TEST_P (MiddlewareManagerTestC, GetMiddleware)
 {
     mamaMiddlewareLibrary bridge   = NULL;
-
-    mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
+    mama_status status = 
+        mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
 
     ASSERT_EQ (this->mLibrary, bridge);
+    ASSERT_EQ (MAMA_STATUS_OK, status);
+
+    bridge = NULL;
+    status = 
+        mamaMiddlewareLibraryManager_getLibrary ("foobar", &bridge); 
+
+    ASSERT_TRUE (NULL == bridge);
+    ASSERT_EQ   (MAMA_STATUS_NOT_FOUND, status);  
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetLoadedMiddlewares)
