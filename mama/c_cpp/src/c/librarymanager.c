@@ -84,10 +84,11 @@ typedef struct IterateLibrariesCbClosure_
  */
 
 static mamaLibraryTypeManagerInfoImpl gManagers [] = {
-    {MAMA_MIDDLEWARE_LIBRARY, "middleware", "Middleware", NULL},
-    {MAMA_PAYLOAD_LIBRARY,    "payload",    "Payload",    NULL},
-    {MAMA_PLUGIN_LIBRARY,     "plugin",     "Plugin",     NULL},
-    {MAMA_UNKNOWN_LIBRARY,    NULL,         NULL,         NULL}
+    {MAMA_MIDDLEWARE_LIBRARY,  "middleware",  "Middleware",  NULL},
+    {MAMA_PAYLOAD_LIBRARY,     "payload",     "Payload",     NULL},
+    {MAMA_PLUGIN_LIBRARY,      "plugin",      "Plugin",      NULL},
+    {MAMA_ENTITLEMENT_LIBRARY, "entitlement", "Entitlement", NULL},
+    {MAMA_UNKNOWN_LIBRARY,      NULL,         NULL,          NULL}
 };
 
 static mamaLibraryManagerImpl gImpl = {

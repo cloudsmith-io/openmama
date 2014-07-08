@@ -48,14 +48,8 @@
 #include "wombat/wInterlocked.h"
 #include "queueimpl.h"
 #include "property.h"
-
-#ifdef WITH_ENTITLEMENTS
-
-#include <OeaClient.h>
-#include <OeaSubscription.h>
-extern oeaClient *   gEntitlementClient;
-
-#endif /* WITH_ENTITLEMENTS */
+#include "entitlementmanager.h"
+#include "entitlement.h"
 
 extern int gGenerateGlobalStats;
 extern int gGenerateQueueStats;
@@ -141,6 +135,7 @@ typedef struct mamaSubscriptionImpl_
     int                     mStateMachineTrace;
     
     mamaBridgeImpl*         mBridgeImpl;
+    mamaEntitlementBridge   mEntitlementBridge;
 
     int                     mGroupSizeHint;
     wombatThrottleAction    mAction;
@@ -380,7 +375,16 @@ mamaSubscription_allocate (
     impl->mGroupSizeHint          = 0;
     impl->mStateMachineTrace      = 0;
 
+    mama_status status = 
+        mamaEntitlementLibraryManager_getEntitlementBridge (
+                                    &impl->mEntitlementBridge);
 
+    if (MAMA_STATUS_OK != status)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "mamaSubscription_setupBasic(): "
+            "Could not get entitlement bridge.");
+        return MAMA_STATUS_NOT_ENTITLED;
+    }
     
     /* Create the mutex. */
     impl->mCreateDestroyLock = wlock_create();
@@ -427,9 +431,6 @@ mamaSubscription_setupBasic (
     int               acceptMultipleInitials    = 0;
     int               checkSeqNumGaps           = 1;
     mama_status       status                    = MAMA_STATUS_OK;
-#ifdef WITH_ENTITLEMENTS
-    oeaStatus         entitlementStatus         = OEA_STATUS_OK;
-#endif
 
     if (!self)      return MAMA_STATUS_NULL_ARG;
     if (!transport) return MAMA_STATUS_INVALID_ARG;
@@ -450,11 +451,10 @@ mamaSubscription_setupBasic (
                   "Could not get bridge impl from transport.");
         return MAMA_STATUS_NO_BRIDGE_IMPL;
     }
-        
-#ifdef WITH_ENTITLEMENTS
-    self->mSubjectContext.mOeaSubscription = oeaClient_newSubscription (&entitlementStatus, gEntitlementClient);
-#endif
-    
+   
+    status = self->mEntitlementBridge->entitlementCreateSubscription (
+                                    &self->mSubjectContext.mEntitlement);
+
     /*Up from entitlement check based on string compare on symbol*/
     if (!isEntitledToSymbol (source, symbol, self))
     {
@@ -475,15 +475,15 @@ mamaSubscription_setupBasic (
         case MAMA_SERVICE_LEVEL_SNAPSHOT:
             if (!self->mRequiresInitial) return MAMA_STATUS_INVALID_ARG;
             subscMsgType = MAMA_SUBSC_SNAPSHOT;
-#ifdef WITH_ENTITLEMENTS
-            oeaSubscription_setIsSnapshot (self->mSubjectContext.mOeaSubscription, 1);
-#endif
             break;
         case MAMA_SERVICE_LEVEL_CONFLATED:/*fall through*/
         default:
             /* Conflation not yet supported! */
             return MAMA_STATUS_INVALID_ARG;
     }
+
+    self->mEntitlementBridge->entitlementSetSubscriptionType (
+        &self->mSubjectContext.mEntitlement, self->mServiceLevel);
 
     /*
     * Certain sub properties need to be set depending on the subscription
@@ -1127,9 +1127,6 @@ mamaSubscription_getSubjectContext (mamaSubscription subscription,
     SubjectContext   *context           = NULL;
     const char*      issueSymbol        = NULL;
     mama_status      status             = MAMA_STATUS_OK;
-    #ifdef WITH_ENTITLEMENTS
-    oeaStatus        entitlementStatus  = OEA_STATUS_OK;
-    #endif
 
     if (!self->mSubjects) /* no group or wildcard */
     {
@@ -1183,9 +1180,13 @@ mamaSubscription_getSubjectContext (mamaSubscription subscription,
         dqContext_initializeContext (&context->mDqContext, self->mPreInitialCacheSize, recap);
         msgUtils_getIssueSymbol (msg, &issueSymbol);
         context->mSymbol = copyString (issueSymbol);
-        #ifdef WITH_ENTITLEMENTS
-        context->mOeaSubscription = oeaClient_newSubscription (&entitlementStatus, gEntitlementClient);
-        #endif 
+            
+        mama_status status = self->mEntitlementBridge->entitlementCreateSubscription (
+                                                                &context->mEntitlement);
+
+        //FIXME logging.
+        if (MAMA_STATUS_OK != status)
+            return NULL;
 
         wtable_insert (self->mSubjects, (char*)sendSubject, (void*)context);
     }
@@ -1386,13 +1387,10 @@ static void freeCacheCb (
     SubjectContext *ctx = (SubjectContext*)data;
     dqContext_cleanup (&(ctx->mDqContext));
     checkFree (&ctx->mSymbol);
-    #ifdef WITH_ENTITLEMENTS
-    if (ctx->mOeaSubscription != NULL)
-    {
-        oeaSubscription_destroy (ctx->mOeaSubscription);
-        ctx->mOeaSubscription = NULL;
-    }
-    #endif
+    mamaSubscription subscription = (mamaSubscription)closure;
+       
+    subscription->mEntitlementBridge->entitlementDeleteSubscription (
+                                 &subscription->mSubjectContext.mEntitlement);
     free (ctx);
     ctx = NULL;
 }
@@ -1433,21 +1431,19 @@ mamaSubscription_cleanup (mamaSubscription subscription)
 
     if (self->mSubjects != NULL)
     {
-        wtable_clear_for_each (self->mSubjects, freeCacheCb, NULL);
+        wtable_clear_for_each (self->mSubjects, freeCacheCb, (void*)subscription);
         wtable_destroy (self->mSubjects);
         self->mSubjects = NULL;
     }
-    #ifdef WITH_ENTITLEMENTS
     else
     {
-        if (self->mSubjectContext.mOeaSubscription != NULL)
-        {
-            /* Destroy will also close a subscription if it is open */
-            oeaSubscription_destroy (self->mSubjectContext.mOeaSubscription);
-            self->mSubjectContext.mOeaSubscription = NULL;
-        }
+        mama_status status = 
+            self->mEntitlementBridge->entitlementDeleteSubscription (
+                                        &self->mSubjectContext.mEntitlement);
+    
+        if (MAMA_STATUS_OK != status)
+            return status;    
     }
-    #endif
     
     dqContext_cleanup (&self->mSubjectContext.mDqContext);
     self->mRecapRequest = NULL;
@@ -2406,24 +2402,16 @@ mamaSubscription_setTransportIndex (
 static int
 isEntitledToSymbol (const char *source, const char*symbol, mamaSubscription subscription)
 {
-#ifdef WITH_ENTITLEMENTS 
-    int result = 0;
     char subject[WOMBAT_SUBJECT_MAX];
 
     snprintf (subject, WOMBAT_SUBJECT_MAX, "%s.%s", source, symbol);
 
-    if (gEntitlementClient == 0) /* Not enforcing entitlements. */
-    {
-        return 1;
-    }
+    mama_status status = 
+        self->mEntitlementBridge->entitlementCheckEntitledWithSubject (
+            &self->mSubjectContext.mEntitlement,
+            subject);
 
-    oeaSubscription_setSubject (self->mSubjectContext.mOeaSubscription, subject);
-    result = oeaSubscription_isAllowed (self->mSubjectContext.mOeaSubscription); 
-    
-    return result;
-#else 
-    return 1;
-#endif /* WITH_ENTITLEMENTS */
+    return ( MAMA_STATUS_OK == status ? 1 : 0 );
 }
 
 char* copyString (const char*  str)

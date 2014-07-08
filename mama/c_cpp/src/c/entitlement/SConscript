@@ -1,0 +1,7 @@
+import os
+Import('env')
+env = env.Clone()
+
+for m in env['entitlements']:
+    env.Append (CPPDEFINES = ['WITH_ENTITLEMENTS'])
+    env.SConscript( os.path.join(m,'SConscript'), 'env')

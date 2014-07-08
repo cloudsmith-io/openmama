@@ -28,10 +28,7 @@
 #include "bridge.h"
 #include "dqstrategy.h"
 #include "mama/mama.h"
-
-#ifdef WITH_ENTITLEMENTS
-#include <OeaSubscription.h>
-#endif
+#include "entitlement.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -88,12 +85,7 @@ typedef enum
 
 typedef struct SubjectContext_
 {    
-#ifdef WITH_ENTITLEMENTS
-    EntitleStatus       mEntitlement; /* default to NOT_DETERMINED! */
-    int32_t             mEntitleCode;
-    uint8_t             mEntitlementAlreadyVerified;
-    oeaSubscription*    mOeaSubscription;
-#endif
+    mamaEntitlementImpl mEntitlement;
     /* The data quality context includes a recap request. */
     mamaDqContext       mDqContext;
     void*               mClosure;

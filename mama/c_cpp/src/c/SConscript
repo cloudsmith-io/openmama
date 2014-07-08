@@ -12,6 +12,7 @@ InstMamaInclude = \
     mama/config.h
     mama/datetime.h
     mama/dictionary.h
+    mama/entitlementmanager.h
     mama/error.h
     mama/fielddesc.h
     mama/inbox.h
@@ -83,9 +84,11 @@ libmama_sources = \
     bridge.c
     clientmanageresponder.c
     datetime.c
+    defaultentitlementbridge.c
     defaultmanager.c
     dictionary.c
     dqstrategy.c
+    entitlementmanager.c
     error.c
     fielddesc.c
     imagerequest.c
@@ -152,12 +155,12 @@ libmama_sources = \
 objects = []
 StaticLibs['libmama'] = []
 
-if env['entitled'] == True:
-    env.Append(
-        LIBPATH = [ os.path.join(env['entitle_home'],'lib') ],
-        LIBS = ['oeac'],
-        CPPDEFINES = ['WITH_ENTITLEMENTS'],
-    )
+#if env['entitled'] == True:
+#    env.Append(
+#        LIBPATH = [ os.path.join(env['entitle_home'],'lib') ],
+#        LIBS = ['oeac'],
+#        CPPDEFINES = ['WITH_ENTITLEMENTS'],
+#    )
 
 for s in libmama_sources:
     obj = env.Object(s)
@@ -175,5 +178,6 @@ Alias('install', env.Install('$prefix/include/mama/conflation',
 
 env.SConscript('bridge/SConscript', 'env')
 env.SConscript('payload/SConscript', 'env')
+env.SConscript('entitlement/SConscript', 'env')
 
 Clean(lib, 'version.c')

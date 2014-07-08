@@ -28,8 +28,7 @@ def get_command_line_opts( host, products, VERSIONS ):
        PathVariable('gtest_home','Path to Google Test home',None, PathVariable.PathIsDir),
        ListVariable('middleware','Middleware(s) to be compiled in', 'avis', names = ['avis', 'qpid'] ),
        ('jobs', 'Number of scons threads to spawn, if n is passed the number of availabe cores is calculated and used', '1'),
-
-    )
+       ListVariable('entitlements', 'Entitlements bridge to build for entitlement checking', 'none', names = ['oea']))
 
     if host['os'] == 'Windows':
         opts.AddVariables(

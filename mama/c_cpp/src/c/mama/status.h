@@ -22,17 +22,11 @@
 #ifndef MamaStatusH__
 #define MamaStatusH__
 
-#define MAMA_STATUS_BASE 9000
-#define MAMA_STATUS_MAX  1000
-
-#ifdef WITH_ENTITLEMENTS
-#include <OeaStatus.h>
-#endif
-
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+#include "wombat/port.h"
 
 typedef enum
 {
@@ -106,85 +100,17 @@ typedef enum
     MAMA_STATUS_SUBSCRIPTION_INVALID_TYPE   = 5003,
     /* The underlying transport saw a gap. */
     MAMA_STATUS_SUBSCRIPTION_GAP            = 5004,
-
     /* A resource has not been initialised. */
     MAMA_STATUS_NOT_INITIALISED             = 5005,
-
     /* A symbol has no subscribers. */
     MAMA_STATUS_NO_SUBSCRIBERS              = 5006,
-
     /* The symbol has expired. */
     MAMA_STATUS_EXPIRED                     = 5007,
-
     /* The application's bandwidth limit has been exceeded. */
     MAMA_STATUS_BANDWIDTH_EXCEEDED          = 5008
-
-#ifdef WITH_ENTITLEMENTS
-    /* Out of memory */
-    ,MAMA_ENTITLE_STATUS_NOMEM      = MAMA_STATUS_BASE + OEA_STATUS_NOMEM, /* 9001 */
-    /* Invalid parameter */
-    MAMA_ENTITLE_STATUS_BAD_PARAM  = MAMA_STATUS_BASE + OEA_STATUS_BAD_PARAM, /* 9002 */
-    /* The XML returned from entitlement server was invalid */
-    MAMA_ENTITLE_STATUS_BAD_DATA   = MAMA_STATUS_BASE + OEA_STATUS_BAD_DATA, /* 9003 */
-    /* Invalid URL */
-    MAMA_ENTITLE_STATUS_URL_ERROR  = MAMA_STATUS_BASE + OEA_STATUS_HTTP_URL_ERROR, /* 9004 */
-    /* Unable to determine OS ID of account process is running under.*/
-    MAMA_ENTITLE_STATUS_OS_LOGIN_ID_UNAVAILABLE = MAMA_STATUS_BASE + OEA_STATUS_OS_LOGIN_ID_UNAVAILABLE, /* 9005 */
-    /* When an attempt is made to get entitlements after a successful attempt 
-     * has already been made */
-    MAMA_ENTITLE_STATUS_ALREADY_ENTITLED        = MAMA_STATUS_BASE + OEA_STATUS_ALREADY_ENTITLED, /* 9006 */
-    /* A user has exceeded concurrent access limit */
-    MAMA_ENTITLE_STATUS_CAC_LIMIT_EXCEEDED      = MAMA_STATUS_BASE + OEA_STATUS_CAC_LIMIT_EXCEEDED, /* 9007 */
-    /* Failed to create OEP listener that processes inbound messages from
-     * site server.  Required for concurrent access control and/or
-     * dynamic entitlements update. */
-    MAMA_ENTITLE_STATUS_OEP_LISTENER_CREATION_FAILURE = MAMA_STATUS_BASE + OEA_STATUS_OEP_LISTENER_CREATION_FAILURE, /* 9008 */
-    /* No such host */
-    MAMA_ENTITLE_HTTP_ERRHOST      = MAMA_STATUS_BASE + OEA_HTTP_ERRHOST, /* 9010 */
-    /* Can't create socket */      
-    MAMA_ENTITLE_HTTP_ERRSOCK      = MAMA_STATUS_BASE + OEA_HTTP_ERRSOCK, /* 9011 */
-    /* Can't connect to host */    
-    MAMA_ENTITLE_HTTP_ERRCONN      = MAMA_STATUS_BASE + OEA_HTTP_ERRCONN, /* 9012 */
-    /* Write error on socket while writing header */
-    MAMA_ENTITLE_HTTP_ERRWRHD      = MAMA_STATUS_BASE + OEA_HTTP_ERRWRHD, /* 9013 */
-    /* Write error on socket while writing data */
-    MAMA_ENTITLE_HTTP_ERRWRDT      = MAMA_STATUS_BASE + OEA_HTTP_ERRWRDT, /* 9014 */
-    /* Read error on socket while reading result */
-    MAMA_ENTITLE_HTTP_ERRRDHD      = MAMA_STATUS_BASE + OEA_HTTP_ERRRDHD, /* 9015 */
-    /* Invalid answer from data server */
-    MAMA_ENTITLE_HTTP_ERRPAHD      = MAMA_STATUS_BASE + OEA_HTTP_ERRPAHD, /* 9016 */
-    /* Null data pointer */
-    MAMA_ENTITLE_HTTP_ERRNULL      = MAMA_STATUS_BASE + OEA_HTTP_ERRNULL, /* 9017 */
-    /* No/Bad length in header */  
-    MAMA_ENTITLE_HTTP_ERRNOLG      = MAMA_STATUS_BASE + OEA_HTTP_ERRNOLG, /* 9018 */
-    /* Can't allocate memory */
-    MAMA_ENTITLE_HTTP_ERRMEM       = MAMA_STATUS_BASE + OEA_HTTP_ERRMEM, /* 9019 */
-    /* Read error while reading data */
-    MAMA_ENTITLE_HTTP_ERRRDDT      = MAMA_STATUS_BASE + OEA_HTTP_ERRRDDT, /* 9020 */
-    /* Invalid url - must start with 'http://' */
-    MAMA_ENTITLE_HTTP_ERRURLH      = MAMA_STATUS_BASE + OEA_HTTP_ERRURLH, /* 9021 */
-    /* Invalid port in url */      
-    MAMA_ENTITLE_HTTP_ERRURLP      = MAMA_STATUS_BASE + OEA_HTTP_ERRURLP, /* 9022 */
-    /* Invalid QUERY HTTP RESULT 400 */
-    MAMA_ENTITLE_HTTP_BAD_QUERY    = MAMA_STATUS_BASE + OEA_HTTP_BAD_QUERY, /* 9023 */
-    /* FORBIDDEN HTTP RESULT 403 */
-    MAMA_ENTITLE_HTTP_FORBIDDEN    = MAMA_STATUS_BASE + OEA_HTTP_FORBIDDEN, /* 9024 */
-    /* Request Timeout HTTP RESULT 403 */
-    MAMA_ENTITLE_HTTP_TIMEOUT      = MAMA_STATUS_BASE + OEA_HTTP_TIMEOUT, /* 9025 */
-    /* Server Error HTTP RESULT 500 */
-    MAMA_ENTITLE_HTTP_SERVER_ERR   = MAMA_STATUS_BASE + OEA_HTTP_SERVER_ERR, /* 9026 */
-    /* Not Implemented HTTP RESULT 501 */
-    MAMA_ENTITLE_HTTP_NO_IMPL      = MAMA_STATUS_BASE + OEA_HTTP_NO_IMPL, /* 9027 */
-    /* Overloaded HTTP RESULT 503 */ 
-    MAMA_ENTITLE_HTTP_OVERLOAD     = MAMA_STATUS_BASE + OEA_HTTP_OVERLOAD, /* 9028 */
-    /* No servers specified */
-    MAMA_ENTITLE_NO_USER           = MAMA_ENTITLE_HTTP_OVERLOAD + 1, /* 9029 */
-    MAMA_ENTITLE_NO_SERVERS_SPECIFIED =  MAMA_ENTITLE_NO_USER + 1, /* 9030 */
-    MAMA_ENTITLE_SITE_NOT_FOUND    = MAMA_STATUS_BASE + OEA_STATUS_SITE_NOT_FOUND /* 9032 */
-#endif
 } mama_status;
 
-MAMAExpDLL
+MAMAExpDLL 
 extern const char*     
 mamaStatus_stringForStatus (mama_status status);
 

@@ -432,7 +432,7 @@ typedef mama_status
 (*msgPayload_load)            (char* identifier);
 
 typedef mama_status 
-(*msgPayload_unload)          ();
+(*msgPayload_unload)          (void);
 
 /*===================================================================
  =              msgPayload bridge function pointers                 =

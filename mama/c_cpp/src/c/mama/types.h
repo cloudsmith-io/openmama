@@ -133,6 +133,7 @@ typedef struct mamaMsgReplyImpl_*               mamaMsgReply;
 typedef struct mamaMiddlewareLibraryImpl_*      mamaMiddlewareLibrary;
 typedef struct mamaPayloadLibraryImpl_*         mamaPayloadLibrary;
 typedef struct mamaPluginLibraryImpl_*          mamaPluginLibrary;
+typedef struct mamaEntitlementLibraryImpl_*     mamaEntitlementLibrary;
 
 #if defined(__cplusplus)
 }
