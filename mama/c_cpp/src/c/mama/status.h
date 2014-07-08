@@ -29,6 +29,7 @@
 #include <OeaStatus.h>
 #endif
 
+#include <wombat/port.h>
 
 #if defined(__cplusplus)
 extern "C" {

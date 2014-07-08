@@ -1015,6 +1015,9 @@ mamaPayloadLibraryManagerImpl_createLibrary (
     plLibrary->mParent    = library;
     plLibrary->mManager   = plManager;
 
+    wInterlocked_initialize (&plLibrary->mActiveCount);
+    wInterlocked_set (0, &plLibrary->mActiveCount);
+    
     *plLibrary0 = plLibrary;
     return MAMA_STATUS_OK;
 }
