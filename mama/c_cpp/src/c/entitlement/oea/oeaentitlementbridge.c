@@ -214,8 +214,6 @@ oeaEntitlement_setup ()
 
     if (entitlementStatus != OEA_STATUS_OK)
     {
-        /*TODO we should really an OEA error to string function to print the error
-            - also better error code*/
         mama_log (MAMA_LOG_LEVEL_ERROR, "Error creating OEA entitlement " 
             "client status %s", oeaStatusToStr (entitlementStatus));
         return MAMA_STATUS_NOT_ENTITLED;
