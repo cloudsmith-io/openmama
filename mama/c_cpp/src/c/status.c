@@ -68,59 +68,6 @@ mamaStatus_stringForStatus (mama_status status)
     case MAMA_STATUS_NO_SUBSCRIBERS: return "MAMA_STATUS_NO_SUBSCRIBERS";
     case MAMA_STATUS_EXPIRED: return "MAMA_STATUS_EXPIRED";
     case MAMA_STATUS_BANDWIDTH_EXCEEDED: return "MAMA_STATUS_BANDWIDTH_EXCEEDED";
-
-#ifdef WITH_ENTITLEMENTS
-    case MAMA_ENTITLE_STATUS_NOMEM : return "ENTITLE_STATUS_NOMEM";
-    case MAMA_ENTITLE_STATUS_BAD_PARAM : return "ENTITLE_STATUS_BAD_PARAM";
-    case MAMA_ENTITLE_STATUS_BAD_DATA : return "ENTITLE_STATUS_BAD_DATA";
-    case MAMA_ENTITLE_STATUS_URL_ERROR : return "ENTITLE_STATUS_URL_ERROR";
-    case MAMA_ENTITLE_STATUS_OS_LOGIN_ID_UNAVAILABLE : return "ENTITLE_STATUS_OS_LOGIN_ID_UNAVAILABLE";
-    case MAMA_ENTITLE_STATUS_ALREADY_ENTITLED : return "ENTITLE_STATUS_ALREADY_ENTITLED";
-    case MAMA_ENTITLE_STATUS_CAC_LIMIT_EXCEEDED : return "ENTITLE_STATUS_CAC_LIMIT_EXCEEDED";
-    case MAMA_ENTITLE_STATUS_OEP_LISTENER_CREATION_FAILURE : return "ENTITLE_STATUS_OEP_LISTENER_CREATION_FAILURE";
-    /* No such host */
-    case MAMA_ENTITLE_HTTP_ERRHOST : return "ENTITLE_HTTP_ERRHOST";
-    /* Can't create socket */
-    case MAMA_ENTITLE_HTTP_ERRSOCK : return "ENTITLE_HTTP_ERRSOCK";
-
-    /* Can't connect to host */
-    case MAMA_ENTITLE_HTTP_ERRCONN : return "ENTITLE_HTTP_ERRCONN";
-    /* Write error on socket while writing header */
-    case MAMA_ENTITLE_HTTP_ERRWRHD : return "ENTITLE_HTTP_ERRWRHD";
-    /* Write error on socket while writing data */
-    case MAMA_ENTITLE_HTTP_ERRWRDT : return "ENTITLE_HTTP_ERRWRDT";
-    /* Read error on socket while reading result */
-    case MAMA_ENTITLE_HTTP_ERRRDHD : return "ENTITLE_HTTP_ERRRDHD";
-    /* Invalid answer from data server */
-    case MAMA_ENTITLE_HTTP_ERRPAHD : return "ENTITLE_HTTP_ERRPAHD";
-    /* Null data pointer */
-    case MAMA_ENTITLE_HTTP_ERRNULL : return "ENTITLE_HTTP_ERRNULL";
-    /* No/Bad length in header */
-    case MAMA_ENTITLE_HTTP_ERRNOLG : return "ENTITLE_HTTP_ERRNOLG";
-    /* Can't allocate memory */
-    case MAMA_ENTITLE_HTTP_ERRMEM : return "ENTITLE_HTTP_ERRMEM";
-    /* Read error while reading data */
-    case MAMA_ENTITLE_HTTP_ERRRDDT : return "ENTITLE_HTTP_ERRRDDT";
-    /* Invalid url - must start with 'http://' */
-    case MAMA_ENTITLE_HTTP_ERRURLH : return "ENTITLE_HTTP_ERRURLH";
-    /* Invalid port in url */
-    case MAMA_ENTITLE_HTTP_ERRURLP : return "ENTITLE_HTTP_ERRURLP";
-    /* Invalid QUERY HTTP RESULT 400 */
-    case MAMA_ENTITLE_HTTP_BAD_QUERY : return "ENTITLE_HTTP_BAD_QUERY";
-    /* FORBIDDEN HTTP RESULT 403 */
-    case MAMA_ENTITLE_HTTP_FORBIDDEN : return "ENTITLE_HTTP_FORBIDDEN";
-    /* Request Timeout HTTP RESULT 403 */
-    case MAMA_ENTITLE_HTTP_TIMEOUT : return "ENTITLE_HTTP_TIMEOUT";
-    /* Server Error HTTP RESULT 500 */
-    case MAMA_ENTITLE_HTTP_SERVER_ERR : return "ENTITLE_HTTP_SERVER_ERR";
-    /* Not Implemented HTTP RESULT 501 */
-    case MAMA_ENTITLE_HTTP_NO_IMPL : return "ENTITLE_HTTP_NO_IMPL";
-    /* Overloaded HTTP RESULT 503 */
-    case MAMA_ENTITLE_HTTP_OVERLOAD : return "ENTITLE_HTTP_OVERLOAD";
-    case MAMA_ENTITLE_NO_USER : return "ENTITLE_NO_USER";
-    case MAMA_ENTITLE_NO_SERVERS_SPECIFIED : return "ENTITLE_NO_SERVERS_SPECIFIED";
-    case MAMA_ENTITLE_SITE_NOT_FOUND : return "ENTITLE_SITE_NOT_FOUND";
-#endif
     }
     return "unknown";
 }

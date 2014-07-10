@@ -22,9 +22,9 @@
 #include <mama/mama.h>
 #include "assert.h"
 #include "oeaentitlementbridge.h"
+#include "oeautil.h"
 
 #include <OeaClient.h>
-#include <OeaStatus.h>
 #include <OeaSubscription.h>
 
 #define SERVERS_PROPERTY "entitlement.servers"
@@ -217,7 +217,7 @@ oeaEntitlement_setup ()
         /*TODO we should really an OEA error to string function to print the error
             - also better error code*/
         mama_log (MAMA_LOG_LEVEL_ERROR, "Error creating OEA entitlement " 
-            "client status %d", entitlementStatus);
+            "client status %s", oeaStatusToStr (entitlementStatus));
         return MAMA_STATUS_NOT_ENTITLED;
     }
 
@@ -229,7 +229,7 @@ oeaEntitlement_setup ()
         if (OEA_STATUS_OK != entitlementStatus)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, "Error setting callbacks for OEA " 
-                    "client. Status %d", entitlementStatus);
+                    "client. Status %s", oeaStatusToStr (entitlementStatus));
             return MAMA_STATUS_NOT_ENTITLED;
         }
 
@@ -239,7 +239,7 @@ oeaEntitlement_setup ()
         if (OEA_STATUS_OK != entitlementStatus)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, "Error setting alternative userID "
-                "for OEA client. Status %d", entitlementStatus);
+                "for OEA client. Status %s", oeaStatusToStr (entitlementStatus));
             return MAMA_STATUS_NOT_ENTITLED;
         }
 
@@ -249,7 +249,7 @@ oeaEntitlement_setup ()
         if (OEA_STATUS_OK != entitlementStatus)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, "Error setting effective IP address for "
-                "OEA client. Status %d", entitlementStatus);
+                "OEA client. Status %s", oeaStatusToStr (entitlementStatus));
             return MAMA_STATUS_NOT_ENTITLED;
         }
 
@@ -262,7 +262,7 @@ oeaEntitlement_setup ()
         if (OEA_STATUS_OK != entitlementStatus)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, "Error setting application ID for "
-                "OEA client. Status %d", entitlementStatus);
+                "OEA client. Status %s", oeaStatusToStr (entitlementStatus));
             return MAMA_STATUS_NOT_ENTITLED;
         }
 
@@ -272,7 +272,7 @@ oeaEntitlement_setup ()
         if (OEA_STATUS_OK != entitlementStatus)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, "Error downloading entitlements "
-                "for OEA client. Status %d", entitlementStatus);
+                "for OEA client. Status %s", oeaStatusToStr (entitlementStatus));
             return MAMA_STATUS_NOT_ENTITLED;
         }
     }
@@ -298,6 +298,13 @@ oeaEntitlement_createSubscription (mamaEntitlement entitlement)
     entitlement->mSubscription = (void*)oeaClient_newSubscription (
                                     &entitlementStatus, gEntitlementClient);
  
+    if (OEA_STATUS_OK != entitlementStatus)
+    {
+        mama_log (MAMA_LOG_LEVEL_ERROR, "Error cannot create subscription "
+            "- status %s", oeaStatusToStr (entitlementStatus));
+        return MAMA_STATUS_NOT_ENTITLED;
+    }
+
     return MAMA_STATUS_OK;
 }
 
