@@ -202,27 +202,6 @@ mamaEntitlementLibraryManagerImpl_getLibraries (mamaEntitlementLibrary* entLibra
     return status;
 }
 
-#define REGISTER_ENTITLEMENT_FUNCTION(funcName, FuncName)\
-do {\
-    if (MAMA_STATUS_OK == status)\
-    {\
-        void* func = \
-            mamaLibraryManager_loadLibraryFunction\
-                    (library->mName, library->mHandle, #funcName);\
-        entBridge->FuncName = *(funcName*) &func;\
-        if (!entBridge->FuncName)\
-        {\
-            mama_log (MAMA_LOG_LEVEL_ERROR,\
-                      "mamaLibraryEntitlementManager_loadLibrary(): "\
-                      "Could not load %s library %s because "\
-                      "required function [%s] is missing in bridge.",\
-                      library->mTypeName, library->mName,\
-                      #funcName);\
-            status = MAMA_STATUS_NO_BRIDGE_IMPL;\
-        }\
-    }\
-} while (0);
-
 mama_status
 mamaEntitlementLibraryManagerImpl_loadBridge (mamaEntitlementLibrary entLibrary)
 {
@@ -232,38 +211,38 @@ mamaEntitlementLibraryManagerImpl_loadBridge (mamaEntitlementLibrary entLibrary)
     if (MAMA_STATUS_OK != status)    
         return status;
 
-    mamaLibrary           library    = entLibrary->mParent;
-    mamaEntitlementBridge entBridge  = entLibrary->mBridge;
-    entBridge->mLibrary              = entLibrary;
+    mamaLibrary           library = entLibrary->mParent;
+    mamaEntitlementBridge bridge  = entLibrary->mBridge;
+    bridge->mLibrary              = entLibrary;
 
     /* Once the bridge has been successfully loaded, and the initialization
      * function called, we register each of the required bridge functions.
      */
 
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_setup,
-                                   entitlementSetup);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_setup,
+                              entitlementSetup);
 
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_tearDown,
-                                   entitlementTearDown);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_tearDown,
+                              entitlementTearDown);
 
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_createSubscription,
-                                   entitlementCreateSubscription);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_createSubscription,
+                              entitlementCreateSubscription);
     
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_deleteSubscription,
-                                   entitlementDeleteSubscription);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_deleteSubscription,
+                              entitlementDeleteSubscription);
     
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_setSubscriptionType,
-                                   entitlementSetSubscriptionType);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_setSubscriptionType,
+                              entitlementSetSubscriptionType);
     
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_checkEntitledWithSubject,
-                                   entitlementCheckEntitledWithSubject);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_checkEntitledWithSubject,
+                              entitlementCheckEntitledWithSubject);
     
-    REGISTER_ENTITLEMENT_FUNCTION (Entitlement_checkEntitledWithCode,
-                                   entitlementCheckEntitledWithCode);
+    REGISTER_BRIDGE_FUNCTION (Entitlement_checkEntitledWithCode,
+                              entitlementCheckEntitledWithCode);
 
     if (MAMA_STATUS_OK != status)
     {
-        free (entBridge);
+        free (bridge);
         return status;
     }
     return MAMA_STATUS_OK;
