@@ -774,7 +774,7 @@ void initializeMama (void)
         mama_setApplicationName (gAppName);
     }
 
-    if (gLibraryPath)
+    if (!gLibraryPath)
     {
         status = 
             mamaMiddlewareLibraryManager_setProperty (NULL,
