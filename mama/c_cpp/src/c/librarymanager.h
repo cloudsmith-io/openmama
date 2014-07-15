@@ -36,6 +36,27 @@ extern "C"
 #define MAX_LIBRARY_SIGNALS        256
 #define MAX_LIBRARY_SIGNAL_SLOTS   256
 
+#define REGISTER_BRIDGE_FUNCTION(funcName, bridgeFuncName)\
+do {\
+    if (MAMA_STATUS_OK == status)\
+    {\
+        void* func =\
+            mamaLibraryManager_loadLibraryFunction\
+                    (library->mName, library->mHandle, #funcName);\
+        bridge->bridgeFuncName = *(funcName*) &func;\
+        if (!bridge->bridgeFuncName)\
+        {\
+            mama_log (MAMA_LOG_LEVEL_ERROR,\
+                      "mama%sLibraryManager_loadLibrary(): "\
+                      "Could not load %s library %s because "\
+                      "required function [%s] is missing in bridge.",\
+                      library->mTypeName, library->mTypeName,\
+                      library->mName, #funcName);\
+            status = MAMA_STATUS_NO_BRIDGE_IMPL;\
+        }\
+    }\
+} while (0);
+
 /* Forward declarations */
 typedef struct mamaLibraryTypeManagerImpl_*       mamaLibraryTypeManager;
 typedef struct mamaLibraryTypeManagerBridgeImpl_* mamaLibraryTypeManagerBridge;

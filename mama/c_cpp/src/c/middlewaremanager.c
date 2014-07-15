@@ -83,25 +83,25 @@ static mama_status
 mamaMiddlewareLibraryManagerImpl_getInstance (
         mamaMiddlewareLibraryManager* mwManager);
 
-static bridge_createImpl
+static Bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle);
 
-static bridge_load
+static Bridge_load
 mamaMiddlewareLibraryManager_getLoad (const char* libraryName,
                                       LIB_HANDLE  libraryHandle);
 
-static bridge_unload
+static Bridge_unload
 mamaMiddlewareLibraryManager_getUnload (const char* libraryName,
                                         LIB_HANDLE  libraryHandle);
 
-static bridge_createImpl
+static Bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
-static bridge_load
+static Bridge_load
 mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library);
 
-static bridge_unload
+static Bridge_unload
 mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library);
 
 static mama_status
@@ -167,7 +167,7 @@ mamaMiddlewareLibraryManagerImpl_getInstance (
      return status;
 }
 
-static bridge_createImpl
+static Bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
                                                 LIB_HANDLE  libraryHandle)
 {
@@ -175,17 +175,17 @@ mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
         mamaLibraryManager_loadLibraryFunction (libraryName,
                                                 libraryHandle,
                                                 "Bridge_createImpl");
-    return *(bridge_createImpl*)&func;
+    return *(Bridge_createImpl*)&func;
 }
 
-static bridge_createImpl
+static Bridge_createImpl
 mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
 {
     return mamaMiddlewareLibraryManagerImpl_getCreateImpl (library->mName,
                                                            library->mHandle);
 }
 
-static bridge_load
+static Bridge_load
 mamaMiddlewareLibraryManagerImpl_getLoad (const char* libraryName,
                                           LIB_HANDLE  libraryHandle)
 {
@@ -193,17 +193,17 @@ mamaMiddlewareLibraryManagerImpl_getLoad (const char* libraryName,
         mamaLibraryManager_loadLibraryFunction (libraryName,
                                                 libraryHandle,
                                                 "Bridge_load");
-    return *(bridge_load*)&func;
+    return *(Bridge_load*)&func;
 }
 
-static bridge_load
+static Bridge_load
 mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library)
 {
     return mamaMiddlewareLibraryManagerImpl_getLoad (library->mName,
                                                      library->mHandle);
 }
 
-static bridge_unload
+static Bridge_unload
 mamaMiddlewareLibraryManagerImpl_getUnload (const char* libraryName,
                                           LIB_HANDLE  libraryHandle)
 {
@@ -211,10 +211,10 @@ mamaMiddlewareLibraryManagerImpl_getUnload (const char* libraryName,
         mamaLibraryManager_loadLibraryFunction (libraryName,
                                                 libraryHandle,
                                                 "Bridge_unload");
-    return *(bridge_unload*)&func;
+    return *(Bridge_unload*)&func;
 }
 
-static bridge_unload
+static Bridge_unload
 mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library)
 {
     return mamaMiddlewareLibraryManagerImpl_getUnload (library->mName,
@@ -233,27 +233,6 @@ mamaMiddlewareLibraryManagerImpl_deactivateLibrary (mamaMiddlewareLibrary mwLibr
     mamaMiddlewareLibraryManagerImpl_destroyBridge (mwLibrary->mBridge);    
 }
 
-#define REGISTER_BRIDGE_FUNCTION(funcName, bridgeFuncName, funcSig)\
-do {\
-    if (MAMA_STATUS_OK == status)\
-    {\
-        void* func =\
-            mamaLibraryManager_loadLibraryFunction\
-                    (library->mName, library->mHandle, #funcName);\
-        bridge->bridgeFuncName = *(funcSig*) &func;\
-        if (!bridge->bridgeFuncName)\
-        {\
-            mama_log (MAMA_LOG_LEVEL_ERROR,\
-                      "mamaMiddlewareLibraryManager_loadLibrary(): "\
-                      "Could not load %s library %s because "\
-                      "required function [%s] is missing in bridge.",\
-                      library->mTypeName, library->mName,\
-                      #funcName);\
-            status = MAMA_STATUS_NO_BRIDGE_IMPL;\
-        }\
-    }\
-} while (0);
-
 static mama_status 
 mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
 {
@@ -269,343 +248,262 @@ mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
     mamaBridge bridge = mwLibrary->mBridge;
     bridge->mLibrary  = mwLibrary;
 
-    REGISTER_BRIDGE_FUNCTION (Bridge_open,  bridgeOpen,  bridge_open);
-    REGISTER_BRIDGE_FUNCTION (Bridge_close, bridgeClose, bridge_close);
-    REGISTER_BRIDGE_FUNCTION (Bridge_start, bridgeStart, bridge_start);
-    REGISTER_BRIDGE_FUNCTION (Bridge_stop,  bridgeStop,  bridge_stop);
+    REGISTER_BRIDGE_FUNCTION (Bridge_open,  bridgeOpen);
+    REGISTER_BRIDGE_FUNCTION (Bridge_close, bridgeClose);
+    REGISTER_BRIDGE_FUNCTION (Bridge_start, bridgeStart);
+    REGISTER_BRIDGE_FUNCTION (Bridge_stop,  bridgeStop);
 
     /*General purpose functions*/
     REGISTER_BRIDGE_FUNCTION (Bridge_getVersion,
-                              bridgeGetVersion,
-                              bridge_getVersion);
+                              bridgeGetVersion);
 
     REGISTER_BRIDGE_FUNCTION (Bridge_getName,
-                              bridgeGetName,
-                              bridge_getName);
+                              bridgeGetName);
 
     REGISTER_BRIDGE_FUNCTION (Bridge_getDefaultPayloadId,
-                              bridgeGetDefaultPayloadId,
-                              bridge_getDefaultPayloadId);
+                              bridgeGetDefaultPayloadId);
 
     /*Queue functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_create,
-                              bridgeMamaQueueCreate,
-                              bridgeMamaQueue_create);
+                              bridgeMamaQueueCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_create_usingNative,
-                              bridgeMamaQueueCreateUsingNative,
-                              bridgeMamaQueue_create_usingNative);
+                              bridgeMamaQueueCreateUsingNative);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_destroy,
-                              bridgeMamaQueueDestroy,
-                              bridgeMamaQueue_destroy);
+                              bridgeMamaQueueDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_getEventCount,
-                              bridgeMamaQueueGetEventCount,
-                              bridgeMamaQueue_getEventCount);
+                              bridgeMamaQueueGetEventCount);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_dispatch,
-                              bridgeMamaQueueDispatch,
-                              bridgeMamaQueue_dispatch);
+                              bridgeMamaQueueDispatch);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_timedDispatch,
-                              bridgeMamaQueueTimedDispatch,
-                              bridgeMamaQueue_timedDispatch);
+                              bridgeMamaQueueTimedDispatch);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_dispatchEvent,
-                              bridgeMamaQueueDispatchEvent,
-                              bridgeMamaQueue_dispatchEvent);
+                              bridgeMamaQueueDispatchEvent);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_enqueueEvent,
-                              bridgeMamaQueueEnqueueEvent,
-                              bridgeMamaQueue_enqueueEvent);
+                              bridgeMamaQueueEnqueueEvent);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_stopDispatch,
-                              bridgeMamaQueueStopDispatch,
-                              bridgeMamaQueue_stopDispatch);
+                              bridgeMamaQueueStopDispatch);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_setEnqueueCallback,
-                              bridgeMamaQueueSetEnqueueCallback,
-                              bridgeMamaQueue_setEnqueueCallback);
+                              bridgeMamaQueueSetEnqueueCallback);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_removeEnqueueCallback,
-                              bridgeMamaQueueRemoveEnqueueCallback,
-                              bridgeMamaQueue_removeEnqueueCallback);
+                              bridgeMamaQueueRemoveEnqueueCallback);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_getNativeHandle,
-                              bridgeMamaQueueGetNativeHandle,
-                              bridgeMamaQueue_getNativeHandle);
+                              bridgeMamaQueueGetNativeHandle);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_setLowWatermark,
-                              bridgeMamaQueueSetLowWatermark,
-                              bridgeMamaQueue_setLowWatermark);
+                              bridgeMamaQueueSetLowWatermark);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaQueue_setHighWatermark,
-                              bridgeMamaQueueSetHighWatermark,
-                              bridgeMamaQueue_setHighWatermark);
+                              bridgeMamaQueueSetHighWatermark);
 
     /*Transport functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_isValid,
-                              bridgeMamaTransportIsValid,
-                              bridgeMamaTransport_isValid);
+                              bridgeMamaTransportIsValid);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_destroy,
-                              bridgeMamaTransportDestroy,
-                              bridgeMamaTransport_destroy);
+                              bridgeMamaTransportDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_create,
-                              bridgeMamaTransportCreate,
-                              bridgeMamaTransport_create);
+                              bridgeMamaTransportCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_forceClientDisconnect,
-                              bridgeMamaTransportForceClientDisconnect,
-                              bridgeMamaTransport_forceClientDisconnect);
+                              bridgeMamaTransportForceClientDisconnect);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_findConnection,
-                              bridgeMamaTransportFindConnection,
-                              bridgeMamaTransport_findConnection);
+                              bridgeMamaTransportFindConnection);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getAllConnections,
-                              bridgeMamaTransportGetAllConnections,
-                              bridgeMamaTransport_getAllConnections);
+                              bridgeMamaTransportGetAllConnections);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getAllConnectionsForTopic,
-                              bridgeMamaTransportGetAllConnectionsForTopic,
-                              bridgeMamaTransport_getAllConnectionsForTopic);
+                              bridgeMamaTransportGetAllConnectionsForTopic);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_freeAllConnections,
-                              bridgeMamaTransportFreeAllConnections,
-                              bridgeMamaTransport_freeAllConnections);
+                              bridgeMamaTransportFreeAllConnections);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getAllServerConnections,
-                              bridgeMamaTransportGetAllServerConnections,
-                              bridgeMamaTransport_getAllServerConnections);
+                              bridgeMamaTransportGetAllServerConnections);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_freeAllServerConnections,
-                              bridgeMamaTransportFreeAllServerConnections,
-                              bridgeMamaTransport_freeAllServerConnections);
+                              bridgeMamaTransportFreeAllServerConnections);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getNumLoadBalanceAttributes,
-                              bridgeMamaTransportGetNumLoadBalanceAttributes,
-                              bridgeMamaTransport_getNumLoadBalanceAttributes);
+                              bridgeMamaTransportGetNumLoadBalanceAttributes);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getLoadBalanceSharedObjectName,
-                              bridgeMamaTransportGetLoadBalanceSharedObjectName,
-                              bridgeMamaTransport_getLoadBalanceSharedObjectName);
+                              bridgeMamaTransportGetLoadBalanceSharedObjectName);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getLoadBalanceScheme,
-                              bridgeMamaTransportGetLoadBalanceScheme,
-                              bridgeMamaTransport_getLoadBalanceScheme);
+                              bridgeMamaTransportGetLoadBalanceScheme);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_sendMsgToConnection,
-                              bridgeMamaTransportSendMsgToConnection,
-                              bridgeMamaTransport_sendMsgToConnection);
+                              bridgeMamaTransportSendMsgToConnection);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_isConnectionIntercepted,
-                              bridgeMamaTransportIsConnectionIntercepted,
-                              bridgeMamaTransport_isConnectionIntercepted);
+                              bridgeMamaTransportIsConnectionIntercepted);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_installConnectConflateMgr,
-                              bridgeMamaTransportInstallConnectConflateMgr,
-                              bridgeMamaTransport_installConnectConflateMgr);
+                              bridgeMamaTransportInstallConnectConflateMgr);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_uninstallConnectConflateMgr,
-                              bridgeMamaTransportUninstallConnectConflateMgr,
-                              bridgeMamaTransport_uninstallConnectConflateMgr);
+                              bridgeMamaTransportUninstallConnectConflateMgr);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_startConnectionConflation,
-                              bridgeMamaTransportStartConnectionConflation,
-                              bridgeMamaTransport_startConnectionConflation);
+                              bridgeMamaTransportStartConnectionConflation);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_requestConflation,
-                              bridgeMamaTransportRequestConflation,
-                              bridgeMamaTransport_requestConflation);
+                              bridgeMamaTransportRequestConflation);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_requestEndConflation,
-                              bridgeMamaTransportRequestEndConflation,
-                              bridgeMamaTransport_requestEndConflation);
+                              bridgeMamaTransportRequestEndConflation);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getNativeTransport,
-                              bridgeMamaTransportGetNativeTransport,
-                              bridgeMamaTransport_getNativeTransport);
+                              bridgeMamaTransportGetNativeTransport);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTransport_getNativeTransportNamingCtx,
-                              bridgeMamaTransportGetNativeTransportNamingCtx,
-                              bridgeMamaTransport_getNativeTransportNamingCtx);
+                              bridgeMamaTransportGetNativeTransportNamingCtx);
 
     /*Subscription functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_create,
-                              bridgeMamaSubscriptionCreate,
-                              bridgeMamaSubscription_create);
+                              bridgeMamaSubscriptionCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_createWildCard,
-                              bridgeMamaSubscriptionCreateWildCard,
-                              bridgeMamaSubscription_createWildCard);
+                              bridgeMamaSubscriptionCreateWildCard);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_mute,
-                              bridgeMamaSubscriptionMute,
-                              bridgeMamaSubscription_mute);
+                              bridgeMamaSubscriptionMute);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_destroy,
-                              bridgeMamaSubscriptionDestroy,
-                              bridgeMamaSubscription_destroy);
+                              bridgeMamaSubscriptionDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_isValid,
-                              bridgeMamaSubscriptionIsValid,
-                              bridgeMamaSubscription_isValid);
+                              bridgeMamaSubscriptionIsValid);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_hasWildcards,
-                              bridgeMamaSubscriptionHasWildcards,
-                              bridgeMamaSubscription_hasWildcards);
+                              bridgeMamaSubscriptionHasWildcards);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_getPlatformError,
-                              bridgeMamaSubscriptionGetPlatformError,
-                              bridgeMamaSubscription_getPlatformError);
+                              bridgeMamaSubscriptionGetPlatformError);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_setTopicClosure,
-                              bridgeMamaSubscriptionSetTopicClosure,
-                              bridgeMamaSubscription_setTopicClosure);
+                              bridgeMamaSubscriptionSetTopicClosure);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_muteCurrentTopic,
-                              bridgeMamaSubscriptionMuteCurrentTopic,
-                              bridgeMamaSubscription_muteCurrentTopic);
+                              bridgeMamaSubscriptionMuteCurrentTopic);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaSubscription_isTportDisconnected,
-                              bridgeMamaSubscriptionIsTportDisconnected,
-                              bridgeMamaSubscription_isTportDisconnected);
+                              bridgeMamaSubscriptionIsTportDisconnected);
 
     /*Timer functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTimer_create,
-                              bridgeMamaTimerCreate,
-                              bridgeMamaTimer_create);
+                              bridgeMamaTimerCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTimer_destroy,
-                              bridgeMamaTimerDestroy,
-                              bridgeMamaTimer_destroy);
+                              bridgeMamaTimerDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTimer_reset,
-                              bridgeMamaTimerReset,
-                              bridgeMamaTimer_reset);
+                              bridgeMamaTimerReset);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTimer_setInterval,
-                              bridgeMamaTimerSetInterval,
-                              bridgeMamaTimer_setInterval);
+                              bridgeMamaTimerSetInterval);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaTimer_getInterval,
-                              bridgeMamaTimerGetInterval,
-                              bridgeMamaTimer_getInterval);
+                              bridgeMamaTimerGetInterval);
 
     /*IO functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaIo_create,
-                              bridgeMamaIoCreate,
-                              bridgeMamaIo_create);
+                              bridgeMamaIoCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaIo_getDescriptor,
-                              bridgeMamaIoGetDescriptor,
-                              bridgeMamaIo_getDescriptor);
+                              bridgeMamaIoGetDescriptor);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaIo_destroy,
-                              bridgeMamaIoDestroy,
-                              bridgeMamaIo_destroy);
+                              bridgeMamaIoDestroy);
 
     /*Publisher functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_create,
-                              bridgeMamaPublisherCreate,
-                              bridgeMamaPublisher_create);
+                              bridgeMamaPublisherCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_createByIndex,
-                              bridgeMamaPublisherCreateByIndex,
-                              bridgeMamaPublisher_createByIndex);
+                              bridgeMamaPublisherCreateByIndex);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_destroy,
-                              bridgeMamaPublisherDestroy,
-                              bridgeMamaPublisher_destroy);
+                              bridgeMamaPublisherDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_send,
-                              bridgeMamaPublisherSend,
-                              bridgeMamaPublisher_send);
+                              bridgeMamaPublisherSend);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_sendFromInbox,
-                              bridgeMamaPublisherSendFromInbox,
-                              bridgeMamaPublisher_sendFromInbox);
+                              bridgeMamaPublisherSendFromInbox);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_sendFromInboxByIndex,
-                              bridgeMamaPublisherSendFromInboxByIndex,
-                              bridgeMamaPublisher_sendFromInboxByIndex);
+                              bridgeMamaPublisherSendFromInboxByIndex);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_sendReplyToInbox,
-                              bridgeMamaPublisherSendReplyToInbox,
-                              bridgeMamaPublisher_sendReplyToInbox);
+                              bridgeMamaPublisherSendReplyToInbox);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaPublisher_sendReplyToInboxHandle,
-                              bridgeMamaPublisherSendReplyToInboxHandle,
-                              bridgeMamaPublisher_sendReplyToInboxHandle);
+                              bridgeMamaPublisherSendReplyToInboxHandle);
 
     /*Inbox functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaInbox_create,
-                              bridgeMamaInboxCreate,
-                              bridgeMamaInbox_create);
+                              bridgeMamaInboxCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaInbox_createByIndex,
-                              bridgeMamaInboxCreateByIndex,
-                              bridgeMamaInbox_createByIndex);
+                              bridgeMamaInboxCreateByIndex);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaInbox_destroy,
-                              bridgeMamaInboxDestroy,
-                              bridgeMamaInbox_destroy);
+                              bridgeMamaInboxDestroy);
 
     /*Mama Msg functions*/
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_create,
-                              bridgeMamaMsgCreate,
-                              bridgeMamaMsg_create);
+                              bridgeMamaMsgCreate);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_isFromInbox,
-                              bridgeMamaMsgIsFromInbox,
-                              bridgeMamaMsg_isFromInbox);
+                              bridgeMamaMsgIsFromInbox);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_getPlatformError,
-                              bridgeMamaMsgGetPlatformError,
-                              bridgeMamaMsg_getPlatformError);
+                              bridgeMamaMsgGetPlatformError);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_detach,
-                              bridgeMamaMsgDetach,
-                              bridgeMamaMsg_detach);
+                              bridgeMamaMsgDetach);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_destroy,
-                              bridgeMamaMsgDestroy,
-                              bridgeMamaMsg_destroy);
+                              bridgeMamaMsgDestroy);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_destroyMiddlewareMsg,
-                              bridgeMamaMsgDestroyMiddlewareMsg,
-                              bridgeMamaMsg_destroyMiddlewareMsg);
+                              bridgeMamaMsgDestroyMiddlewareMsg);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_setSendSubject,
-                              bridgeMamaMsgSetSendSubject,
-                              bridgeMamaMsg_setSendSubject);
+                              bridgeMamaMsgSetSendSubject);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_getNativeHandle,
-                              bridgeMamaMsgGetNativeHandle,
-                              bridgeMamaMsg_getNativeHandle);
+                              bridgeMamaMsgGetNativeHandle);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_duplicateReplyHandle,
-                              bridgeMamaMsgDuplicateReplyHandle,
-                              bridgeMamaMsg_duplicateReplyHandle);
+                              bridgeMamaMsgDuplicateReplyHandle);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_copyReplyHandle,
-                              bridgeMamaMsgCopyReplyHandle,
-                              bridgeMamaMsg_copyReplyHandle);
+                              bridgeMamaMsgCopyReplyHandle);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsgImpl_setReplyHandle,
-                              bridgeMamaMsgSetReplyHandle,
-                              bridgeMamaMsgImpl_setReplyHandle);
+                              bridgeMamaMsgSetReplyHandle);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsgImpl_setReplyHandle,
-                              bridgeMamaMsgSetReplyHandleAndIncrement,
-                              bridgeMamaMsgImpl_setReplyHandle);
+                              bridgeMamaMsgSetReplyHandleAndIncrement);
 
     REGISTER_BRIDGE_FUNCTION (BridgeMamaMsg_destroyReplyHandle,
-                              bridgeMamaMsgDestroyReplyHandle,
-                              bridgeMamaMsg_destroyReplyHandle);
+                              bridgeMamaMsgDestroyReplyHandle);
 
     if (MAMA_STATUS_OK != status)
     {
@@ -646,7 +544,7 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
     if (!bridge)
         return MAMA_STATUS_NOMEM;
 
-    bridge_createImpl createImpl =
+    Bridge_createImpl createImpl =
         mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (library);
 
     if (createImpl)
@@ -717,7 +615,7 @@ mamaMiddlewareLibraryManagerImpl_createLibrary (
     if (!mwLibrary)
         return MAMA_STATUS_NOMEM;
     
-    bridge_load load = 
+    Bridge_load load = 
         mamaMiddlewareLibraryManagerImpl_getLibraryLoad (library);
    
     if (load)
@@ -849,7 +747,7 @@ mamaMiddlewareLibraryManagerImpl_destroyLibrary (
         mamaMiddlewareLibraryManagerImpl_closeFull (mwLibrary);
     }
 
-    bridge_unload unload = 
+    Bridge_unload unload = 
         mamaMiddlewareLibraryManagerImpl_getLibraryUnload (library);
     
     if (unload)
@@ -1163,11 +1061,11 @@ mamaLibraryType
 mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
                                                   LIB_HANDLE  libraryLib)
 {
-    bridge_createImpl createImpl =
+    Bridge_createImpl createImpl =
         mamaMiddlewareLibraryManagerImpl_getCreateImpl (libraryName,
                                                         libraryLib);
 
-    bridge_load load = 
+    Bridge_load load = 
         mamaMiddlewareLibraryManagerImpl_getLoad (libraryName,
                                                   libraryLib);
 

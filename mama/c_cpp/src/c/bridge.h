@@ -254,34 +254,34 @@ while(0)                                                                       \
 
 /*Called when creating a bridge - should be used as a chance to programmatically
  * set any properties or create data for the bridge closure*/
-typedef mama_status (*bridge_load)(void);
+typedef mama_status (*Bridge_load)(void);
 
 /*Called when creating a bridge - should be used a chance to clean
  * up anything created in the load.*/
-typedef mama_status (*bridge_unload)(void);
+typedef mama_status (*Bridge_unload)(void);
 
 /*===================================================================
  =                      Used in mama.c                              =
  ====================================================================*/
 /*Called when loading/creating a bridge */
-typedef void (*bridge_createImpl)(mamaBridge* result);
+typedef void (*Bridge_createImpl)(mamaBridge* result);
 
 /*Called by mama_open()*/
-typedef mama_status (*bridge_open)(mamaBridge bridgeImpl);
+typedef mama_status (*Bridge_open)(mamaBridge bridgeImpl);
 
 /*Called by mama_close()*/
-typedef mama_status (*bridge_close)(mamaBridge bridgeImpl);
+typedef mama_status (*Bridge_close)(mamaBridge bridgeImpl);
 
 /*Called by mama_start()*/
-typedef mama_status (*bridge_start)(mamaQueue defaultEventQueue);
+typedef mama_status (*Bridge_start)(mamaQueue defaultEventQueue);
 
 /*Called by mama_stop()*/
-typedef mama_status (*bridge_stop)(mamaQueue defaultEventQueue);
+typedef mama_status (*Bridge_stop)(mamaQueue defaultEventQueue);
 
 /*Called by mama_getVersion()*/
-typedef const char* (*bridge_getVersion)(void);
-typedef const char* (*bridge_getName)(void);
-typedef mama_status (*bridge_getDefaultPayloadId)(char***name, char** id);
+typedef const char* (*Bridge_getVersion)(void);
+typedef const char* (*Bridge_getName)(void);
+typedef mama_status (*Bridge_getDefaultPayloadId)(char***name, char** id);
 
 /**
  * Used to return various bridge related properties, which OpenMAMA may then
@@ -292,68 +292,68 @@ typedef mama_status (*bridge_getDefaultPayloadId)(char***name, char** id);
  *
  * @return mama_status indicating the success or failure of the call.
  */
-typedef mama_status (*bridge_getBridgeProperties)(wproperty_t* properties);
+typedef mama_status (*Bridge_getBridgeProperties)(wproperty_t* properties);
 
 /*===================================================================
  =               mamaQueue bridge function pointers                 =
  ====================================================================*/
-typedef mama_status (*bridgeMamaQueue_create)(queueBridge*    queue,
+typedef mama_status (*BridgeMamaQueue_create)(queueBridge*    queue,
                                               mamaQueue       parent);
 
-typedef mama_status (*bridgeMamaQueue_create_usingNative)(queueBridge* queue,
+typedef mama_status (*BridgeMamaQueue_create_usingNative)(queueBridge* queue,
                                                           mamaQueue    parent,
                                                           void*        nativeQueue);
 
-typedef mama_status (*bridgeMamaQueue_destroy)(queueBridge    queue);
+typedef mama_status (*BridgeMamaQueue_destroy)(queueBridge    queue);
 
-typedef mama_status (*bridgeMamaQueue_getEventCount)(queueBridge  queue,
+typedef mama_status (*BridgeMamaQueue_getEventCount)(queueBridge  queue,
                                                      size_t*    count);
 
-typedef mama_status (*bridgeMamaQueue_dispatch)(queueBridge queue);
+typedef mama_status (*BridgeMamaQueue_dispatch)(queueBridge queue);
 
-typedef mama_status (*bridgeMamaQueue_timedDispatch)(queueBridge  queue,
+typedef mama_status (*BridgeMamaQueue_timedDispatch)(queueBridge  queue,
                                                      uint64_t   timeout);
 
-typedef mama_status (*bridgeMamaQueue_dispatchEvent)(queueBridge queue);
+typedef mama_status (*BridgeMamaQueue_dispatchEvent)(queueBridge queue);
 
-typedef mama_status (*bridgeMamaQueue_enqueueEvent)(queueBridge        queue,
+typedef mama_status (*BridgeMamaQueue_enqueueEvent)(queueBridge        queue,
                                                     mamaQueueEnqueueCB callback,
                                                     void*              closure);
 
-typedef mama_status (*bridgeMamaQueue_stopDispatch)(queueBridge queue);
+typedef mama_status (*BridgeMamaQueue_stopDispatch)(queueBridge queue);
 
-typedef mama_status (*bridgeMamaQueue_setEnqueueCallback)(
+typedef mama_status (*BridgeMamaQueue_setEnqueueCallback)(
                                                 queueBridge         queue,
                                                 mamaQueueEnqueueCB callback,
                                                 void*              closure);
 
-typedef mama_status (*bridgeMamaQueue_removeEnqueueCallback)
+typedef mama_status (*BridgeMamaQueue_removeEnqueueCallback)
                                                (queueBridge queue);
-typedef mama_status (*bridgeMamaQueue_getNativeHandle)
+typedef mama_status (*BridgeMamaQueue_getNativeHandle)
 
                                                (queueBridge queue,
                                                 void**      nativeHandle);
 
-typedef mama_status (*bridgeMamaQueue_setHighWatermark)
+typedef mama_status (*BridgeMamaQueue_setHighWatermark)
                                     (queueBridge queue, size_t highWatermark);
 
-typedef mama_status (*bridgeMamaQueue_setLowWatermark)
+typedef mama_status (*BridgeMamaQueue_setLowWatermark)
                                     (queueBridge queue, size_t lowWatermark);
 
 /*===================================================================
  =               mamaTransport bridge function pointers             =
  ====================================================================*/
 /*Return true is the transport is valid*/
-typedef int (*bridgeMamaTransport_isValid)(transportBridge transport);
+typedef int (*BridgeMamaTransport_isValid)(transportBridge transport);
 
 /*Destroy the transport bridge impl*/
-typedef mama_status (*bridgeMamaTransport_destroy)(transportBridge transport);
+typedef mama_status (*BridgeMamaTransport_destroy)(transportBridge transport);
 
 /*Create a transport. The closure can be used in invoking client callbacks.*/
-typedef mama_status (*bridgeMamaTransport_create)(transportBridge *result,
+typedef mama_status (*BridgeMamaTransport_create)(transportBridge *result,
                                                   const char*      name,
                                                   mamaTransport    parent);
-typedef mama_status (*bridgeMamaTransport_forceClientDisconnect)
+typedef mama_status (*BridgeMamaTransport_forceClientDisconnect)
                                (transportBridge* transports,
                                 int              numTransports,
                                 const char*      ipAddress,
@@ -366,7 +366,7 @@ typedef mama_status (*bridgeMamaTransport_forceClientDisconnect)
  *
  * For middleware that does not provide access to per-connection information
  * (non WMW  middleware), the method returns MAMA_STATUS_NOT_IMPL. */
-typedef mama_status (*bridgeMamaTransport_findConnection)
+typedef mama_status (*BridgeMamaTransport_findConnection)
                                (transportBridge* transports,
                                 int              numTransports,
                                 mamaConnection*  result,
@@ -376,67 +376,67 @@ typedef mama_status (*bridgeMamaTransport_findConnection)
 /* Return a list of all clients connected to this transport. The result and
  * len must be passed to mamaTransport_freeAllConnections() to free resources
  * allocated by this function.*/
-typedef mama_status (*bridgeMamaTransport_getAllConnections)
+typedef mama_status (*BridgeMamaTransport_getAllConnections)
                                 (transportBridge* transports,
                                  int              numTransports,
                                  mamaConnection** result,
                                  uint32_t*        len);
 
-typedef mama_status (*bridgeMamaTransport_getAllConnectionsForTopic)
+typedef mama_status (*BridgeMamaTransport_getAllConnectionsForTopic)
                                 (transportBridge* transports,
                                  int              numTransports,
                                  const char*      topic,
                                  mamaConnection** result,
                                  uint32_t*        len);
 
-typedef mama_status (*bridgeMamaTransport_requestConflation)
+typedef mama_status (*BridgeMamaTransport_requestConflation)
                                 (transportBridge* transports,
                                  int              numTransports);
 
-typedef mama_status (*bridgeMamaTransport_requestEndConflation)
+typedef mama_status (*BridgeMamaTransport_requestEndConflation)
                                 (transportBridge* transports,
                                  int              numTransports);
 
 /* Return a list of all servers connected to this transport. The result and
  * len must be passed to mamaTransport_freeAllServerConnections() to free
  * resources allocated by this function. */
-typedef mama_status (*bridgeMamaTransport_getAllServerConnections)
+typedef mama_status (*BridgeMamaTransport_getAllServerConnections)
                                 (transportBridge*       transports,
                                  int                    numTransports,
                                  mamaServerConnection** result,
                                  uint32_t*              len);
 
  /* Free resources allocated by mamaTransport_getAllServerConnections()*/
-typedef mama_status (*bridgeMamaTransport_freeAllServerConnections)
+typedef mama_status (*BridgeMamaTransport_freeAllServerConnections)
                                 (transportBridge*      transports,
                                  int                   numTransports,
                                  mamaServerConnection* connections,
                                  uint32_t              len);
 
 /* Free resources allocated by mamaTransport_getAllConnections().*/
-typedef mama_status (*bridgeMamaTransport_freeAllConnections)
+typedef mama_status (*BridgeMamaTransport_freeAllConnections)
                                 (transportBridge*       transports,
                                 int                     numTransports,
                                 mamaConnection*         connections,
                                 uint32_t                len);
 
 /* Return the number of load balance attributes (those which contain lb<n>).*/
-typedef mama_status (*bridgeMamaTransport_getNumLoadBalanceAttributes)
+typedef mama_status (*BridgeMamaTransport_getNumLoadBalanceAttributes)
                                 (const char* name,
                                 int*         numLoadBalanceAttributes);
 
 /* Return the name of the load balance shared object attribute. This may be
 * used to implement alternative load balance schemes beyond round robin. */
-typedef mama_status (*bridgeMamaTransport_getLoadBalanceSharedObjectName)
+typedef mama_status (*BridgeMamaTransport_getLoadBalanceSharedObjectName)
                                 (const char*  name,
                                  const char** loadBalanceSharedObjectName);
 
 /*Return the load balancing scheme to be used */
-typedef mama_status (*bridgeMamaTransport_getLoadBalanceScheme)
+typedef mama_status (*BridgeMamaTransport_getLoadBalanceScheme)
                                 (const char*     name,
                                  tportLbScheme*  scheme);
 
-typedef mama_status (*bridgeMamaTransport_sendMsgToConnection)
+typedef mama_status (*BridgeMamaTransport_sendMsgToConnection)
                                 (transportBridge transport,
                                  mamaConnection  connection,
                                  mamaMsg         msg,
@@ -444,7 +444,7 @@ typedef mama_status (*bridgeMamaTransport_sendMsgToConnection)
 
 /* Return true if the specified connection is intercepted. We should not need
  * the transport to determine this.*/
-typedef mama_status (*bridgeMamaTransport_isConnectionIntercepted)
+typedef mama_status (*BridgeMamaTransport_isConnectionIntercepted)
                                 (mamaConnection connection,
                                  uint8_t* result);
 
@@ -452,29 +452,29 @@ typedef mama_status (*bridgeMamaTransport_isConnectionIntercepted)
  * transportBridge_startConnectionConflation() will start instercepting
  * message for the specified connection. This method performs any setup
  * required. */
-typedef mama_status (*bridgeMamaTransport_installConnectConflateMgr)
+typedef mama_status (*BridgeMamaTransport_installConnectConflateMgr)
                                 (transportBridge       handle,
                                  mamaConflationManager mgr,
                                  mamaConnection        connection,
                                  conflateProcessCb     processCb,
                                  conflateGetMsgCb      msgCb);
 
-typedef mama_status (*bridgeMamaTransport_uninstallConnectConflateMgr)
+typedef mama_status (*BridgeMamaTransport_uninstallConnectConflateMgr)
                                 (transportBridge       handle,
                                  mamaConflationManager mgr,
                                  mamaConnection        connection);
 
 /* Start intercepting messages. */
-typedef mama_status (*bridgeMamaTransport_startConnectionConflation)
+typedef mama_status (*BridgeMamaTransport_startConnectionConflation)
                                (transportBridge        handle,
                                 mamaConflationManager  mgr,
                                 mamaConnection         connection);
 
-typedef mama_status (*bridgeMamaTransport_getNativeTransport)
+typedef mama_status (*BridgeMamaTransport_getNativeTransport)
                                 (transportBridge transport,
                                  void**          nativeTport);
 
-typedef mama_status (*bridgeMamaTransport_getNativeTransportNamingCtx)
+typedef mama_status (*BridgeMamaTransport_getNativeTransportNamingCtx)
                                 (transportBridge transport,
                                  void**          nativeTportNamingCtx);
 
@@ -482,7 +482,7 @@ typedef mama_status (*bridgeMamaTransport_getNativeTransportNamingCtx)
  =               mamaSubscription bridge function pointers          =
  ====================================================================*/
 /*Create the bridge subscription structure.*/
-typedef mama_status (*bridgeMamaSubscription_create)
+typedef mama_status (*BridgeMamaSubscription_create)
                                (subscriptionBridge* subsc_,
                                 const char*         source,
                                 const char*         symbol,
@@ -493,7 +493,7 @@ typedef mama_status (*bridgeMamaSubscription_create)
                                 void*               closure );
 
 /*Create the bridge subscription structure for wildcard subscription .*/
-typedef mama_status (*bridgeMamaSubscription_createWildCard)
+typedef mama_status (*BridgeMamaSubscription_createWildCard)
                                (subscriptionBridge* subsc_,
                                 const char*         source,
                                 const char*         symbol,
@@ -507,42 +507,42 @@ typedef mama_status (*bridgeMamaSubscription_createWildCard)
  * subscription is deactivated as part of its destruction; however,
  * subscription destruction can be delayed and we don't want to
  * receive updates.*/
-typedef mama_status (*bridgeMamaSubscription_mute)
+typedef mama_status (*BridgeMamaSubscription_mute)
                                 (subscriptionBridge subscriber);
 
 /* Destroy the subscriber. */
-typedef mama_status (*bridgeMamaSubscription_destroy)
+typedef mama_status (*BridgeMamaSubscription_destroy)
                                 (subscriptionBridge subscriber);
 
 /*Whether the subscription impl is valid*/
-typedef int (*bridgeMamaSubscription_isValid)
+typedef int (*BridgeMamaSubscription_isValid)
                                 (subscriptionBridge bridge);
 
 /* Return true if the subject contains wildcards. Some messaging APIs may
  * not support wildcards. */
-typedef int (*bridgeMamaSubscription_hasWildcards)
+typedef int (*BridgeMamaSubscription_hasWildcards)
                                 (subscriptionBridge subscriber);
 
 /*Get the last error specific to the platform.*/
-typedef mama_status (*bridgeMamaSubscription_getPlatformError)
+typedef mama_status (*BridgeMamaSubscription_getPlatformError)
                                 (subscriptionBridge subsc, void** error);
 
 /* Return true if the subject transport is disconnected. */
-typedef int (*bridgeMamaSubscription_isTportDisconnected)
+typedef int (*BridgeMamaSubscription_isTportDisconnected)
                                 (subscriptionBridge subscriber);
 
 /*Set the topic closure for transport or wild card subscriptions */
-typedef mama_status (*bridgeMamaSubscription_setTopicClosure)
+typedef mama_status (*BridgeMamaSubscription_setTopicClosure)
                                 (subscriptionBridge subsc, void* closure);
 
 /*Mute current topic for "transport subscriptions" WMW only */
-typedef mama_status (*bridgeMamaSubscription_muteCurrentTopic)
+typedef mama_status (*BridgeMamaSubscription_muteCurrentTopic)
                                 (subscriptionBridge subsc);
 
 /*===================================================================
  =               mamaTimer bridge function pointers          =
  ====================================================================*/
-typedef mama_status (*bridgeMamaTimer_create)(timerBridge* timer,
+typedef mama_status (*BridgeMamaTimer_create)(timerBridge* timer,
                                               void*        nativeQueueHandle,
                                               mamaTimerCb  action,
                                               mamaTimerCb  onTimerDestroyed,
@@ -550,20 +550,20 @@ typedef mama_status (*bridgeMamaTimer_create)(timerBridge* timer,
                                               mamaTimer    parent,
                                               void*        closure);
 
-typedef mama_status (*bridgeMamaTimer_destroy)(timerBridge timer);
+typedef mama_status (*BridgeMamaTimer_destroy)(timerBridge timer);
 
-typedef mama_status (*bridgeMamaTimer_reset)(timerBridge timer);
+typedef mama_status (*BridgeMamaTimer_reset)(timerBridge timer);
 
-typedef mama_status (*bridgeMamaTimer_setInterval)(timerBridge timer,
+typedef mama_status (*BridgeMamaTimer_setInterval)(timerBridge timer,
                                                    mama_f64_t  interval);
 
-typedef mama_status (*bridgeMamaTimer_getInterval)(timerBridge timer,
+typedef mama_status (*BridgeMamaTimer_getInterval)(timerBridge timer,
                                                    mama_f64_t* interval);
 
 /*===================================================================
  =               mamaIo bridge function pointers          =
  ====================================================================*/
-typedef mama_status (*bridgeMamaIo_create)(ioBridge*    result,
+typedef mama_status (*BridgeMamaIo_create)(ioBridge*    result,
                                            void*        nativeQueueHandle,
                                            uint32_t     descriptor,
                                            mamaIoCb     action,
@@ -571,16 +571,16 @@ typedef mama_status (*bridgeMamaIo_create)(ioBridge*    result,
                                            mamaIo       parent,
                                            void*        closure);
 
-typedef mama_status (*bridgeMamaIo_getDescriptor)(ioBridge io, uint32_t* d);
+typedef mama_status (*BridgeMamaIo_getDescriptor)(ioBridge io, uint32_t* d);
 
-typedef mama_status (*bridgeMamaIo_destroy)(ioBridge io);
+typedef mama_status (*BridgeMamaIo_destroy)(ioBridge io);
 
 /*===================================================================
  =               mamaPublisher bridge function pointers          =
  ====================================================================*/
 
 typedef mama_status
-(*bridgeMamaPublisher_createByIndex)(publisherBridge*   result,
+(*BridgeMamaPublisher_createByIndex)(publisherBridge*   result,
                                      mamaTransport      tport,
                                      int                tportIndex,
                                      const char*        topic,
@@ -590,7 +590,7 @@ typedef mama_status
                                      mamaPublisher      parent);
 
 typedef mama_status
-(*bridgeMamaPublisher_create)(publisherBridge*  result,
+(*BridgeMamaPublisher_create)(publisherBridge*  result,
                               mamaTransport     tport,
                               const char*       topic,
                               const char*       source,
@@ -599,29 +599,29 @@ typedef mama_status
                               mamaPublisher     parent);
 
 typedef mama_status
-(*bridgeMamaPublisher_destroy)(publisherBridge publisher);
+(*BridgeMamaPublisher_destroy)(publisherBridge publisher);
 
 typedef mama_status
-(*bridgeMamaPublisher_send)(publisherBridge publisher,
+(*BridgeMamaPublisher_send)(publisherBridge publisher,
                             mamaMsg         msg);
 
 typedef mama_status
-(*bridgeMamaPublisher_sendReplyToInbox)(publisherBridge publisher,
+(*BridgeMamaPublisher_sendReplyToInbox)(publisherBridge publisher,
                                         void *         request,
                                         mamaMsg         reply);
 
 typedef mama_status
-(*bridgeMamaPublisher_sendReplyToInboxHandle)(publisherBridge publisher,
+(*BridgeMamaPublisher_sendReplyToInboxHandle)(publisherBridge publisher,
                                               void*           request,
                                               mamaMsg         reply);
 
 typedef mama_status
-(*bridgeMamaPublisher_sendFromInboxByIndex)(publisherBridge publisher,
+(*BridgeMamaPublisher_sendFromInboxByIndex)(publisherBridge publisher,
                                             int             tportIndex,
                                             mamaInbox       inbox,
                                             mamaMsg         msg);
 typedef mama_status
-(*bridgeMamaPublisher_sendFromInbox)(publisherBridge publisher,
+(*BridgeMamaPublisher_sendFromInbox)(publisherBridge publisher,
                                      mamaInbox       inbox,
                                      mamaMsg         msg);
 
@@ -630,7 +630,7 @@ typedef mama_status
  =               mamaInbox bridge function pointers                 =
  ====================================================================*/
 typedef mama_status
-(*bridgeMamaInbox_create)(
+(*BridgeMamaInbox_create)(
         inboxBridge*           bridge,
         mamaTransport          tport,
         mamaQueue              queue,
@@ -641,7 +641,7 @@ typedef mama_status
         mamaInbox              parent);
 
 typedef mama_status
-(*bridgeMamaInbox_createByIndex)
+(*BridgeMamaInbox_createByIndex)
         (inboxBridge*           bridge,
          mamaTransport          tport,
          int                    tportIndex,
@@ -653,51 +653,51 @@ typedef mama_status
          mamaInbox              parent);
 
 typedef mama_status
-(*bridgeMamaInbox_destroy)(inboxBridge inbox);
+(*BridgeMamaInbox_destroy)(inboxBridge inbox);
 
 /*===================================================================
  =               mamaMsg bridge function pointers                   =
  ====================================================================*/
 typedef mama_status
-(*bridgeMamaMsg_create)(msgBridge* msg, mamaMsg parent);
+(*BridgeMamaMsg_create)(msgBridge* msg, mamaMsg parent);
 
 typedef int
-(*bridgeMamaMsg_isFromInbox)(msgBridge msg);
+(*BridgeMamaMsg_isFromInbox)(msgBridge msg);
 
 typedef mama_status
-(*bridgeMamaMsg_destroy)(msgBridge msg, int destroyMsg);
+(*BridgeMamaMsg_destroy)(msgBridge msg, int destroyMsg);
 
 typedef mama_status
-(*bridgeMamaMsg_destroyMiddlewareMsg)(msgBridge msg);
+(*BridgeMamaMsg_destroyMiddlewareMsg)(msgBridge msg);
 
 typedef mama_status
-(*bridgeMamaMsg_detach)(msgBridge msg);
+(*BridgeMamaMsg_detach)(msgBridge msg);
 
 typedef mama_status
-(*bridgeMamaMsg_getPlatformError)(msgBridge msg, void** error);
+(*BridgeMamaMsg_getPlatformError)(msgBridge msg, void** error);
 
 typedef mama_status
-(*bridgeMamaMsg_setSendSubject) (msgBridge   msg,
+(*BridgeMamaMsg_setSendSubject) (msgBridge   msg,
                                  const char* symbol,
                                  const char* subject);
 
 typedef mama_status
-(*bridgeMamaMsg_getNativeHandle) (msgBridge msg, void** result);
+(*BridgeMamaMsg_getNativeHandle) (msgBridge msg, void** result);
 
 typedef mama_status
-(*bridgeMamaMsg_duplicateReplyHandle) (msgBridge msg, void** result);
+(*BridgeMamaMsg_duplicateReplyHandle) (msgBridge msg, void** result);
 
 typedef mama_status
-(*bridgeMamaMsg_copyReplyHandle) (void* src, void** dest);
+(*BridgeMamaMsg_copyReplyHandle) (void* src, void** dest);
 
 typedef mama_status
-(*bridgeMamaMsgImpl_setReplyHandle) (msgBridge msg, void* result);
+(*BridgeMamaMsgImpl_setReplyHandle) (msgBridge msg, void* result);
 
 typedef mama_status
-(*bridgeMamaMsgImpl_setReplyHandleAndIncrement) (msgBridge msg, void* result);
+(*BridgeMamaMsgImpl_setReplyHandleAndIncrement) (msgBridge msg, void* result);
 
 typedef mama_status
-(*bridgeMamaMsg_destroyReplyHandle) (void* result);
+(*BridgeMamaMsg_destroyReplyHandle) (void* result);
 
 /*
    The structure of function pointers to specific implementations of bridge
@@ -735,128 +735,128 @@ typedef struct mamaBridgeImpl_
     void*     mCppCallback;
 
     /*Used in mama.c*/
-    bridge_open         			bridgeOpen;
-    bridge_close        			bridgeClose;
-    bridge_start        			bridgeStart;
-    bridge_stop         			bridgeStop;
-    bridge_getVersion   			bridgeGetVersion;
-    bridge_getName      			bridgeGetName;
-    bridge_getDefaultPayloadId   	bridgeGetDefaultPayloadId;
+    Bridge_open         			bridgeOpen;
+    Bridge_close        			bridgeClose;
+    Bridge_start        			bridgeStart;
+    Bridge_stop         			bridgeStop;
+    Bridge_getVersion   			bridgeGetVersion;
+    Bridge_getName      			bridgeGetName;
+    Bridge_getDefaultPayloadId   	bridgeGetDefaultPayloadId;
 
     /*Queue bridge functions*/
-    bridgeMamaQueue_create                  bridgeMamaQueueCreate;
-    bridgeMamaQueue_create_usingNative      bridgeMamaQueueCreateUsingNative;
-    bridgeMamaQueue_destroy                 bridgeMamaQueueDestroy;
-    bridgeMamaQueue_getEventCount           bridgeMamaQueueGetEventCount;
-    bridgeMamaQueue_dispatch                bridgeMamaQueueDispatch;
-    bridgeMamaQueue_timedDispatch           bridgeMamaQueueTimedDispatch;
-    bridgeMamaQueue_dispatchEvent           bridgeMamaQueueDispatchEvent;
-    bridgeMamaQueue_enqueueEvent            bridgeMamaQueueEnqueueEvent;
-    bridgeMamaQueue_stopDispatch            bridgeMamaQueueStopDispatch;
-    bridgeMamaQueue_setEnqueueCallback      bridgeMamaQueueSetEnqueueCallback;
-    bridgeMamaQueue_removeEnqueueCallback
+    BridgeMamaQueue_create                  bridgeMamaQueueCreate;
+    BridgeMamaQueue_create_usingNative      bridgeMamaQueueCreateUsingNative;
+    BridgeMamaQueue_destroy                 bridgeMamaQueueDestroy;
+    BridgeMamaQueue_getEventCount           bridgeMamaQueueGetEventCount;
+    BridgeMamaQueue_dispatch                bridgeMamaQueueDispatch;
+    BridgeMamaQueue_timedDispatch           bridgeMamaQueueTimedDispatch;
+    BridgeMamaQueue_dispatchEvent           bridgeMamaQueueDispatchEvent;
+    BridgeMamaQueue_enqueueEvent            bridgeMamaQueueEnqueueEvent;
+    BridgeMamaQueue_stopDispatch            bridgeMamaQueueStopDispatch;
+    BridgeMamaQueue_setEnqueueCallback      bridgeMamaQueueSetEnqueueCallback;
+    BridgeMamaQueue_removeEnqueueCallback
                                 bridgeMamaQueueRemoveEnqueueCallback;
-    bridgeMamaQueue_getNativeHandle         bridgeMamaQueueGetNativeHandle;
-    bridgeMamaQueue_setLowWatermark         bridgeMamaQueueSetLowWatermark;
-    bridgeMamaQueue_setHighWatermark        bridgeMamaQueueSetHighWatermark;
+    BridgeMamaQueue_getNativeHandle         bridgeMamaQueueGetNativeHandle;
+    BridgeMamaQueue_setLowWatermark         bridgeMamaQueueSetLowWatermark;
+    BridgeMamaQueue_setHighWatermark        bridgeMamaQueueSetHighWatermark;
 
     /*Transport bridge functions*/
-    bridgeMamaTransport_isValid             bridgeMamaTransportIsValid;
-    bridgeMamaTransport_destroy             bridgeMamaTransportDestroy;
-    bridgeMamaTransport_create              bridgeMamaTransportCreate;
-    bridgeMamaTransport_forceClientDisconnect
+    BridgeMamaTransport_isValid             bridgeMamaTransportIsValid;
+    BridgeMamaTransport_destroy             bridgeMamaTransportDestroy;
+    BridgeMamaTransport_create              bridgeMamaTransportCreate;
+    BridgeMamaTransport_forceClientDisconnect
                                 bridgeMamaTransportForceClientDisconnect;
-    bridgeMamaTransport_findConnection      bridgeMamaTransportFindConnection;
-    bridgeMamaTransport_getAllConnections
+    BridgeMamaTransport_findConnection      bridgeMamaTransportFindConnection;
+    BridgeMamaTransport_getAllConnections
                                 bridgeMamaTransportGetAllConnections;
-    bridgeMamaTransport_getAllConnectionsForTopic
+    BridgeMamaTransport_getAllConnectionsForTopic
                                 bridgeMamaTransportGetAllConnectionsForTopic;
-    bridgeMamaTransport_freeAllConnections
+    BridgeMamaTransport_freeAllConnections
                                 bridgeMamaTransportFreeAllConnections;
-    bridgeMamaTransport_getAllServerConnections
+    BridgeMamaTransport_getAllServerConnections
                                 bridgeMamaTransportGetAllServerConnections;
-    bridgeMamaTransport_freeAllServerConnections
+    BridgeMamaTransport_freeAllServerConnections
                                 bridgeMamaTransportFreeAllServerConnections;
-    bridgeMamaTransport_getNumLoadBalanceAttributes
+    BridgeMamaTransport_getNumLoadBalanceAttributes
                                 bridgeMamaTransportGetNumLoadBalanceAttributes;
-    bridgeMamaTransport_getLoadBalanceSharedObjectName
+    BridgeMamaTransport_getLoadBalanceSharedObjectName
                             bridgeMamaTransportGetLoadBalanceSharedObjectName;
-    bridgeMamaTransport_getLoadBalanceScheme
+    BridgeMamaTransport_getLoadBalanceScheme
                                 bridgeMamaTransportGetLoadBalanceScheme;
-    bridgeMamaTransport_sendMsgToConnection
+    BridgeMamaTransport_sendMsgToConnection
                                 bridgeMamaTransportSendMsgToConnection;
-    bridgeMamaTransport_isConnectionIntercepted
+    BridgeMamaTransport_isConnectionIntercepted
                                 bridgeMamaTransportIsConnectionIntercepted;
-    bridgeMamaTransport_installConnectConflateMgr
+    BridgeMamaTransport_installConnectConflateMgr
                                 bridgeMamaTransportInstallConnectConflateMgr;
-    bridgeMamaTransport_uninstallConnectConflateMgr
+    BridgeMamaTransport_uninstallConnectConflateMgr
                             bridgeMamaTransportUninstallConnectConflateMgr;
-    bridgeMamaTransport_startConnectionConflation
+    BridgeMamaTransport_startConnectionConflation
                                 bridgeMamaTransportStartConnectionConflation;
-    bridgeMamaTransport_requestConflation
+    BridgeMamaTransport_requestConflation
                                 bridgeMamaTransportRequestConflation;
-    bridgeMamaTransport_requestEndConflation
+    BridgeMamaTransport_requestEndConflation
                                 bridgeMamaTransportRequestEndConflation;
-    bridgeMamaTransport_getNativeTransport
+    BridgeMamaTransport_getNativeTransport
                                 bridgeMamaTransportGetNativeTransport;
-    bridgeMamaTransport_getNativeTransportNamingCtx
+    BridgeMamaTransport_getNativeTransportNamingCtx
                                 bridgeMamaTransportGetNativeTransportNamingCtx;
 
     /*Subscription bridge functions*/
-    bridgeMamaSubscription_create           bridgeMamaSubscriptionCreate;
-    bridgeMamaSubscription_createWildCard   bridgeMamaSubscriptionCreateWildCard;
-    bridgeMamaSubscription_mute             bridgeMamaSubscriptionMute;
-    bridgeMamaSubscription_destroy          bridgeMamaSubscriptionDestroy;
-    bridgeMamaSubscription_isValid          bridgeMamaSubscriptionIsValid;
-    bridgeMamaSubscription_hasWildcards     bridgeMamaSubscriptionHasWildcards;
-    bridgeMamaSubscription_getPlatformError bridgeMamaSubscriptionGetPlatformError;
-    bridgeMamaSubscription_setTopicClosure  bridgeMamaSubscriptionSetTopicClosure;
-    bridgeMamaSubscription_muteCurrentTopic bridgeMamaSubscriptionMuteCurrentTopic;
-    bridgeMamaSubscription_isTportDisconnected bridgeMamaSubscriptionIsTportDisconnected;
+    BridgeMamaSubscription_create           bridgeMamaSubscriptionCreate;
+    BridgeMamaSubscription_createWildCard   bridgeMamaSubscriptionCreateWildCard;
+    BridgeMamaSubscription_mute             bridgeMamaSubscriptionMute;
+    BridgeMamaSubscription_destroy          bridgeMamaSubscriptionDestroy;
+    BridgeMamaSubscription_isValid          bridgeMamaSubscriptionIsValid;
+    BridgeMamaSubscription_hasWildcards     bridgeMamaSubscriptionHasWildcards;
+    BridgeMamaSubscription_getPlatformError bridgeMamaSubscriptionGetPlatformError;
+    BridgeMamaSubscription_setTopicClosure  bridgeMamaSubscriptionSetTopicClosure;
+    BridgeMamaSubscription_muteCurrentTopic bridgeMamaSubscriptionMuteCurrentTopic;
+    BridgeMamaSubscription_isTportDisconnected bridgeMamaSubscriptionIsTportDisconnected;
 
     /*Timer bridge functions*/
-    bridgeMamaTimer_create                  bridgeMamaTimerCreate;
-    bridgeMamaTimer_destroy                 bridgeMamaTimerDestroy;
-    bridgeMamaTimer_reset                   bridgeMamaTimerReset;
-    bridgeMamaTimer_setInterval             bridgeMamaTimerSetInterval;
-    bridgeMamaTimer_getInterval             bridgeMamaTimerGetInterval;
+    BridgeMamaTimer_create                  bridgeMamaTimerCreate;
+    BridgeMamaTimer_destroy                 bridgeMamaTimerDestroy;
+    BridgeMamaTimer_reset                   bridgeMamaTimerReset;
+    BridgeMamaTimer_setInterval             bridgeMamaTimerSetInterval;
+    BridgeMamaTimer_getInterval             bridgeMamaTimerGetInterval;
 
     /*IO bridge functions*/
-    bridgeMamaIo_create                     bridgeMamaIoCreate;
-    bridgeMamaIo_getDescriptor              bridgeMamaIoGetDescriptor;
-    bridgeMamaIo_destroy                    bridgeMamaIoDestroy;
+    BridgeMamaIo_create                     bridgeMamaIoCreate;
+    BridgeMamaIo_getDescriptor              bridgeMamaIoGetDescriptor;
+    BridgeMamaIo_destroy                    bridgeMamaIoDestroy;
 
     /*mamaPublisher bridge functions*/
-    bridgeMamaPublisher_create              bridgeMamaPublisherCreate;
-    bridgeMamaPublisher_createByIndex       bridgeMamaPublisherCreateByIndex;
-    bridgeMamaPublisher_destroy             bridgeMamaPublisherDestroy;
-    bridgeMamaPublisher_send                bridgeMamaPublisherSend;
-    bridgeMamaPublisher_sendFromInbox       bridgeMamaPublisherSendFromInbox;
-    bridgeMamaPublisher_sendFromInboxByIndex
+    BridgeMamaPublisher_create              bridgeMamaPublisherCreate;
+    BridgeMamaPublisher_createByIndex       bridgeMamaPublisherCreateByIndex;
+    BridgeMamaPublisher_destroy             bridgeMamaPublisherDestroy;
+    BridgeMamaPublisher_send                bridgeMamaPublisherSend;
+    BridgeMamaPublisher_sendFromInbox       bridgeMamaPublisherSendFromInbox;
+    BridgeMamaPublisher_sendFromInboxByIndex
                                         bridgeMamaPublisherSendFromInboxByIndex;
-    bridgeMamaPublisher_sendReplyToInbox
+    BridgeMamaPublisher_sendReplyToInbox
                                 bridgeMamaPublisherSendReplyToInbox;
-    bridgeMamaPublisher_sendReplyToInboxHandle
+    BridgeMamaPublisher_sendReplyToInboxHandle
                                 bridgeMamaPublisherSendReplyToInboxHandle;
     /*mamaInbox bridge functions*/
-    bridgeMamaInbox_create                  bridgeMamaInboxCreate;
-    bridgeMamaInbox_createByIndex           bridgeMamaInboxCreateByIndex;
-    bridgeMamaInbox_destroy                 bridgeMamaInboxDestroy;
+    BridgeMamaInbox_create                  bridgeMamaInboxCreate;
+    BridgeMamaInbox_createByIndex           bridgeMamaInboxCreateByIndex;
+    BridgeMamaInbox_destroy                 bridgeMamaInboxDestroy;
 
     /*mamaMsg bridge functions*/
-    bridgeMamaMsg_create                    bridgeMamaMsgCreate;
-    bridgeMamaMsg_isFromInbox               bridgeMamaMsgIsFromInbox;
-    bridgeMamaMsg_getPlatformError          bridgeMamaMsgGetPlatformError;
-    bridgeMamaMsg_detach                    bridgeMamaMsgDetach;
-    bridgeMamaMsg_destroy                   bridgeMamaMsgDestroy;
-    bridgeMamaMsg_destroyMiddlewareMsg      bridgeMamaMsgDestroyMiddlewareMsg;
-    bridgeMamaMsg_setSendSubject            bridgeMamaMsgSetSendSubject;
-    bridgeMamaMsg_getNativeHandle           bridgeMamaMsgGetNativeHandle;
-    bridgeMamaMsg_duplicateReplyHandle      bridgeMamaMsgDuplicateReplyHandle;
-    bridgeMamaMsg_copyReplyHandle           bridgeMamaMsgCopyReplyHandle;
-    bridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandle;
-    bridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandleAndIncrement;
-    bridgeMamaMsg_destroyReplyHandle        bridgeMamaMsgDestroyReplyHandle;
+    BridgeMamaMsg_create                    bridgeMamaMsgCreate;
+    BridgeMamaMsg_isFromInbox               bridgeMamaMsgIsFromInbox;
+    BridgeMamaMsg_getPlatformError          bridgeMamaMsgGetPlatformError;
+    BridgeMamaMsg_detach                    bridgeMamaMsgDetach;
+    BridgeMamaMsg_destroy                   bridgeMamaMsgDestroy;
+    BridgeMamaMsg_destroyMiddlewareMsg      bridgeMamaMsgDestroyMiddlewareMsg;
+    BridgeMamaMsg_setSendSubject            bridgeMamaMsgSetSendSubject;
+    BridgeMamaMsg_getNativeHandle           bridgeMamaMsgGetNativeHandle;
+    BridgeMamaMsg_duplicateReplyHandle      bridgeMamaMsgDuplicateReplyHandle;
+    BridgeMamaMsg_copyReplyHandle           bridgeMamaMsgCopyReplyHandle;
+    BridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandle;
+    BridgeMamaMsgImpl_setReplyHandle        bridgeMamaMsgSetReplyHandleAndIncrement;
+    BridgeMamaMsg_destroyReplyHandle        bridgeMamaMsgDestroyReplyHandle;
 
     mamaMiddlewareLibrary mLibrary; /**< Back-reference to parent library */
 } mamaBridgeImpl;

@@ -420,1083 +420,1083 @@ while(0)                                                                    \
  ====================================================================*/
 /*Called when loading/creating a bridge */
 typedef mama_status
-(*msgPayload_createImpl)      (mamaPayloadBridge* result, char* identifier);
+(*Payload_createImpl)      (mamaPayloadBridge* result, char* identifier);
 
 typedef void
-(*msgPayload_destroyImpl)     (mamaPayloadBridge bridge);
+(*Payload_destroyImpl)     (mamaPayloadBridge bridge);
 
 typedef mamaPayloadType
-(*msgPayload_getType)         (void);
+(*Payload_getType)         (void);
 
 typedef mama_status 
-(*msgPayload_load)            (char* identifier);
+(*Payload_load)            (char* identifier);
 
 typedef mama_status 
-(*msgPayload_unload)          (void);
+(*Payload_unload)          (void);
 
 /*===================================================================
  =              msgPayload bridge function pointers                 =
  ====================================================================*/
 typedef mama_status
-(*msgPayload_create)           (msgPayload*         msg);
+(*Payload_create)           (msgPayload*         msg);
 typedef mama_status
-(*msgPayload_createForTemplate)(msgPayload*         msg,
-                                mamaPayloadBridge       bridge,
-                                mama_u32_t          templateId);
+(*Payload_createForTemplate)(msgPayload*         msg,
+                             mamaPayloadBridge       bridge,
+                             mama_u32_t          templateId);
 typedef mama_status
-(*msgPayload_copy)             (const msgPayload    msg,
-                                msgPayload*         copy);
+(*Payload_copy)             (const msgPayload    msg,
+                             msgPayload*         copy);
 typedef mama_status
-(*msgPayload_clear)            (msgPayload          msg);
+(*Payload_clear)            (msgPayload          msg);
 typedef mama_status
-(*msgPayload_destroy)          (msgPayload          msg);
+(*Payload_destroy)          (msgPayload          msg);
 typedef mama_status
-(*msgPayload_setParent)        (msgPayload          msg,
-                                const mamaMsg       parent);
+(*Payload_setParent)        (msgPayload          msg,
+                             const mamaMsg       parent);
 typedef mama_status
-(*msgPayload_getByteSize)      (msgPayload          msg,
-                                mama_size_t*        size);
+(*Payload_getByteSize)      (msgPayload          msg,
+                             mama_size_t*        size);
 typedef mama_status
-(*msgPayload_getNumFields)     (const msgPayload    msg,
-                                mama_size_t*        numFields);
+(*Payload_getNumFields)     (const msgPayload    msg,
+                             mama_size_t*        numFields);
 
 typedef mama_status
-(*msgPayload_getSendSubject)   (const msgPayload    msg,
-                                const char**        subject);
+(*Payload_getSendSubject)   (const msgPayload    msg,
+                             const char**        subject);
 typedef const char*
-(*msgPayload_toString)         (const msgPayload    msg);
+(*Payload_toString)         (const msgPayload    msg);
 typedef mama_status
-(*msgPayload_iterateFields)    (const msgPayload    msg,
-                                const mamaMsg       parent,
-                                mamaMsgField        field,
-                                mamaMsgIteratorCb   cb,
-                                void*               closure);
+(*Payload_iterateFields)    (const msgPayload    msg,
+                             const mamaMsg       parent,
+                             mamaMsgField        field,
+                             mamaMsgIteratorCb   cb,
+                             void*               closure);
 
 typedef mama_status
-(*msgPayload_serialize)        (const msgPayload    msg,
-                                const void**        buffer,
-                                mama_size_t*        bufferLength);
+(*Payload_serialize)        (const msgPayload    msg,
+                             const void**        buffer,
+                             mama_size_t*        bufferLength);
 
 typedef mama_status
-(*msgPayload_unSerialize)      (const msgPayload    msg,
-                                const void**        buffer,
-                                mama_size_t         bufferLength);
+(*Payload_unSerialize)      (const msgPayload    msg,
+                             const void**        buffer,
+                             mama_size_t         bufferLength);
 
 typedef mama_status
-(*msgPayload_getByteBuffer)    (const msgPayload    msg,
-                                const void**        buffer,
-                                mama_size_t*        bufferLength);
+(*Payload_getByteBuffer)    (const msgPayload    msg,
+                             const void**        buffer,
+                             mama_size_t*        bufferLength);
 
 typedef mama_status
-(*msgPayload_setByteBuffer)    (const msgPayload    msg,
-                                mamaPayloadBridge   bridge,
-                                const void*         buffer,
-                                mama_size_t         bufferLength);
+(*Payload_setByteBuffer)    (const msgPayload    msg,
+                             mamaPayloadBridge   bridge,
+                             const void*         buffer,
+                             mama_size_t         bufferLength);
 
 typedef mama_status
-(*msgPayload_createFromByteBuffer) (
+(*Payload_createFromByteBuffer) (
                                 msgPayload*         msg,
                                 mamaPayloadBridge       bridge,
                                 const void*         buffer,
                                 mama_size_t         bufferLength);
 typedef mama_status
-(*msgPayload_apply)            (msgPayload          dest,
-                                const msgPayload    src);
+(*Payload_apply)            (msgPayload          dest,
+                             const msgPayload    src);
 typedef mama_status
-(*msgPayload_getNativeMsg)     (const msgPayload    msg,
-                                void**              nativeMsg);
+(*Payload_getNativeMsg)     (const msgPayload    msg,
+                             void**              nativeMsg);
 
 typedef mama_status
-(*msgPayload_getFieldAsString) (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                char*               buffer,
-                                mama_size_t         len);
-typedef mama_status
-(*msgPayload_addBool)          (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_bool_t         value);
-typedef mama_status
-(*msgPayload_addChar)          (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                char                value);
-typedef mama_status
-(*msgPayload_addI8)            (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i8_t           value);
-typedef mama_status
-(*msgPayload_addU8)            (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u8_t           value);
-typedef mama_status
-(*msgPayload_addI16)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i16_t          value);
-typedef mama_status
-(*msgPayload_addU16)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u16_t          value);
-typedef mama_status
-(*msgPayload_addI32)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i32_t          value);
-typedef mama_status
-(*msgPayload_addU32)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u32_t          value);
-typedef mama_status
-(*msgPayload_addI64)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i64_t          value);
-typedef mama_status
-(*msgPayload_addU64)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u64_t          value);
-typedef mama_status
-(*msgPayload_addF32)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f32_t          value);
-typedef mama_status
-(*msgPayload_addF64)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f64_t          value);
-typedef mama_status
-(*msgPayload_addString)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char*         value);
-typedef mama_status
-(*msgPayload_addOpaque)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const void*         value,
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addDateTime)      (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaDateTime  value);
-typedef mama_status
-(*msgPayload_addPrice)         (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaPrice     value);
-typedef mama_status
-(*msgPayload_addMsg)           (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                msgPayload          value);
-typedef mama_status
-(*msgPayload_addVectorBool)    (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_bool_t   value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorChar)    (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char          value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorI8)      (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i8_t     value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorU8)      (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u8_t     value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorI16)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i16_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorU16)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u16_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorI32)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i32_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorU32)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u32_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorI64)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i64_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorU64)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u64_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorF32)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_f32_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorF64)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_f64_t    value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorString)  (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char*         value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorMsg)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaMsg       value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorDateTime)(msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaDateTime  value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_addVectorPrice)   (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaPrice     value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateBool)       (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_bool_t         value);
-typedef mama_status
-(*msgPayload_updateChar)       (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                char                value);
-typedef mama_status
-(*msgPayload_updateU8)         (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u8_t           value);
-typedef mama_status
-(*msgPayload_updateI8)         (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i8_t           value);
-typedef mama_status
-(*msgPayload_updateI16)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i16_t          value);
-typedef mama_status
-(*msgPayload_updateU16)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u16_t          value);
-typedef mama_status
-(*msgPayload_updateI32)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i32_t          value);
-typedef mama_status
-(*msgPayload_updateU32)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u32_t          value);
-typedef mama_status
-(*msgPayload_updateI64)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i64_t          value);
-typedef mama_status
-(*msgPayload_updateU64)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u64_t          value);
-typedef mama_status
-(*msgPayload_updateF32)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f32_t          value);
-typedef mama_status
-(*msgPayload_updateF64)        (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f64_t          value);
-typedef mama_status
-(*msgPayload_updateString)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char*         value);
-typedef mama_status
-(*msgPayload_updateOpaque)     (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const void*         value,
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateDateTime)   (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaDateTime  value);
-typedef mama_status
-(*msgPayload_updatePrice)      (msgPayload          msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaPrice     value);
-typedef mama_status
-(*msgPayload_getBool)          (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_bool_t*        result);
-typedef mama_status
-(*msgPayload_updateSubMsg)     (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const msgPayload    subMsg);
-typedef mama_status
-(*msgPayload_updateVectorMsg)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mamaMsg       value[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorString)(msgPayload         msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const char*         strList[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorBool) (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_bool_t   boolList[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorChar) (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const char          charList[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorI8)   (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_i8_t     i8List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorU8)   (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_u8_t     u8List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorI16)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_i16_t    i16List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorU16)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_u16_t    u16List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorI32)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_i32_t    i32List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorU32)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_u32_t    u32List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorI64)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_i64_t    i64List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorU64)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_u64_t    u64List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorF32)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_f32_t    f32List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorF64)  (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mama_f64_t    f64List[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorPrice)(msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mamaPrice*    priceList[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_updateVectorTime) (msgPayload          msg,
-                                const char*         fname,
-                                mama_fid_t          fid,
-                                const mamaDateTime  timeList[],
-                                mama_size_t         size);
-typedef mama_status
-(*msgPayload_getChar)          (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                char*               result);
-typedef mama_status
-(*msgPayload_getI8)            (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i8_t*          result);
-typedef mama_status
-(*msgPayload_getU8)            (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u8_t*          result);
-typedef mama_status
-(*msgPayload_getI16)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i16_t*         result);
-typedef mama_status
-(*msgPayload_getU16)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u16_t*         result);
-typedef mama_status
-(*msgPayload_getI32)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i32_t*         result);
-typedef mama_status
-(*msgPayload_getU32)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u32_t*         result);
-typedef mama_status
-(*msgPayload_getI64)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_i64_t*         result);
-typedef mama_status
-(*msgPayload_getU64)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_u64_t*         result);
-typedef mama_status
-(*msgPayload_getF32)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f32_t*         result);
-typedef mama_status
-(*msgPayload_getF64)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mama_f64_t*         result);
-typedef mama_status
-(*msgPayload_getString)        (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char**        result);
-typedef mama_status
-(*msgPayload_getOpaque)        (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const void**        result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getField)         (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                msgFieldPayload*    result);
-typedef mama_status
-(*msgPayload_getDateTime)      (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mamaDateTime        result);
-typedef mama_status
-(*msgPayload_getPrice)         (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                mamaPrice           result);
-typedef mama_status
-(*msgPayload_getMsg)           (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                msgPayload*         result);
-typedef mama_status
-(*msgPayload_getVectorBool)    (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_bool_t** result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorChar)    (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char**        result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorI8)      (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i8_t**   result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorU8)      (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u8_t**   result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorI16)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i16_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorU16)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u16_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorI32)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i32_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorU32)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u32_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorI64)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_i64_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorU64)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_u64_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorF32)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_f32_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorF64)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mama_f64_t**  result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorString)  (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const char***       result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorDateTime)(const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaDateTime* result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorPrice)   (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const mamaPrice*    result,
-                                mama_size_t*        size);
-typedef mama_status
-(*msgPayload_getVectorMsg)     (const msgPayload    msg,
-                                const char*         name,
-                                mama_fid_t          fid,
-                                const msgPayload**  result,
-                                mama_size_t*        size);
+(*Payload_getFieldAsString) (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             char*               buffer,
+                             mama_size_t         len);
+typedef mama_status
+(*Payload_addBool)          (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_bool_t         value);
+typedef mama_status
+(*Payload_addChar)          (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             char                value);
+typedef mama_status
+(*Payload_addI8)            (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i8_t           value);
+typedef mama_status
+(*Payload_addU8)            (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u8_t           value);
+typedef mama_status
+(*Payload_addI16)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i16_t          value);
+typedef mama_status
+(*Payload_addU16)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u16_t          value);
+typedef mama_status
+(*Payload_addI32)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i32_t          value);
+typedef mama_status
+(*Payload_addU32)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u32_t          value);
+typedef mama_status
+(*Payload_addI64)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i64_t          value);
+typedef mama_status
+(*Payload_addU64)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u64_t          value);
+typedef mama_status
+(*Payload_addF32)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f32_t          value);
+typedef mama_status
+(*Payload_addF64)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f64_t          value);
+typedef mama_status
+(*Payload_addString)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char*         value);
+typedef mama_status
+(*Payload_addOpaque)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const void*         value,
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addDateTime)      (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaDateTime  value);
+typedef mama_status
+(*Payload_addPrice)         (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaPrice     value);
+typedef mama_status
+(*Payload_addMsg)           (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             msgPayload          value);
+typedef mama_status
+(*Payload_addVectorBool)    (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_bool_t   value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorChar)    (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char          value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorI8)      (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i8_t     value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorU8)      (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u8_t     value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorI16)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i16_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorU16)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u16_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorI32)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i32_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorU32)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u32_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorI64)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i64_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorU64)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u64_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorF32)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_f32_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorF64)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_f64_t    value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorString)  (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char*         value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorMsg)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaMsg       value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorDateTime)(msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaDateTime  value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_addVectorPrice)   (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaPrice     value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateBool)       (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_bool_t         value);
+typedef mama_status
+(*Payload_updateChar)       (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             char                value);
+typedef mama_status
+(*Payload_updateU8)         (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u8_t           value);
+typedef mama_status
+(*Payload_updateI8)         (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i8_t           value);
+typedef mama_status
+(*Payload_updateI16)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i16_t          value);
+typedef mama_status
+(*Payload_updateU16)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u16_t          value);
+typedef mama_status
+(*Payload_updateI32)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i32_t          value);
+typedef mama_status
+(*Payload_updateU32)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u32_t          value);
+typedef mama_status
+(*Payload_updateI64)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i64_t          value);
+typedef mama_status
+(*Payload_updateU64)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u64_t          value);
+typedef mama_status
+(*Payload_updateF32)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f32_t          value);
+typedef mama_status
+(*Payload_updateF64)        (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f64_t          value);
+typedef mama_status
+(*Payload_updateString)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char*         value);
+typedef mama_status
+(*Payload_updateOpaque)     (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const void*         value,
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateDateTime)   (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaDateTime  value);
+typedef mama_status
+(*Payload_updatePrice)      (msgPayload          msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaPrice     value);
+typedef mama_status
+(*Payload_getBool)          (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_bool_t*        result);
+typedef mama_status
+(*Payload_updateSubMsg)     (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const msgPayload    subMsg);
+typedef mama_status
+(*Payload_updateVectorMsg)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mamaMsg       value[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorString)(msgPayload         msg,
+                              const char*         fname,
+                              mama_fid_t          fid,
+                              const char*         strList[],
+                              mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorBool) (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_bool_t   boolList[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorChar) (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const char          charList[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorI8)   (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_i8_t     i8List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorU8)   (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_u8_t     u8List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorI16)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_i16_t    i16List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorU16)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_u16_t    u16List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorI32)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_i32_t    i32List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorU32)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_u32_t    u32List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorI64)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_i64_t    i64List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorU64)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_u64_t    u64List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorF32)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_f32_t    f32List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorF64)  (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mama_f64_t    f64List[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorPrice)(msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mamaPrice*    priceList[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_updateVectorTime) (msgPayload          msg,
+                             const char*         fname,
+                             mama_fid_t          fid,
+                             const mamaDateTime  timeList[],
+                             mama_size_t         size);
+typedef mama_status
+(*Payload_getChar)          (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             char*               result);
+typedef mama_status
+(*Payload_getI8)            (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i8_t*          result);
+typedef mama_status
+(*Payload_getU8)            (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u8_t*          result);
+typedef mama_status
+(*Payload_getI16)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i16_t*         result);
+typedef mama_status
+(*Payload_getU16)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u16_t*         result);
+typedef mama_status
+(*Payload_getI32)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i32_t*         result);
+typedef mama_status
+(*Payload_getU32)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u32_t*         result);
+typedef mama_status
+(*Payload_getI64)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_i64_t*         result);
+typedef mama_status
+(*Payload_getU64)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_u64_t*         result);
+typedef mama_status
+(*Payload_getF32)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f32_t*         result);
+typedef mama_status
+(*Payload_getF64)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mama_f64_t*         result);
+typedef mama_status
+(*Payload_getString)        (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char**        result);
+typedef mama_status
+(*Payload_getOpaque)        (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const void**        result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getField)         (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             msgFieldPayload*    result);
+typedef mama_status
+(*Payload_getDateTime)      (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mamaDateTime        result);
+typedef mama_status
+(*Payload_getPrice)         (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             mamaPrice           result);
+typedef mama_status
+(*Payload_getMsg)           (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             msgPayload*         result);
+typedef mama_status
+(*Payload_getVectorBool)    (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_bool_t** result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorChar)    (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char**        result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorI8)      (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i8_t**   result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorU8)      (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u8_t**   result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorI16)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i16_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorU16)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u16_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorI32)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i32_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorU32)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u32_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorI64)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_i64_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorU64)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_u64_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorF32)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_f32_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorF64)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mama_f64_t**  result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorString)  (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const char***       result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorDateTime)(const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaDateTime* result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorPrice)   (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const mamaPrice*    result,
+                             mama_size_t*        size);
+typedef mama_status
+(*Payload_getVectorMsg)     (const msgPayload    msg,
+                             const char*         name,
+                             mama_fid_t          fid,
+                             const msgPayload**  result,
+                             mama_size_t*        size);
 /*===================================================================
  =              msgFieldPayload bridge function pointers             =
  ====================================================================*/
 typedef mama_status
-(*msgFieldPayload_create)      (msgFieldPayload*        field);
+(*FieldPayload_create)      (msgFieldPayload*        field);
 
 typedef mama_status
-(*msgFieldPayload_destroy)     (msgFieldPayload         field);
+(*FieldPayload_destroy)     (msgFieldPayload         field);
 
 typedef mama_status
-(*msgFieldPayload_getType)     (const msgFieldPayload   field,
-                                mamaFieldType*          result);
+(*FieldPayload_getType)     (const msgFieldPayload   field,
+                             mamaFieldType*          result);
 typedef mama_status
-(*msgFieldPayload_getName)     (msgFieldPayload         field,
-                                mamaDictionary          dict,
-                                mamaFieldDescriptor     desc,
-                                const char**            result);
+(*FieldPayload_getName)     (msgFieldPayload         field,
+                             mamaDictionary          dict,
+                             mamaFieldDescriptor     desc,
+                             const char**            result);
 typedef mama_status
-(*msgFieldPayload_getFid)      (const msgFieldPayload   field,
-                                mamaDictionary          dict,
-                                mamaFieldDescriptor     desc,
-                                uint16_t*               result);
+(*FieldPayload_getFid)      (const msgFieldPayload   field,
+                             mamaDictionary          dict,
+                             mamaFieldDescriptor     desc,
+                             uint16_t*               result);
 typedef mama_status
-(*msgFieldPayload_getDescriptor)(const msgFieldPayload  field,
-                                mamaDictionary          dict,
-                                mamaFieldDescriptor*    result);
+(*FieldPayload_getDescriptor)(const msgFieldPayload  field,
+                              mamaDictionary          dict,
+                              mamaFieldDescriptor*    result);
 typedef mama_status
-(*msgFieldPayload_updateBool)  (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_bool_t             value);
+(*FieldPayload_updateBool)  (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_bool_t             value);
 typedef mama_status
-(*msgFieldPayload_updateChar)  (msgFieldPayload         field,
-                                msgPayload              msg,
-                                char                    value);
+(*FieldPayload_updateChar)  (msgFieldPayload         field,
+                             msgPayload              msg,
+                             char                    value);
 typedef mama_status
-(*msgFieldPayload_updateU8)    (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_u8_t               value);
+(*FieldPayload_updateU8)    (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_u8_t               value);
 typedef mama_status
-(*msgFieldPayload_updateI8)    (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_i8_t               value);
+(*FieldPayload_updateI8)    (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_i8_t               value);
 typedef mama_status
-(*msgFieldPayload_updateI16)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_i16_t              value);
+(*FieldPayload_updateI16)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_i16_t              value);
 typedef mama_status
-(*msgFieldPayload_updateU16)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_u16_t              value);
+(*FieldPayload_updateU16)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_u16_t              value);
 typedef mama_status
-(*msgFieldPayload_updateI32)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_i32_t              value);
+(*FieldPayload_updateI32)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_i32_t              value);
 typedef mama_status
-(*msgFieldPayload_updateU32)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_u32_t              value);
+(*FieldPayload_updateU32)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_u32_t              value);
 typedef mama_status
-(*msgFieldPayload_updateI64)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_i64_t              value);
+(*FieldPayload_updateI64)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_i64_t              value);
 typedef mama_status
-(*msgFieldPayload_updateU64)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_u64_t              value);
+(*FieldPayload_updateU64)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_u64_t              value);
 typedef mama_status
-(*msgFieldPayload_updateF32)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_f32_t              value);
+(*FieldPayload_updateF32)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_f32_t              value);
 typedef mama_status
-(*msgFieldPayload_updateF64)   (msgFieldPayload         field,
-                                msgPayload              msg,
-                                mama_f64_t              value);
+(*FieldPayload_updateF64)   (msgFieldPayload         field,
+                             msgPayload              msg,
+                             mama_f64_t              value);
 typedef mama_status
-(*msgFieldPayload_updateString)(msgFieldPayload         field,
-                                msgPayload              msg,
-                                const char*             value);
+(*FieldPayload_updateString)(msgFieldPayload         field,
+                             msgPayload              msg,
+                             const char*             value);
 typedef mama_status
-(*msgFieldPayload_updateDateTime)
+(*FieldPayload_updateDateTime)
                                (msgFieldPayload         field,
                                 msgPayload              msg,
                                 const mamaDateTime      value);
 typedef mama_status
-(*msgFieldPayload_updatePrice) (msgFieldPayload         field,
-                                msgPayload              msg,
-                                const mamaPrice         value);
+(*FieldPayload_updatePrice) (msgFieldPayload         field,
+                             msgPayload              msg,
+                             const mamaPrice         value);
 typedef mama_status
-(*msgFieldPayload_updateSubMsg)(msgFieldPayload         field,
-                                msgPayload              msg,
-                                const msgPayload        subMsg);
+(*FieldPayload_updateSubMsg)(msgFieldPayload         field,
+                             msgPayload              msg,
+                             const msgPayload        subMsg);
 typedef mama_status
-(*msgFieldPayload_getBool)     (const msgFieldPayload   field,
-                                mama_bool_t*            result);
+(*FieldPayload_getBool)     (const msgFieldPayload   field,
+                             mama_bool_t*            result);
 typedef mama_status
-(*msgFieldPayload_getChar)     (const msgFieldPayload   field,
-                                char*                   result);
+(*FieldPayload_getChar)     (const msgFieldPayload   field,
+                             char*                   result);
 typedef mama_status
-(*msgFieldPayload_getI8)       (const msgFieldPayload   field,
-                                mama_i8_t*              result);
+(*FieldPayload_getI8)       (const msgFieldPayload   field,
+                             mama_i8_t*              result);
 typedef mama_status
-(*msgFieldPayload_getU8)       (const msgFieldPayload   field,
+(*FieldPayload_getU8)       (const msgFieldPayload   field,
                                 mama_u8_t*              result);
 typedef mama_status
-(*msgFieldPayload_getI16)      (const msgFieldPayload   field,
-                                mama_i16_t*             result);
+(*FieldPayload_getI16)      (const msgFieldPayload   field,
+                             mama_i16_t*             result);
 typedef mama_status
-(*msgFieldPayload_getU16)      (const msgFieldPayload   field,
-                                 mama_u16_t*            result);
+(*FieldPayload_getU16)      (const msgFieldPayload   field,
+                             mama_u16_t*            result);
 typedef mama_status
-(*msgFieldPayload_getI32)      (const msgFieldPayload   field,
-                                mama_i32_t*             result);
+(*FieldPayload_getI32)      (const msgFieldPayload   field,
+                             mama_i32_t*             result);
 typedef mama_status
-(*msgFieldPayload_getU32)      (const msgFieldPayload   field,
-                                mama_u32_t*             result);
+(*FieldPayload_getU32)      (const msgFieldPayload   field,
+                             mama_u32_t*             result);
 typedef mama_status
-(*msgFieldPayload_getI64)      (const msgFieldPayload   field,
-                                mama_i64_t*             result);
+(*FieldPayload_getI64)      (const msgFieldPayload   field,
+                             mama_i64_t*             result);
 typedef mama_status
-(*msgFieldPayload_getU64)      (const msgFieldPayload   field,
-                                mama_u64_t*             result);
+(*FieldPayload_getU64)      (const msgFieldPayload   field,
+                             mama_u64_t*             result);
 typedef mama_status
-(*msgFieldPayload_getF32)      (const msgFieldPayload   field,
-                                mama_f32_t*             result);
+(*FieldPayload_getF32)      (const msgFieldPayload   field,
+                             mama_f32_t*             result);
 typedef mama_status
-(*msgFieldPayload_getF64)      (const msgFieldPayload   field,
-                                mama_f64_t*             result);
+(*FieldPayload_getF64)      (const msgFieldPayload   field,
+                             mama_f64_t*             result);
 typedef mama_status
-(*msgFieldPayload_getString)   (const msgFieldPayload   field,
-                                const char**            result);
+(*FieldPayload_getString)   (const msgFieldPayload   field,
+                             const char**            result);
 typedef mama_status
-(*msgFieldPayload_getOpaque)   (const msgFieldPayload   field,
-                                const void**            result,
-                                mama_size_t*            size);
+(*FieldPayload_getOpaque)   (const msgFieldPayload   field,
+                             const void**            result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getDateTime) (const msgFieldPayload   field,
-                                mamaDateTime            result);
+(*FieldPayload_getDateTime) (const msgFieldPayload   field,
+                             mamaDateTime            result);
 typedef mama_status
-(*msgFieldPayload_getPrice)    (const msgFieldPayload   field,
-                                mamaPrice               result);
+(*FieldPayload_getPrice)    (const msgFieldPayload   field,
+                             mamaPrice               result);
 typedef mama_status
-(*msgFieldPayload_getMsg)      (const msgFieldPayload   field,
-                                msgPayload*             result);
+(*FieldPayload_getMsg)      (const msgFieldPayload   field,
+                             msgPayload*             result);
 typedef mama_status
-(*msgFieldPayload_getVectorBool)
+(*FieldPayload_getVectorBool)
                                (const msgFieldPayload   field,
                                 const mama_bool_t**     result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorChar)
+(*FieldPayload_getVectorChar)
                                (const msgFieldPayload   field,
                                 const char**            result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorI8)
+(*FieldPayload_getVectorI8)
                                (const msgFieldPayload   field,
                                 const mama_i8_t**       result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorU8) (const msgFieldPayload   field,
-                                const mama_u8_t**       result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorU8) (const msgFieldPayload   field,
+                             const mama_u8_t**       result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorI16)(const msgFieldPayload   field,
-                                const mama_i16_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorI16)(const msgFieldPayload   field,
+                             const mama_i16_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorU16)(const msgFieldPayload   field,
-                                const mama_u16_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorU16)(const msgFieldPayload   field,
+                             const mama_u16_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorI32)(const msgFieldPayload   field,
-                                const mama_i32_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorI32)(const msgFieldPayload   field,
+                             const mama_i32_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorU32)(const msgFieldPayload   field,
-                                const mama_u32_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorU32)(const msgFieldPayload   field,
+                             const mama_u32_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorI64)(const msgFieldPayload   field,
-                                const mama_i64_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorI64)(const msgFieldPayload   field,
+                             const mama_i64_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorU64)(const msgFieldPayload   field,
-                                const mama_u64_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorU64)(const msgFieldPayload   field,
+                             const mama_u64_t**      result,
+                             mama_size_t*            size);
  typedef mama_status
-(*msgFieldPayload_getVectorF32)(const msgFieldPayload   field,
-                                const mama_f32_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorF32)(const msgFieldPayload   field,
+                             const mama_f32_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorF64)(const msgFieldPayload   field,
-                                const mama_f64_t**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorF64)(const msgFieldPayload   field,
+                             const mama_f64_t**      result,
+                             mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorString)
+(*FieldPayload_getVectorString)
                                (const msgFieldPayload   field,
                                 const char***           result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorDateTime)
+(*FieldPayload_getVectorDateTime)
                                (const msgFieldPayload   field,
                                 const mamaDateTime*     result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorPrice)
+(*FieldPayload_getVectorPrice)
                                (const msgFieldPayload   field,
                                 const mamaPrice*        result,
                                 mama_size_t*            size);
 typedef mama_status
-(*msgFieldPayload_getVectorMsg)(const msgFieldPayload   field,
-                                const msgPayload**      result,
-                                mama_size_t*            size);
+(*FieldPayload_getVectorMsg)(const msgFieldPayload   field,
+                             const msgPayload**      result,
+                             mama_size_t*            size);
 
 typedef mama_status
-(*msgFieldPayload_getAsString) (const msgFieldPayload   field,
-                                const msgPayload        msg,
-                                char*                   buffer,
-                                mama_size_t             len);
+(*FieldPayload_getAsString) (const msgFieldPayload   field,
+                             const msgPayload        msg,
+                             char*                   buffer,
+                             mama_size_t             len);
 
 /*===================================================================
  =              msgPayloadIter bridge function pointers             =
  ====================================================================*/
 typedef mama_status
-(*msgPayloadIter_create)       (msgPayloadIter*         iter,
-                                msgPayload              msg);
+(*PayloadIter_create)       (msgPayloadIter*         iter,
+                             msgPayload              msg);
 typedef msgFieldPayload
-(*msgPayloadIter_next)         (msgPayloadIter          iter,
-                                msgFieldPayload         field,
-                                msgPayload              msg);
+(*PayloadIter_next)         (msgPayloadIter          iter,
+                             msgFieldPayload         field,
+                             msgPayload              msg);
 typedef mama_bool_t
-(*msgPayloadIter_hasNext)      (msgPayloadIter          iter,
-                                msgPayload              msg);
+(*PayloadIter_hasNext)      (msgPayloadIter          iter,
+                             msgPayload              msg);
 typedef msgFieldPayload
-(*msgPayloadIter_begin)        (msgPayloadIter          iter,
-                                msgFieldPayload         field,
-                                msgPayload              msg);
+(*PayloadIter_begin)        (msgPayloadIter          iter,
+                             msgFieldPayload         field,
+                             msgPayload              msg);
 typedef msgFieldPayload
-(*msgPayloadIter_end)          (msgPayloadIter          iter,
-                                msgPayload              msg);
+(*PayloadIter_end)          (msgPayloadIter          iter,
+                             msgPayload              msg);
 typedef mama_status
-(*msgPayloadIter_associate)    (msgPayloadIter          iter,
-                                msgPayload              msg);
+(*PayloadIter_associate)    (msgPayloadIter          iter,
+                             msgPayload              msg);
 typedef mama_status
-(*msgPayloadIter_destroy)      (msgPayloadIter          iter);
+(*PayloadIter_destroy)      (msgPayloadIter          iter);
 
 typedef struct mamaPayloadBridgeImpl_
 {
     /*Associate arbitrary data. Used for the wfast state */
     void*     mClosure;
 
-    msgPayload_create                   msgPayloadCreate;
-    msgPayload_createForTemplate        msgPayloadCreateForTemplate;
-    msgPayload_getType                  msgPayloadGetType;
-    msgPayload_copy                     msgPayloadCopy;
-    msgPayload_clear                    msgPayloadClear;
-    msgPayload_destroy                  msgPayloadDestroy;
-    msgPayload_setParent                msgPayloadSetParent;
-    msgPayload_getByteSize              msgPayloadGetByteSize;
-    msgPayload_getNumFields             msgPayloadGetNumFields;
-    msgPayload_getSendSubject           msgPayloadGetSendSubject;
-    msgPayload_toString                 msgPayloadToString;
-    msgPayload_iterateFields            msgPayloadIterateFields;
-    msgPayload_serialize                msgPayloadSerialize;
-    msgPayload_unSerialize              msgPayloadUnSerialize;
-    msgPayload_getByteBuffer            msgPayloadGetByteBuffer;
-    msgPayload_setByteBuffer            msgPayloadSetByteBuffer;
-    msgPayload_createFromByteBuffer     msgPayloadCreateFromByteBuffer;
-    msgPayload_apply                    msgPayloadApply;
-    msgPayload_getNativeMsg             msgPayloadGetNativeMsg;
-    msgPayload_getFieldAsString         msgPayloadGetFieldAsString;
-    msgPayload_addBool                  msgPayloadAddBool;
-    msgPayload_addChar                  msgPayloadAddChar;
-    msgPayload_addI8                    msgPayloadAddI8;
-    msgPayload_addU8                    msgPayloadAddU8;
-    msgPayload_addI16                   msgPayloadAddI16;
-    msgPayload_addU16                   msgPayloadAddU16;
-    msgPayload_addI32                   msgPayloadAddI32;
-    msgPayload_addU32                   msgPayloadAddU32;
-    msgPayload_addI64                   msgPayloadAddI64;
-    msgPayload_addU64                   msgPayloadAddU64;
-    msgPayload_addF32                   msgPayloadAddF32;
-    msgPayload_addF64                   msgPayloadAddF64;
-    msgPayload_addString                msgPayloadAddString;
-    msgPayload_addOpaque                msgPayloadAddOpaque;
-    msgPayload_addDateTime              msgPayloadAddDateTime;
-    msgPayload_addPrice                 msgPayloadAddPrice;
-    msgPayload_addMsg                   msgPayloadAddMsg;
-    msgPayload_addVectorBool            msgPayloadAddVectorBool;
-    msgPayload_addVectorChar            msgPayloadAddVectorChar;
-    msgPayload_addVectorI8              msgPayloadAddVectorI8;
-    msgPayload_addVectorU8              msgPayloadAddVectorU8;
-    msgPayload_addVectorI16             msgPayloadAddVectorI16;
-    msgPayload_addVectorU16             msgPayloadAddVectorU16;
-    msgPayload_addVectorI32             msgPayloadAddVectorI32;
-    msgPayload_addVectorU32             msgPayloadAddVectorU32;
-    msgPayload_addVectorI64             msgPayloadAddVectorI64;
-    msgPayload_addVectorU64             msgPayloadAddVectorU64;
-    msgPayload_addVectorF32             msgPayloadAddVectorF32;
-    msgPayload_addVectorF64             msgPayloadAddVectorF64;
-    msgPayload_addVectorString          msgPayloadAddVectorString;
-    msgPayload_addVectorMsg             msgPayloadAddVectorMsg;
-    msgPayload_addVectorDateTime        msgPayloadAddVectorDateTime;
-    msgPayload_addVectorPrice           msgPayloadAddVectorPrice;
-    msgPayload_updateBool               msgPayloadUpdateBool;
-    msgPayload_updateChar               msgPayloadUpdateChar;
-    msgPayload_updateU8                 msgPayloadUpdateU8;
-    msgPayload_updateI8                 msgPayloadUpdateI8;
-    msgPayload_updateI16                msgPayloadUpdateI16;
-    msgPayload_updateU16                msgPayloadUpdateU16;
-    msgPayload_updateI32                msgPayloadUpdateI32;
-    msgPayload_updateU32                msgPayloadUpdateU32;
-    msgPayload_updateI64                msgPayloadUpdateI64;
-    msgPayload_updateU64                msgPayloadUpdateU64;
-    msgPayload_updateF32                msgPayloadUpdateF32;
-    msgPayload_updateF64                msgPayloadUpdateF64;
-    msgPayload_updateString             msgPayloadUpdateString;
-    msgPayload_updateOpaque             msgPayloadUpdateOpaque;
-    msgPayload_updateDateTime           msgPayloadUpdateDateTime;
-    msgPayload_updatePrice              msgPayloadUpdatePrice;
-    msgPayload_updateSubMsg             msgPayloadUpdateSubMsg;
-    msgPayload_updateVectorMsg          msgPayloadUpdateVectorMsg;
-    msgPayload_updateVectorString       msgPayloadUpdateVectorString;
-    msgPayload_updateVectorBool         msgPayloadUpdateVectorBool;
-    msgPayload_updateVectorChar         msgPayloadUpdateVectorChar;
-    msgPayload_updateVectorI8           msgPayloadUpdateVectorI8;
-    msgPayload_updateVectorU8           msgPayloadUpdateVectorU8;
-    msgPayload_updateVectorI16          msgPayloadUpdateVectorI16;
-    msgPayload_updateVectorU16          msgPayloadUpdateVectorU16;
-    msgPayload_updateVectorI32          msgPayloadUpdateVectorI32;
-    msgPayload_updateVectorU32          msgPayloadUpdateVectorU32;
-    msgPayload_updateVectorI64          msgPayloadUpdateVectorI64;
-    msgPayload_updateVectorU64          msgPayloadUpdateVectorU64;
-    msgPayload_updateVectorF32          msgPayloadUpdateVectorF32;
-    msgPayload_updateVectorF64          msgPayloadUpdateVectorF64;
-    msgPayload_updateVectorPrice        msgPayloadUpdateVectorPrice;
-    msgPayload_updateVectorTime         msgPayloadUpdateVectorTime;
-    msgPayload_getBool                  msgPayloadGetBool;
-    msgPayload_getChar                  msgPayloadGetChar;
-    msgPayload_getI8                    msgPayloadGetI8;
-    msgPayload_getU8                    msgPayloadGetU8;
-    msgPayload_getI16                   msgPayloadGetI16;
-    msgPayload_getU16                   msgPayloadGetU16;
-    msgPayload_getI32                   msgPayloadGetI32;
-    msgPayload_getU32                   msgPayloadGetU32;
-    msgPayload_getI64                   msgPayloadGetI64;
-    msgPayload_getU64                   msgPayloadGetU64;
-    msgPayload_getF32                   msgPayloadGetF32;
-    msgPayload_getF64                   msgPayloadGetF64;
-    msgPayload_getString                msgPayloadGetString;
-    msgPayload_getOpaque                msgPayloadGetOpaque;
-    msgPayload_getField                 msgPayloadGetField;
-    msgPayload_getDateTime              msgPayloadGetDateTime;
-    msgPayload_getPrice                 msgPayloadGetPrice;
-    msgPayload_getMsg                   msgPayloadGetMsg;
-    msgPayload_getVectorBool            msgPayloadGetVectorBool;
-    msgPayload_getVectorChar            msgPayloadGetVectorChar;
-    msgPayload_getVectorI8              msgPayloadGetVectorI8;
-    msgPayload_getVectorU8              msgPayloadGetVectorU8;
-    msgPayload_getVectorI16             msgPayloadGetVectorI16;
-    msgPayload_getVectorU16             msgPayloadGetVectorU16;
-    msgPayload_getVectorI32             msgPayloadGetVectorI32;
-    msgPayload_getVectorU32             msgPayloadGetVectorU32;
-    msgPayload_getVectorI64             msgPayloadGetVectorI64;
-    msgPayload_getVectorU64             msgPayloadGetVectorU64;
-    msgPayload_getVectorF32             msgPayloadGetVectorF32;
-    msgPayload_getVectorF64             msgPayloadGetVectorF64;
-    msgPayload_getVectorString          msgPayloadGetVectorString;
-    msgPayload_getVectorDateTime        msgPayloadGetVectorDateTime;
-    msgPayload_getVectorPrice           msgPayloadGetVectorPrice;
-    msgPayload_getVectorMsg             msgPayloadGetVectorMsg;
-    msgFieldPayload_create              msgFieldPayloadCreate;
-    msgFieldPayload_destroy             msgFieldPayloadDestroy;
-    msgFieldPayload_getName             msgFieldPayloadGetName;
-    msgFieldPayload_getFid              msgFieldPayloadGetFid;
-    msgFieldPayload_getDescriptor       msgFieldPayloadGetDescriptor;
-    msgFieldPayload_getType             msgFieldPayloadGetType;
-    msgFieldPayload_updateBool          msgFieldPayloadUpdateBool;
-    msgFieldPayload_updateChar          msgFieldPayloadUpdateChar;
-    msgFieldPayload_updateU8            msgFieldPayloadUpdateU8;
-    msgFieldPayload_updateI8            msgFieldPayloadUpdateI8;
-    msgFieldPayload_updateI16           msgFieldPayloadUpdateI16;
-    msgFieldPayload_updateU16           msgFieldPayloadUpdateU16;
-    msgFieldPayload_updateI32           msgFieldPayloadUpdateI32;
-    msgFieldPayload_updateU32           msgFieldPayloadUpdateU32;
-    msgFieldPayload_updateI64           msgFieldPayloadUpdateI64;
-    msgFieldPayload_updateU64           msgFieldPayloadUpdateU64;
-    msgFieldPayload_updateF32           msgFieldPayloadUpdateF32;
-    msgFieldPayload_updateF64           msgFieldPayloadUpdateF64;
-    msgFieldPayload_updateString        msgFieldPayloadUpdateString;
-    msgFieldPayload_updateDateTime      msgFieldPayloadUpdateDateTime;
-    msgFieldPayload_updatePrice         msgFieldPayloadUpdatePrice;
-    msgFieldPayload_getBool             msgFieldPayloadGetBool;
-    msgFieldPayload_getChar             msgFieldPayloadGetChar;
-    msgFieldPayload_getI8               msgFieldPayloadGetI8;
-    msgFieldPayload_getU8               msgFieldPayloadGetU8;
-    msgFieldPayload_getI16              msgFieldPayloadGetI16;
-    msgFieldPayload_getU16              msgFieldPayloadGetU16;
-    msgFieldPayload_getI32              msgFieldPayloadGetI32;
-    msgFieldPayload_getU32              msgFieldPayloadGetU32;
-    msgFieldPayload_getI64              msgFieldPayloadGetI64;
-    msgFieldPayload_getU64              msgFieldPayloadGetU64;
-    msgFieldPayload_getF32              msgFieldPayloadGetF32;
-    msgFieldPayload_getF64              msgFieldPayloadGetF64;
-    msgFieldPayload_getString           msgFieldPayloadGetString;
-    msgFieldPayload_getOpaque           msgFieldPayloadGetOpaque;
-    msgFieldPayload_getDateTime         msgFieldPayloadGetDateTime;
-    msgFieldPayload_getPrice            msgFieldPayloadGetPrice;
-    msgFieldPayload_getMsg              msgFieldPayloadGetMsg;
-    msgFieldPayload_getVectorBool       msgFieldPayloadGetVectorBool;
-    msgFieldPayload_getVectorChar       msgFieldPayloadGetVectorChar;
-    msgFieldPayload_getVectorI8         msgFieldPayloadGetVectorI8;
-    msgFieldPayload_getVectorU8         msgFieldPayloadGetVectorU8;
-    msgFieldPayload_getVectorI16        msgFieldPayloadGetVectorI16;
-    msgFieldPayload_getVectorU16        msgFieldPayloadGetVectorU16;
-    msgFieldPayload_getVectorI32        msgFieldPayloadGetVectorI32;
-    msgFieldPayload_getVectorU32        msgFieldPayloadGetVectorU32;
-    msgFieldPayload_getVectorI64        msgFieldPayloadGetVectorI64;
-    msgFieldPayload_getVectorU64        msgFieldPayloadGetVectorU64;
-    msgFieldPayload_getVectorF32        msgFieldPayloadGetVectorF32;
-    msgFieldPayload_getVectorF64        msgFieldPayloadGetVectorF64;
-    msgFieldPayload_getVectorString     msgFieldPayloadGetVectorString;
-    msgFieldPayload_getVectorDateTime   msgFieldPayloadGetVectorDateTime;
-    msgFieldPayload_getVectorPrice      msgFieldPayloadGetVectorPrice;
-    msgFieldPayload_getVectorMsg        msgFieldPayloadGetVectorMsg;
-    msgFieldPayload_getAsString         msgFieldPayloadGetAsString;
+    Payload_create                   msgPayloadCreate;
+    Payload_createForTemplate        msgPayloadCreateForTemplate;
+    Payload_getType                  msgPayloadGetType;
+    Payload_copy                     msgPayloadCopy;
+    Payload_clear                    msgPayloadClear;
+    Payload_destroy                  msgPayloadDestroy;
+    Payload_setParent                msgPayloadSetParent;
+    Payload_getByteSize              msgPayloadGetByteSize;
+    Payload_getNumFields             msgPayloadGetNumFields;
+    Payload_getSendSubject           msgPayloadGetSendSubject;
+    Payload_toString                 msgPayloadToString;
+    Payload_iterateFields            msgPayloadIterateFields;
+    Payload_serialize                msgPayloadSerialize;
+    Payload_unSerialize              msgPayloadUnSerialize;
+    Payload_getByteBuffer            msgPayloadGetByteBuffer;
+    Payload_setByteBuffer            msgPayloadSetByteBuffer;
+    Payload_createFromByteBuffer     msgPayloadCreateFromByteBuffer;
+    Payload_apply                    msgPayloadApply;
+    Payload_getNativeMsg             msgPayloadGetNativeMsg;
+    Payload_getFieldAsString         msgPayloadGetFieldAsString;
+    Payload_addBool                  msgPayloadAddBool;
+    Payload_addChar                  msgPayloadAddChar;
+    Payload_addI8                    msgPayloadAddI8;
+    Payload_addU8                    msgPayloadAddU8;
+    Payload_addI16                   msgPayloadAddI16;
+    Payload_addU16                   msgPayloadAddU16;
+    Payload_addI32                   msgPayloadAddI32;
+    Payload_addU32                   msgPayloadAddU32;
+    Payload_addI64                   msgPayloadAddI64;
+    Payload_addU64                   msgPayloadAddU64;
+    Payload_addF32                   msgPayloadAddF32;
+    Payload_addF64                   msgPayloadAddF64;
+    Payload_addString                msgPayloadAddString;
+    Payload_addOpaque                msgPayloadAddOpaque;
+    Payload_addDateTime              msgPayloadAddDateTime;
+    Payload_addPrice                 msgPayloadAddPrice;
+    Payload_addMsg                   msgPayloadAddMsg;
+    Payload_addVectorBool            msgPayloadAddVectorBool;
+    Payload_addVectorChar            msgPayloadAddVectorChar;
+    Payload_addVectorI8              msgPayloadAddVectorI8;
+    Payload_addVectorU8              msgPayloadAddVectorU8;
+    Payload_addVectorI16             msgPayloadAddVectorI16;
+    Payload_addVectorU16             msgPayloadAddVectorU16;
+    Payload_addVectorI32             msgPayloadAddVectorI32;
+    Payload_addVectorU32             msgPayloadAddVectorU32;
+    Payload_addVectorI64             msgPayloadAddVectorI64;
+    Payload_addVectorU64             msgPayloadAddVectorU64;
+    Payload_addVectorF32             msgPayloadAddVectorF32;
+    Payload_addVectorF64             msgPayloadAddVectorF64;
+    Payload_addVectorString          msgPayloadAddVectorString;
+    Payload_addVectorMsg             msgPayloadAddVectorMsg;
+    Payload_addVectorDateTime        msgPayloadAddVectorDateTime;
+    Payload_addVectorPrice           msgPayloadAddVectorPrice;
+    Payload_updateBool               msgPayloadUpdateBool;
+    Payload_updateChar               msgPayloadUpdateChar;
+    Payload_updateU8                 msgPayloadUpdateU8;
+    Payload_updateI8                 msgPayloadUpdateI8;
+    Payload_updateI16                msgPayloadUpdateI16;
+    Payload_updateU16                msgPayloadUpdateU16;
+    Payload_updateI32                msgPayloadUpdateI32;
+    Payload_updateU32                msgPayloadUpdateU32;
+    Payload_updateI64                msgPayloadUpdateI64;
+    Payload_updateU64                msgPayloadUpdateU64;
+    Payload_updateF32                msgPayloadUpdateF32;
+    Payload_updateF64                msgPayloadUpdateF64;
+    Payload_updateString             msgPayloadUpdateString;
+    Payload_updateOpaque             msgPayloadUpdateOpaque;
+    Payload_updateDateTime           msgPayloadUpdateDateTime;
+    Payload_updatePrice              msgPayloadUpdatePrice;
+    Payload_updateSubMsg             msgPayloadUpdateSubMsg;
+    Payload_updateVectorMsg          msgPayloadUpdateVectorMsg;
+    Payload_updateVectorString       msgPayloadUpdateVectorString;
+    Payload_updateVectorBool         msgPayloadUpdateVectorBool;
+    Payload_updateVectorChar         msgPayloadUpdateVectorChar;
+    Payload_updateVectorI8           msgPayloadUpdateVectorI8;
+    Payload_updateVectorU8           msgPayloadUpdateVectorU8;
+    Payload_updateVectorI16          msgPayloadUpdateVectorI16;
+    Payload_updateVectorU16          msgPayloadUpdateVectorU16;
+    Payload_updateVectorI32          msgPayloadUpdateVectorI32;
+    Payload_updateVectorU32          msgPayloadUpdateVectorU32;
+    Payload_updateVectorI64          msgPayloadUpdateVectorI64;
+    Payload_updateVectorU64          msgPayloadUpdateVectorU64;
+    Payload_updateVectorF32          msgPayloadUpdateVectorF32;
+    Payload_updateVectorF64          msgPayloadUpdateVectorF64;
+    Payload_updateVectorPrice        msgPayloadUpdateVectorPrice;
+    Payload_updateVectorTime         msgPayloadUpdateVectorTime;
+    Payload_getBool                  msgPayloadGetBool;
+    Payload_getChar                  msgPayloadGetChar;
+    Payload_getI8                    msgPayloadGetI8;
+    Payload_getU8                    msgPayloadGetU8;
+    Payload_getI16                   msgPayloadGetI16;
+    Payload_getU16                   msgPayloadGetU16;
+    Payload_getI32                   msgPayloadGetI32;
+    Payload_getU32                   msgPayloadGetU32;
+    Payload_getI64                   msgPayloadGetI64;
+    Payload_getU64                   msgPayloadGetU64;
+    Payload_getF32                   msgPayloadGetF32;
+    Payload_getF64                   msgPayloadGetF64;
+    Payload_getString                msgPayloadGetString;
+    Payload_getOpaque                msgPayloadGetOpaque;
+    Payload_getField                 msgPayloadGetField;
+    Payload_getDateTime              msgPayloadGetDateTime;
+    Payload_getPrice                 msgPayloadGetPrice;
+    Payload_getMsg                   msgPayloadGetMsg;
+    Payload_getVectorBool            msgPayloadGetVectorBool;
+    Payload_getVectorChar            msgPayloadGetVectorChar;
+    Payload_getVectorI8              msgPayloadGetVectorI8;
+    Payload_getVectorU8              msgPayloadGetVectorU8;
+    Payload_getVectorI16             msgPayloadGetVectorI16;
+    Payload_getVectorU16             msgPayloadGetVectorU16;
+    Payload_getVectorI32             msgPayloadGetVectorI32;
+    Payload_getVectorU32             msgPayloadGetVectorU32;
+    Payload_getVectorI64             msgPayloadGetVectorI64;
+    Payload_getVectorU64             msgPayloadGetVectorU64;
+    Payload_getVectorF32             msgPayloadGetVectorF32;
+    Payload_getVectorF64             msgPayloadGetVectorF64;
+    Payload_getVectorString          msgPayloadGetVectorString;
+    Payload_getVectorDateTime        msgPayloadGetVectorDateTime;
+    Payload_getVectorPrice           msgPayloadGetVectorPrice;
+    Payload_getVectorMsg             msgPayloadGetVectorMsg;
+    FieldPayload_create              msgFieldPayloadCreate;
+    FieldPayload_destroy             msgFieldPayloadDestroy;
+    FieldPayload_getName             msgFieldPayloadGetName;
+    FieldPayload_getFid              msgFieldPayloadGetFid;
+    FieldPayload_getDescriptor       msgFieldPayloadGetDescriptor;
+    FieldPayload_getType             msgFieldPayloadGetType;
+    FieldPayload_updateBool          msgFieldPayloadUpdateBool;
+    FieldPayload_updateChar          msgFieldPayloadUpdateChar;
+    FieldPayload_updateU8            msgFieldPayloadUpdateU8;
+    FieldPayload_updateI8            msgFieldPayloadUpdateI8;
+    FieldPayload_updateI16           msgFieldPayloadUpdateI16;
+    FieldPayload_updateU16           msgFieldPayloadUpdateU16;
+    FieldPayload_updateI32           msgFieldPayloadUpdateI32;
+    FieldPayload_updateU32           msgFieldPayloadUpdateU32;
+    FieldPayload_updateI64           msgFieldPayloadUpdateI64;
+    FieldPayload_updateU64           msgFieldPayloadUpdateU64;
+    FieldPayload_updateF32           msgFieldPayloadUpdateF32;
+    FieldPayload_updateF64           msgFieldPayloadUpdateF64;
+    FieldPayload_updateString        msgFieldPayloadUpdateString;
+    FieldPayload_updateDateTime      msgFieldPayloadUpdateDateTime;
+    FieldPayload_updatePrice         msgFieldPayloadUpdatePrice;
+    FieldPayload_getBool             msgFieldPayloadGetBool;
+    FieldPayload_getChar             msgFieldPayloadGetChar;
+    FieldPayload_getI8               msgFieldPayloadGetI8;
+    FieldPayload_getU8               msgFieldPayloadGetU8;
+    FieldPayload_getI16              msgFieldPayloadGetI16;
+    FieldPayload_getU16              msgFieldPayloadGetU16;
+    FieldPayload_getI32              msgFieldPayloadGetI32;
+    FieldPayload_getU32              msgFieldPayloadGetU32;
+    FieldPayload_getI64              msgFieldPayloadGetI64;
+    FieldPayload_getU64              msgFieldPayloadGetU64;
+    FieldPayload_getF32              msgFieldPayloadGetF32;
+    FieldPayload_getF64              msgFieldPayloadGetF64;
+    FieldPayload_getString           msgFieldPayloadGetString;
+    FieldPayload_getOpaque           msgFieldPayloadGetOpaque;
+    FieldPayload_getDateTime         msgFieldPayloadGetDateTime;
+    FieldPayload_getPrice            msgFieldPayloadGetPrice;
+    FieldPayload_getMsg              msgFieldPayloadGetMsg;
+    FieldPayload_getVectorBool       msgFieldPayloadGetVectorBool;
+    FieldPayload_getVectorChar       msgFieldPayloadGetVectorChar;
+    FieldPayload_getVectorI8         msgFieldPayloadGetVectorI8;
+    FieldPayload_getVectorU8         msgFieldPayloadGetVectorU8;
+    FieldPayload_getVectorI16        msgFieldPayloadGetVectorI16;
+    FieldPayload_getVectorU16        msgFieldPayloadGetVectorU16;
+    FieldPayload_getVectorI32        msgFieldPayloadGetVectorI32;
+    FieldPayload_getVectorU32        msgFieldPayloadGetVectorU32;
+    FieldPayload_getVectorI64        msgFieldPayloadGetVectorI64;
+    FieldPayload_getVectorU64        msgFieldPayloadGetVectorU64;
+    FieldPayload_getVectorF32        msgFieldPayloadGetVectorF32;
+    FieldPayload_getVectorF64        msgFieldPayloadGetVectorF64;
+    FieldPayload_getVectorString     msgFieldPayloadGetVectorString;
+    FieldPayload_getVectorDateTime   msgFieldPayloadGetVectorDateTime;
+    FieldPayload_getVectorPrice      msgFieldPayloadGetVectorPrice;
+    FieldPayload_getVectorMsg        msgFieldPayloadGetVectorMsg;
+    FieldPayload_getAsString         msgFieldPayloadGetAsString;
 
-    msgPayloadIter_create               msgPayloadIterCreate;
-    msgPayloadIter_next                 msgPayloadIterNext;
-    msgPayloadIter_hasNext              msgPayloadIterHasNext;
-    msgPayloadIter_begin                msgPayloadIterBegin;
-    msgPayloadIter_end                  msgPayloadIterEnd;
-    msgPayloadIter_associate            msgPayloadIterAssociate;
-    msgPayloadIter_destroy              msgPayloadIterDestroy;
+    PayloadIter_create               msgPayloadIterCreate;
+    PayloadIter_next                 msgPayloadIterNext;
+    PayloadIter_hasNext              msgPayloadIterHasNext;
+    PayloadIter_begin                msgPayloadIterBegin;
+    PayloadIter_end                  msgPayloadIterEnd;
+    PayloadIter_associate            msgPayloadIterAssociate;
+    PayloadIter_destroy              msgPayloadIterDestroy;
 
     void*                               closure;
 
