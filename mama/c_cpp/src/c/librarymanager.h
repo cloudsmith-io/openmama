@@ -125,52 +125,15 @@ typedef mamaLibraryType
                                                LIB_HANDLE  libraryHandle);
 
 typedef const char*
-(*mamaLibraryTypeManager_getLibraryProperty) (mamaLibrary library,
-                                              const char* property);
+(*mamaLibraryTypeManager_getLibraryStringProperty) (mamaLibrary library,
+                                                    const char* property);
 
 typedef mama_bool_t
 (*mamaLibraryTypeManager_getLibraryBoolProperty) (mamaLibrary library,
                                                   const char* property);
 
 typedef const char*
-(*mamaLibraryTypeManager_getLibraryIgnore) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryName) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryDescription) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryAuthor) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryUri) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryLicense) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryVersion) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryMamaVersion) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryBridgeAuthor) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryBridgeUri) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryBridgeLicense) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryBridgeVersion) (mamaLibrary library);
-
-typedef const char*
-(*mamaLibraryTypeManager_getLibraryBridgeMamaVersion) (mamaLibrary library);
-
+(*mamaLibraryTypeManager_getLibraryPropertyFunc) (mamaLibrary library);
 
 /*********************************************************
  * Library Manager Data Structures.
@@ -222,20 +185,20 @@ typedef struct mamaLibraryTypeManagerBridgeImpl_
     mamaLibraryTypeManager_dumpLibrary                 dumpLibrary;
     mamaLibraryTypeManager_forwardCallback             forwardCallback;
     mamaLibraryTypeManager_classifyLibraryType         classifyLibraryType;
-    mamaLibraryTypeManager_getLibraryProperty          getLibraryProperty;
+    mamaLibraryTypeManager_getLibraryStringProperty    getLibraryStringProperty;
     mamaLibraryTypeManager_getLibraryBoolProperty      getLibraryBoolProperty;
-    mamaLibraryTypeManager_getLibraryIgnore            getLibraryIgnore;
-    mamaLibraryTypeManager_getLibraryName              getLibraryName;
-    mamaLibraryTypeManager_getLibraryAuthor            getLibraryAuthor;
-    mamaLibraryTypeManager_getLibraryUri               getLibraryUri;
-    mamaLibraryTypeManager_getLibraryLicense           getLibraryLicense;
-    mamaLibraryTypeManager_getLibraryVersion           getLibraryVersion;
-    mamaLibraryTypeManager_getLibraryMamaVersion       getLibraryMamaVersion;
-    mamaLibraryTypeManager_getLibraryBridgeAuthor      getLibraryBridgeAuthor;
-    mamaLibraryTypeManager_getLibraryBridgeUri         getLibraryBridgeUri;
-    mamaLibraryTypeManager_getLibraryBridgeLicense     getLibraryBridgeLicense;
-    mamaLibraryTypeManager_getLibraryBridgeVersion     getLibraryBridgeVersion;
-    mamaLibraryTypeManager_getLibraryBridgeMamaVersion getLibraryBridgeMamaVersion;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryIgnore;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryName;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryAuthor;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryUri;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryLicense;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryVersion;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryMamaVersion;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryBridgeAuthor;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryBridgeUri;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryBridgeLicense;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryBridgeVersion;
+    mamaLibraryTypeManager_getLibraryPropertyFunc      getLibraryBridgeMamaVersion;
 } mamaLibraryTypeManagerBridgeImpl;
 
 typedef struct mamaLibraryTypeManagerImpl_

@@ -30,61 +30,62 @@
 extern "C"
 {
 #endif /* __cplusplus */
+ 
+typedef struct mamaMiddlewareLibraryImpl_*  mamaMiddlewareLibrary;
 
 extern mama_status
-mamaMiddlewareLibraryManager_create (mamaLibraryTypeManager manager);
+mamaMiddlewareManager_create (mamaLibraryTypeManager manager);
 
 extern void
-mamaMiddlewareLibraryManager_destroy (void);
+mamaMiddlewareManager_destroy (void);
 
 extern mama_status
-mamaMiddlewareLibraryManager_loadLibrary (mamaLibrary library);
+mamaMiddlewareManager_loadLibrary (mamaLibrary library);
 
 extern void
-mamaMiddlewareLibraryManager_unloadLibrary (mamaLibrary library);
+mamaMiddlewareManager_unloadLibrary (mamaLibrary library);
 
 extern mamaLibraryType
-mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
-                                                  LIB_HANDLE  libraryLib);
+mamaMiddlewareManager_classifyLibraryType (const char* libraryName,
+                                           LIB_HANDLE  libraryLib);
 
 extern mama_bool_t
-mamaMiddlewareLibraryManager_forwardCallback (mamaLibraryCb cb, 
-                                              mamaLibrary   library, 
-                                              void*         closure);
+mamaMiddlewareManager_forwardCallback (mamaLibraryCb cb, 
+                                       mamaLibrary   library, 
+                                       void*         closure);
 extern void 
-mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager);
+mamaMiddlewareManager_dump (mamaLibraryTypeManager manager);
 
 extern void 
-mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library);
+mamaMiddlewareManager_dumpLibrary (mamaLibrary library);
 
 extern mama_status
-mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
-                                                    mamaMiddlewareLibraryCb cb,
-                                                    mamaStopCB              callback,
-                                                    mamaStopCBEx            exCallback,
-                                                    void*                   closure);
-
+mamaMiddlewareManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
+                                             mamaMiddlewareCb        cb,
+                                             mamaStopCB              callback,
+                                             mamaStopCBEx            exCallback,
+                                             void*                   closure);
 
 /*
  * Get first available middleware
  */
 extern mamaBridge
-mamaMiddlewareLibraryManager_findBridge (void);
+mamaMiddlewareManager_findBridge (void);
 
 /*Deprecated convert from middleware name to mamaMiddleware enum string*/
 extern mamaMiddleware
-mamaMiddlewareLibraryManager_convertFromString (const char*  str);
+mamaMiddlewareManager_convertFromString (const char*  str);
 
 /*Deprecated convert from mamaMiddleware to string representation of middleware name*/
 extern const char*
-mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware);
+mamaMiddlewareManager_convertToString (mamaMiddleware middleware);
 
 /* FIXME - these are just temporary functions to allow us to still use functions taking mamaBridge
  * which should be converted to mamaMiddlewareLibrary functions*/
 
 extern mama_status
-mamaMiddlewareLibraryManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
-                                                     mamaBridge*           bridge);
+mamaMiddlewareManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
+                                              mamaBridge*           bridge);
 
 #if defined(__cplusplus)
 }

@@ -257,20 +257,6 @@ mamaQueue_create (mamaQueue* queue,
 }
 
 mama_status
-mamaQueue_createWithLibrary (mamaQueue*            queue,
-                             mamaMiddlewareLibrary library)
-{
-    mamaBridge bridge = NULL;
-
-    if (!library)
-        return MAMA_STATUS_NULL_ARG;
-
-    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, &bridge);
-
-    return mamaQueue_create (queue, bridge);
-}
-
-mama_status
 mamaQueue_enableStats(mamaQueue queue)
 {
     mamaQueueImpl*  impl        =   (mamaQueueImpl *)queue;
@@ -463,21 +449,6 @@ mamaQueue_create_usingNative (mamaQueue* queue,
     *queue = (mamaQueue)impl;
 
     return MAMA_STATUS_OK;
-}
-
-mama_status
-mamaQueue_createWithLibrary_usingNative (mamaQueue*            queue,
-                                         mamaMiddlewareLibrary library,
-                                         void*                 nativeQueue)
-{
-    mamaBridge bridge = NULL;
-
-    if (!library)
-        return MAMA_STATUS_NULL_ARG;
-
-    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, &bridge);
-
-    return mamaQueue_create_usingNative (queue, bridge, nativeQueue);
 }
 
 void

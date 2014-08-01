@@ -34,7 +34,7 @@
  * Private types
  */
 
-typedef struct mamaMiddlewareLibraryManagerImpl_* mamaMiddlewareLibraryManager;
+typedef struct mamaMiddlewareManagerImpl_*        mamaMiddlewareManager;
 typedef struct mamaMiddlewareStartBgClosureImpl_* mamaMiddlewareStartBgClosure; 
 
 typedef struct mamaMiddlewareLibraryImpl_
@@ -44,10 +44,10 @@ typedef struct mamaMiddlewareLibraryImpl_
     wInterlockedInt              mStartCount;
     mamaBridge                   mBridge;
     char                         mMiddlewareId;
-    mamaMiddlewareLibraryManager mManager;
+    mamaMiddlewareManager mManager;
 } mamaMiddlewareLibraryImpl;
 
-typedef struct mamaMiddlewareLibraryManagerImpl_
+typedef struct mamaMiddlewareManagerImpl_
 {
     mamaLibraryTypeManager mParent;
     mamaMiddlewareLibrary  mMiddleware [MAMA_MAX_LIBRARIES];
@@ -55,11 +55,11 @@ typedef struct mamaMiddlewareLibraryManagerImpl_
     wInterlockedInt        mNumActive;
     mama_size_t            mStartSignal;
     mama_size_t            mStopSignal;
-} mamaMiddlewareLibraryManagerImpl;
+} mamaMiddlewareManagerImpl;
 
 typedef struct mamaMiddlewareStartBgClosureImpl_
 {
-    mamaMiddlewareLibraryCb mCb;
+    mamaMiddlewareCb mCb;
     
     /* FIXME remove the below callbacks they should not be
      * needed not, if the API user wants a callback to say the
@@ -80,77 +80,77 @@ typedef struct mamaMiddlewareStartBgClosureImpl_
  */
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_getInstance (
-        mamaMiddlewareLibraryManager* mwManager);
+mamaMiddlewareManagerImpl_getInstance (
+        mamaMiddlewareManager* mwManager);
 
 static Bridge_createImpl
-mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
-                                                LIB_HANDLE  libraryHandle);
+mamaMiddlewareManagerImpl_getCreateImpl (const char* libraryName,
+                                         LIB_HANDLE  libraryHandle);
 
 static Bridge_load
-mamaMiddlewareLibraryManager_getLoad (const char* libraryName,
-                                      LIB_HANDLE  libraryHandle);
+mamaMiddlewareManager_getLoad (const char* libraryName,
+                               LIB_HANDLE  libraryHandle);
 
 static Bridge_unload
-mamaMiddlewareLibraryManager_getUnload (const char* libraryName,
-                                        LIB_HANDLE  libraryHandle);
+mamaMiddlewareManager_getUnload (const char* libraryName,
+                                 LIB_HANDLE  libraryHandle);
 
 static Bridge_createImpl
-mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
+mamaMiddlewareManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
 static Bridge_load
-mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library);
+mamaMiddlewareManagerImpl_getLibraryLoad (mamaLibrary library);
 
 static Bridge_unload
-mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library);
+mamaMiddlewareManagerImpl_getLibraryUnload (mamaLibrary library);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_activateLibrary (mamaMiddlewareLibrary mwLibrary);
+mamaMiddlewareManagerImpl_activateLibrary (mamaMiddlewareLibrary mwLibrary);
 
 static void
-mamaMiddlewareLibraryManagerImpl_deactivateLibrary (mamaMiddlewareLibrary mwLibrary);
+mamaMiddlewareManagerImpl_deactivateLibrary (mamaMiddlewareLibrary mwLibrary);
 
 static mama_status 
-mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary library);
+mamaMiddlewareManagerImpl_loadBridge (mamaMiddlewareLibrary library);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
-                                               mamaBridge* bridge0);
+mamaMiddlewareManagerImpl_createBridge (mamaLibrary library,
+                                        mamaBridge* bridge0);
 static void
-mamaMiddlewareLibraryManagerImpl_destroyBridge (mamaBridge bridge);
+mamaMiddlewareManagerImpl_destroyBridge (mamaBridge bridge);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_createLibrary (
+mamaMiddlewareManagerImpl_createLibrary (
         mamaLibrary library, mamaMiddlewareLibrary* mwLibrary0);
 
 static void
-mamaMiddlewareLibraryManagerImpl_destroyLibrary (
+mamaMiddlewareManagerImpl_destroyLibrary (
         mamaMiddlewareLibrary mwLibrary);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
-                                                      mamaBridge  bridge);
+mamaMiddlewareManagerImpl_loadDefaultPayloads (mamaLibrary library,
+                                               mamaBridge  bridge);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
+mamaMiddlewareManagerImpl_getMiddlewareId (
         mamaMiddlewareLibrary library, char* middlewareId);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary);
+mamaMiddlewareManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary);
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary);
+mamaMiddlewareManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary);
 
 static void* 
-mamaMiddlewareLibraryManagerImpl_startThread (void* closure);
+mamaMiddlewareManagerImpl_startThread (void* closure);
 
 /*
  * Private implementation
  */
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_getInstance (
-        mamaMiddlewareLibraryManager* mwManager)
+mamaMiddlewareManagerImpl_getInstance (
+        mamaMiddlewareManager* mwManager)
 {
      if (!mwManager)
          return MAMA_STATUS_NULL_ARG;
@@ -160,7 +160,7 @@ mamaMiddlewareLibraryManagerImpl_getInstance (
          mamaLibraryManager_getTypeManager (MAMA_MIDDLEWARE_LIBRARY, &manager);
 
      if (MAMA_STATUS_OK == status)
-         *mwManager = (mamaMiddlewareLibraryManager) manager->mClosure;
+         *mwManager = (mamaMiddlewareManager) manager->mClosure;
      else
          *mwManager = NULL;
 
@@ -168,8 +168,8 @@ mamaMiddlewareLibraryManagerImpl_getInstance (
 }
 
 static Bridge_createImpl
-mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
-                                                LIB_HANDLE  libraryHandle)
+mamaMiddlewareManagerImpl_getCreateImpl (const char* libraryName,
+                                         LIB_HANDLE  libraryHandle)
 {
     void* func = 
         mamaLibraryManager_loadLibraryFunction (libraryName,
@@ -179,15 +179,15 @@ mamaMiddlewareLibraryManagerImpl_getCreateImpl (const char* libraryName,
 }
 
 static Bridge_createImpl
-mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
+mamaMiddlewareManagerImpl_getLibraryCreateImpl (mamaLibrary library)
 {
-    return mamaMiddlewareLibraryManagerImpl_getCreateImpl (library->mName,
+    return mamaMiddlewareManagerImpl_getCreateImpl (library->mName,
                                                            library->mHandle);
 }
 
 static Bridge_load
-mamaMiddlewareLibraryManagerImpl_getLoad (const char* libraryName,
-                                          LIB_HANDLE  libraryHandle)
+mamaMiddlewareManagerImpl_getLoad (const char* libraryName,
+                                   LIB_HANDLE  libraryHandle)
 {
     void* func = 
         mamaLibraryManager_loadLibraryFunction (libraryName,
@@ -197,14 +197,14 @@ mamaMiddlewareLibraryManagerImpl_getLoad (const char* libraryName,
 }
 
 static Bridge_load
-mamaMiddlewareLibraryManagerImpl_getLibraryLoad (mamaLibrary library)
+mamaMiddlewareManagerImpl_getLibraryLoad (mamaLibrary library)
 {
-    return mamaMiddlewareLibraryManagerImpl_getLoad (library->mName,
-                                                     library->mHandle);
+    return mamaMiddlewareManagerImpl_getLoad (library->mName,
+                                              library->mHandle);
 }
 
 static Bridge_unload
-mamaMiddlewareLibraryManagerImpl_getUnload (const char* libraryName,
+mamaMiddlewareManagerImpl_getUnload (const char* libraryName,
                                           LIB_HANDLE  libraryHandle)
 {
     void* func = 
@@ -215,38 +215,42 @@ mamaMiddlewareLibraryManagerImpl_getUnload (const char* libraryName,
 }
 
 static Bridge_unload
-mamaMiddlewareLibraryManagerImpl_getLibraryUnload (mamaLibrary library)
+mamaMiddlewareManagerImpl_getLibraryUnload (mamaLibrary library)
 {
-    return mamaMiddlewareLibraryManagerImpl_getUnload (library->mName,
-                                                       library->mHandle);
+    return mamaMiddlewareManagerImpl_getUnload (library->mName,
+                                                library->mHandle);
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_activateLibrary (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManagerImpl_activateLibrary (mamaMiddlewareLibrary mwLibrary)
 {
-    return mamaMiddlewareLibraryManagerImpl_loadBridge (mwLibrary);  
+    return mamaMiddlewareManagerImpl_loadBridge (mwLibrary);  
 }
 
 static void
-mamaMiddlewareLibraryManagerImpl_deactivateLibrary (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManagerImpl_deactivateLibrary (mamaMiddlewareLibrary mwLibrary)
 {
-    mamaMiddlewareLibraryManagerImpl_destroyBridge (mwLibrary->mBridge);    
+    mamaMiddlewareManagerImpl_destroyBridge (mwLibrary->mBridge);    
 }
 
 static mama_status 
-mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
 {
+    mama_status status  = MAMA_STATUS_OK;
     mamaLibrary library = mwLibrary->mParent;
+    mamaBridge bridge   = mwLibrary->mBridge;
 
-    mama_status status = 
-        mamaMiddlewareLibraryManagerImpl_createBridge (library,
-                                                       &mwLibrary->mBridge);
+    if (!bridge)
+    {
+        status = 
+            mamaMiddlewareManagerImpl_createBridge (library,
+                                                    &bridge);
+        if (MAMA_STATUS_OK != status)
+            return status;
 
-    if (MAMA_STATUS_OK != status)
-        return status;
+        mwLibrary->mBridge->mLibrary = mwLibrary;
+    }
 
-    mamaBridge bridge = mwLibrary->mBridge;
-    bridge->mLibrary  = mwLibrary;
 
     REGISTER_BRIDGE_FUNCTION (Bridge_open,  bridgeOpen);
     REGISTER_BRIDGE_FUNCTION (Bridge_close, bridgeClose);
@@ -512,7 +516,7 @@ mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
     }
 
     status =
-        mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (library, bridge);
+        mamaMiddlewareManagerImpl_loadDefaultPayloads (library, bridge);
 
     if (MAMA_STATUS_OK != status)
         free (bridge);
@@ -532,8 +536,8 @@ mamaMiddlewareLibraryManagerImpl_loadBridge (mamaMiddlewareLibrary mwLibrary)
  * them and then copy the relevant parts before deallocating theirs again.
  */
 static mama_status
-mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
-                                               mamaBridge* bridge0)
+mamaMiddlewareManagerImpl_createBridge (mamaLibrary library,
+                                        mamaBridge* bridge0)
 {
     assert (bridge0);
     *bridge0 = NULL;
@@ -545,7 +549,7 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
         return MAMA_STATUS_NOMEM;
 
     Bridge_createImpl createImpl =
-        mamaMiddlewareLibraryManagerImpl_getLibraryCreateImpl (library);
+        mamaMiddlewareManagerImpl_getLibraryCreateImpl (library);
 
     if (createImpl)
     {
@@ -559,7 +563,7 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
         if (!oldBridge)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR,
-                      "mamaMiddlewareLibraryManager_loadLibrary(): "
+                      "mamaMiddlewareManager_loadLibrary(): "
                       "Could not initialise %s library %s bridge using "
                       "old-style allocation.",
                       library->mTypeName, library->mName);
@@ -590,21 +594,21 @@ mamaMiddlewareLibraryManagerImpl_createBridge (mamaLibrary library,
 }
 
 static void
-mamaMiddlewareLibraryManagerImpl_destroyBridge (mamaBridge bridge)
+mamaMiddlewareManagerImpl_destroyBridge (mamaBridge bridge)
 {
     free (bridge);
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_createLibrary (
+mamaMiddlewareManagerImpl_createLibrary (
         mamaLibrary library, mamaMiddlewareLibrary* mwLibrary0)
 {
     assert (mwLibrary0);
     *mwLibrary0 = NULL;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -616,14 +620,14 @@ mamaMiddlewareLibraryManagerImpl_createLibrary (
         return MAMA_STATUS_NOMEM;
     
     Bridge_load load = 
-        mamaMiddlewareLibraryManagerImpl_getLibraryLoad (library);
+        mamaMiddlewareManagerImpl_getLibraryLoad (library);
    
     if (load)
     {
         if (MAMA_STATUS_OK != load ())
         {
             mama_log (MAMA_LOG_LEVEL_ERROR,
-                      "mamaPayloadLibraryManager_createBridge(): "
+                      "mamaPayloadManager_createBridge(): "
                       "Could not initialise %s library %s bridge using "
                       "new-style initialisation.",
                       library->mTypeName, library->mName);
@@ -644,7 +648,6 @@ mamaMiddlewareLibraryManagerImpl_createLibrary (
     /* Establish bi-directional links */
     library->mClosure = mwLibrary;
 
-    mwLibrary->mBridge  = NULL;
     mwLibrary->mParent  = library;
     mwLibrary->mManager = mwManager;
 
@@ -653,12 +656,19 @@ mamaMiddlewareLibraryManagerImpl_createLibrary (
     wInterlocked_initialize (&mwLibrary->mStartCount);
     wInterlocked_set (0, &mwLibrary->mStartCount);
 
+    status = 
+        mamaMiddlewareManagerImpl_createBridge (library,
+                                                &mwLibrary->mBridge);
+    if (MAMA_STATUS_OK != status)
+        return status;
+
+    mwLibrary->mBridge->mLibrary = mwLibrary;
     *mwLibrary0 = mwLibrary;
     return MAMA_STATUS_OK;
 }
 
 static void* 
-mamaMiddlewareLibraryManagerImpl_startThread (void* closure)
+mamaMiddlewareManagerImpl_startThread (void* closure)
 {
     mama_status                  status = MAMA_STATUS_OK;          
     mamaMiddlewareStartBgClosure cb     = 
@@ -667,7 +677,7 @@ mamaMiddlewareLibraryManagerImpl_startThread (void* closure)
     if (!cb)
         return NULL;
 
-    status = mamaMiddlewareLibraryManager_startBridge (cb->mLibrary);
+    status = mamaMiddlewareManager_startBridge (cb->mLibrary->mBridge);
 
     if (cb->mStopCallback)
         cb->mStopCallback (status);
@@ -676,27 +686,27 @@ mamaMiddlewareLibraryManagerImpl_startThread (void* closure)
         cb->mStopCallbackEx (status, cb->mLibrary->mBridge, cb->mClosure);
 
     if ((MAMA_STATUS_OK != status) && cb->mCb)
-        cb->mCb (cb->mLibrary, cb->mClosure);
+        cb->mCb (cb->mLibrary->mBridge, cb->mClosure);
 
     free (cb);
     return NULL;
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary)
 {
     mama_status status = MAMA_STATUS_OK;
 
     while (MAMA_STATUS_OK == status &&
            wInterlocked_read (&mwLibrary->mOpenCount) > 0)
     {
-        status = mamaMiddlewareLibraryManager_closeBridge (mwLibrary);
+        status = mamaMiddlewareManager_closeBridge (mwLibrary->mBridge);
     }
 
     if (MAMA_STATUS_OK != status)
     {
         mama_log (MAMA_LOG_LEVEL_WARN,
-                  "mamaMiddlewareLibraryManagerImpl_closeFull(): "
+                  "mamaMiddlewareManagerImpl_closeFull(): "
                   "Failed to fully close %s library %s bridge.",
                   mwLibrary->mParent->mTypeName, mwLibrary->mParent->mName);
     }
@@ -705,20 +715,20 @@ mamaMiddlewareLibraryManagerImpl_closeFull (mamaMiddlewareLibrary mwLibrary)
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary)
 {
     mama_status status = MAMA_STATUS_OK;
 
     while (MAMA_STATUS_OK == status &&
            wInterlocked_read (&mwLibrary->mOpenCount) > 0)
     {
-        status = mamaMiddlewareLibraryManager_stopBridge (mwLibrary);
+        status = mamaMiddlewareManager_stopBridge (mwLibrary->mBridge);
     }
 
     if (MAMA_STATUS_OK != status)
     {
         mama_log (MAMA_LOG_LEVEL_WARN,
-                  "mamaMiddlewareLibraryManagerImpl_closeFull(): "
+                  "mamaMiddlewareManagerImpl_closeFull(): "
                   "Failed to fully stop %s library %s bridge.",
                   mwLibrary->mParent->mTypeName, mwLibrary->mParent->mName);
     }
@@ -727,7 +737,7 @@ mamaMiddlewareLibraryManagerImpl_stopFull (mamaMiddlewareLibrary mwLibrary)
 }
 
 static void
-mamaMiddlewareLibraryManagerImpl_destroyLibrary (
+mamaMiddlewareManagerImpl_destroyLibrary (
         mamaMiddlewareLibrary mwLibrary)
 {
     if (!mwLibrary)
@@ -739,23 +749,23 @@ mamaMiddlewareLibraryManagerImpl_destroyLibrary (
     if (0 != wInterlocked_read (&mwLibrary->mOpenCount))
     {
         mama_log (MAMA_LOG_LEVEL_FINER,
-                  "mamaMiddlewareLibraryManagerImpl_destroyLibrary(): "
+                  "mamaMiddlewareManagerImpl_destroyLibrary(): "
                   "Destroying %s library %s but bridge was still open, "
                   "so forcing a bridge close.",
                   library->mTypeName, library->mName);
 
-        mamaMiddlewareLibraryManagerImpl_closeFull (mwLibrary);
+        mamaMiddlewareManagerImpl_closeFull (mwLibrary);
     }
 
     Bridge_unload unload = 
-        mamaMiddlewareLibraryManagerImpl_getLibraryUnload (library);
+        mamaMiddlewareManagerImpl_getLibraryUnload (library);
     
     if (unload)
     {
         if (MAMA_STATUS_OK != unload ())
         {
             mama_log (MAMA_LOG_LEVEL_ERROR, 
-                      "mamaMiddlewareLibraryManagerImpl_destroyLibrary(): "
+                      "mamaMiddlewareManagerImpl_destroyLibrary(): "
                       "Error unloading %s library %s", library->mTypeName, 
                       library->mName);
         }
@@ -769,8 +779,8 @@ mamaMiddlewareLibraryManagerImpl_destroyLibrary (
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
-                                                      mamaBridge  bridge)
+mamaMiddlewareManagerImpl_loadDefaultPayloads (mamaLibrary library,
+                                               mamaBridge  bridge)
 {
     mama_status status = MAMA_STATUS_OK;
 
@@ -784,7 +794,7 @@ mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
     {
         while (*payloadNames && *payloadIds)
         {
-            mamaPayloadLibrary payloadLibrary = NULL;
+            mamaPayloadBridge bridge = NULL;
 
             const char* paths [2] = {
                 library->mPath,
@@ -795,9 +805,9 @@ mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
             for (mama_size_t k = 0; k < sizeof (paths)/sizeof (paths[0]); ++k)
             {
                 status =
-                    mamaPayloadLibraryManager_loadLibraryWithPath (*payloadNames,
-                                                                   paths[k],
-                                                                   &payloadLibrary);
+                    mamaPayloadManager_loadBridgeWithPath (*payloadNames,
+                                                            paths[k],
+                                                            &bridge);
 
                 if (MAMA_STATUS_OK == status)
                     break;
@@ -816,7 +826,7 @@ mamaMiddlewareLibraryManagerImpl_loadDefaultPayloads (mamaLibrary library,
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
+mamaMiddlewareManagerImpl_getMiddlewareId (
         mamaMiddlewareLibrary mwLibrary, char* middlewareId)
 {
     assert (mwLibrary);
@@ -838,7 +848,7 @@ mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
     }
 
     mamaMiddleware tmpId =
-            mamaMiddlewareLibraryManager_convertFromString (library->mName);
+            mamaMiddlewareManager_convertFromString (library->mName);
 
     if (tmpId != MAMA_MIDDLEWARE_UNKNOWN)
     {
@@ -846,7 +856,7 @@ mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
         return MAMA_STATUS_OK;
     }
 
-    mamaMiddlewareLibraryManager mwManager = mwLibrary->mManager;
+    mamaMiddlewareManager mwManager = mwLibrary->mManager;
     mama_status status = MAMA_STATUS_SYSTEM_ERROR;
 
     /* Select next free slot */
@@ -864,7 +874,7 @@ mamaMiddlewareLibraryManagerImpl_getMiddlewareId (
 }
 
 static
-mama_bool_t mamaMiddlewareLibraryManagerImpl_isOpenedBridge (mamaLibrary lib)
+mama_bool_t mamaMiddlewareManagerImpl_isOpenedBridge (mamaLibrary lib)
 {
     mamaMiddlewareLibrary mwLibrary =
         (mamaMiddlewareLibrary) lib->mClosure;
@@ -872,7 +882,7 @@ mama_bool_t mamaMiddlewareLibraryManagerImpl_isOpenedBridge (mamaLibrary lib)
 }
 
 static
-mama_bool_t mamaMiddlewareLibraryManagerImpl_isActiveBridge (mamaLibrary lib)
+mama_bool_t mamaMiddlewareManagerImpl_isActiveBridge (mamaLibrary lib)
 {
     mamaMiddlewareLibrary mwLibrary =
         (mamaMiddlewareLibrary) lib->mClosure;
@@ -880,29 +890,29 @@ mama_bool_t mamaMiddlewareLibraryManagerImpl_isActiveBridge (mamaLibrary lib)
 }
 
 static
-mama_bool_t mamaMiddlewareLibraryManagerImpl_isInactiveBridge (mamaLibrary lib)
+mama_bool_t mamaMiddlewareManagerImpl_isInactiveBridge (mamaLibrary lib)
 {
     mamaMiddlewareLibrary mwLibrary =
         (mamaMiddlewareLibrary) lib->mClosure;
-    return (mwLibrary && mamaMiddlewareLibraryManagerImpl_isOpenedBridge (lib) &&
-            !mamaMiddlewareLibraryManagerImpl_isActiveBridge (lib));
+    return (mwLibrary && mamaMiddlewareManagerImpl_isOpenedBridge (lib) &&
+            !mamaMiddlewareManagerImpl_isActiveBridge (lib));
 }
 
 static
-mama_bool_t mamaMiddlewareLibraryManagerImpl_isClosedBridge (mamaLibrary lib)
+mama_bool_t mamaMiddlewareManagerImpl_isClosedBridge (mamaLibrary lib)
 {
     mamaMiddlewareLibrary mwLibrary =
         (mamaMiddlewareLibrary) lib->mClosure;
     return (mwLibrary &&
-            !mamaMiddlewareLibraryManagerImpl_isOpenedBridge (lib));
+            !mamaMiddlewareManagerImpl_isOpenedBridge (lib));
 }
 
 static mama_status
-mamaMiddlewareLibraryManagerImpl_getLibraries (mamaMiddlewareLibrary* mwLibraries,
-                                               mama_size_t*           size,
-                                               mamaLibraryPredicateCb predicate)
+mamaMiddlewareManagerImpl_getBridges (mamaBridge*            bridges,
+                                      mama_size_t*           size,
+                                      mamaLibraryPredicateCb predicate)
 {
-    if (!mwLibraries || !size)
+    if (!bridges || !size)
         return MAMA_STATUS_NULL_ARG;
  
     mamaLibrary libraries [MAMA_MAX_LIBRARIES];
@@ -915,7 +925,8 @@ mamaMiddlewareLibraryManagerImpl_getLibraries (mamaMiddlewareLibrary* mwLibrarie
                                          predicate);
 
     for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
-        mwLibraries[k] = (mamaMiddlewareLibrary)libraries[k]->mClosure;
+        bridges[k] = (mamaBridge)((mamaMiddlewareLibrary)
+            libraries[k]->mClosure)->mBridge;
 
     if (librariesSize < *size)
         *size = librariesSize;
@@ -924,13 +935,13 @@ mamaMiddlewareLibraryManagerImpl_getLibraries (mamaMiddlewareLibrary* mwLibrarie
 }
 
 static mama_bool_t
-mamaMiddlewareLibraryManagerImpl_stopAllCb (mamaLibrary library,
-                                            void*       closure)
+mamaMiddlewareManagerImpl_stopAllCb (mamaLibrary library,
+                                     void*       closure)
 {
     mamaMiddlewareLibrary mwLibrary =
         (mamaMiddlewareLibrary) library->mClosure;
 
-    mamaMiddlewareLibraryManagerImpl_stopFull (mwLibrary);
+    mamaMiddlewareManagerImpl_stopFull (mwLibrary);
     return 1;
 }
 
@@ -939,10 +950,10 @@ mamaMiddlewareLibraryManagerImpl_stopAllCb (mamaLibrary library,
  */
 
 mama_status
-mamaMiddlewareLibraryManager_create (mamaLibraryTypeManager manager)
+mamaMiddlewareManager_create (mamaLibraryTypeManager manager)
 {
-    mamaMiddlewareLibraryManager mwManager = (mamaMiddlewareLibraryManager)
-        calloc (1, sizeof (mamaMiddlewareLibraryManagerImpl));
+    mamaMiddlewareManager mwManager = (mamaMiddlewareManager)
+        calloc (1, sizeof (mamaMiddlewareManagerImpl));
 
     if (!mwManager)
         return MAMA_STATUS_NOMEM;
@@ -966,11 +977,11 @@ mamaMiddlewareLibraryManager_create (mamaLibraryTypeManager manager)
 }
 
 void
-mamaMiddlewareLibraryManager_destroy (void)
+mamaMiddlewareManager_destroy (void)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return;
@@ -989,31 +1000,31 @@ mamaMiddlewareLibraryManager_destroy (void)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_loadLibrary (mamaLibrary library)
+mamaMiddlewareManager_loadLibrary (mamaLibrary library)
 {
     mamaMiddlewareLibrary mwLibrary = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_createLibrary (library,
-                                                        &mwLibrary);
+        mamaMiddlewareManagerImpl_createLibrary (library,
+                                                 &mwLibrary);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
     char middlewareId = 0;
     status =
-        mamaMiddlewareLibraryManagerImpl_getMiddlewareId (mwLibrary,
-                                                          &middlewareId);
+        mamaMiddlewareManagerImpl_getMiddlewareId (mwLibrary,
+                                                   &middlewareId);
 
     if (status != MAMA_STATUS_OK)
         return status;
 
-    mamaMiddlewareLibraryManager mwManager = mwLibrary->mManager;
+    mamaMiddlewareManager mwManager = mwLibrary->mManager;
     mamaMiddlewareLibrary dupLibrary = mwManager->mMiddleware [middlewareId];
 
     if (dupLibrary)
     {
        mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaMiddlewareLibraryManager_loadLibrary(): "
+                  "mamaMiddlewareManager_loadLibrary(): "
                   "Middleware id [%d] for %s library %s duplicates library %s.",
                   middlewareId, library->mTypeName,
                   library->mName,
@@ -1028,27 +1039,27 @@ mamaMiddlewareLibraryManager_loadLibrary (mamaLibrary library)
 }
 
 void
-mamaMiddlewareLibraryManager_unloadLibrary (mamaLibrary library)
+mamaMiddlewareManager_unloadLibrary (mamaLibrary library)
 {
     mamaMiddlewareLibrary mwLibrary = (mamaMiddlewareLibrary) library->mClosure;
-    mamaMiddlewareLibraryManager mwManager = mwLibrary->mManager;
+    mamaMiddlewareManager mwManager = mwLibrary->mManager;
 
     char middlewareId = mwLibrary->mMiddlewareId;
-    mamaMiddlewareLibraryManagerImpl_destroyLibrary (mwLibrary);
+    mamaMiddlewareManagerImpl_destroyLibrary (mwLibrary);
     mwManager->mMiddleware[middlewareId] = NULL;
 }
 
-void mamaMiddlewareLibraryManager_dump (mamaLibraryTypeManager manager)
+void mamaMiddlewareManager_dump (mamaLibraryTypeManager manager)
 {
-    mamaMiddlewareLibraryManager mwManager = 
-        (mamaMiddlewareLibraryManager) manager->mClosure;
+    mamaMiddlewareManager mwManager = 
+        (mamaMiddlewareManager) manager->mClosure;
 
     mama_log (MAMA_LOG_LEVEL_NORMAL, "Num Open [%d] Num Active [%d]", 
         wInterlocked_read(&mwManager->mNumOpen), 
         wInterlocked_read(&mwManager->mNumActive));
 }
 
-void mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library)
+void mamaMiddlewareManager_dumpLibrary (mamaLibrary library)
 {
     mamaMiddlewareLibrary mwLibrary = 
         (mamaMiddlewareLibrary) library->mClosure;
@@ -1058,15 +1069,15 @@ void mamaMiddlewareLibraryManager_dumpLibrary (mamaLibrary library)
 }
 
 mamaLibraryType
-mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
-                                                  LIB_HANDLE  libraryLib)
+mamaMiddlewareManager_classifyLibraryType (const char* libraryName,
+                                           LIB_HANDLE  libraryLib)
 {
     Bridge_createImpl createImpl =
-        mamaMiddlewareLibraryManagerImpl_getCreateImpl (libraryName,
+        mamaMiddlewareManagerImpl_getCreateImpl (libraryName,
                                                         libraryLib);
 
     Bridge_load load = 
-        mamaMiddlewareLibraryManagerImpl_getLoad (libraryName,
+        mamaMiddlewareManagerImpl_getLoad (libraryName,
                                                   libraryLib);
 
     if (createImpl || load)
@@ -1076,15 +1087,15 @@ mamaMiddlewareLibraryManager_classifyLibraryType (const char* libraryName,
 }
 
 mama_bool_t
-mamaMiddlewareLibraryManager_forwardCallback (mamaLibraryCb cb, 
-                                              mamaLibrary   library, 
-                                              void*         closure)
+mamaMiddlewareManager_forwardCallback (mamaLibraryCb cb, 
+                                       mamaLibrary   library, 
+                                       void*         closure)
 {
-    mamaMiddlewareLibraryCb mwCb      = (mamaMiddlewareLibraryCb)cb;
-    mamaMiddlewareLibrary   mwLibrary = 
+    mamaMiddlewareCb       mwCb      = (mamaMiddlewareCb)cb;
+    mamaMiddlewareLibrary  mwLibrary = 
         (mamaMiddlewareLibrary)library->mClosure;
 
-    return mwCb (mwLibrary, closure);
+    return mwCb (mwLibrary->mBridge, closure);
 }
 
 /*
@@ -1092,11 +1103,11 @@ mamaMiddlewareLibraryManager_forwardCallback (mamaLibraryCb cb,
  */
 
 mama_status
-mamaMiddlewareLibraryManager_loadLibraryWithPath (const char*            middlewareName,
-                                                  const char*            path,
-                                                  mamaMiddlewareLibrary* mwLibrary)
+mamaMiddlewareManager_loadBridgeWithPath (const char*  middlewareName,
+                                          const char*  path,
+                                          mamaBridge*  bridge)
 {
-    if (!mwLibrary || !middlewareName)
+    if (!bridge || !middlewareName)
         return MAMA_STATUS_NULL_ARG;
 
     mamaLibrary library = NULL;
@@ -1108,35 +1119,37 @@ mamaMiddlewareLibraryManager_loadLibraryWithPath (const char*            middlew
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *mwLibrary =
-        (mamaMiddlewareLibrary) library->mClosure;
+    *bridge =
+        ((mamaMiddlewareLibrary)library->mClosure)->mBridge;
 
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaMiddlewareLibraryManager_unloadLib (mamaMiddlewareLibrary library)
+mamaMiddlewareManager_unloadBridge (mamaBridge bridge)
 {
+    mamaMiddlewareLibrary library = bridge->mLibrary;
+
     mama_status status = 
-        mamaMiddlewareLibraryManagerImpl_stopFull (library);
+        mamaMiddlewareManagerImpl_stopFull (library);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    status = mamaMiddlewareLibraryManagerImpl_closeFull (library);
+    status = mamaMiddlewareManagerImpl_closeFull (library);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
     return mamaLibraryManager_unloadLibrary(
-        mamaMiddlewareLibraryManager_getName(library), MAMA_MIDDLEWARE_LIBRARY);
+        mamaMiddlewareManager_getName(bridge), MAMA_MIDDLEWARE_LIBRARY);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getLibrary (const char*            middlewareName,
-                                         mamaMiddlewareLibrary* mwLibrary)
+mamaMiddlewareManager_getBridge (const char* middlewareName,
+                                 mamaBridge* bridge)
 {
-    if (!mwLibrary || !middlewareName)
+    if (!bridge || !middlewareName)
         return MAMA_STATUS_NULL_ARG;
 
     mamaLibrary library = NULL;
@@ -1148,23 +1161,23 @@ mamaMiddlewareLibraryManager_getLibrary (const char*            middlewareName,
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *mwLibrary =
-        (mamaMiddlewareLibrary) library->mClosure;
+    *bridge =
+        (mamaBridge)((mamaMiddlewareLibrary) library->mClosure)->mBridge;
 
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library)
+mamaMiddlewareManager_getDefaultBridge (mamaBridge* bridge)
 {
-    if (!library)
+    if (!bridge)
         return MAMA_STATUS_NULL_ARG;
 
-    *library = NULL;
+    *bridge = NULL;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1180,7 +1193,7 @@ mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library)
 
         if (mwLibrary)
         {
-            *library = mwLibrary;
+            *bridge = mwLibrary->mBridge;
             return MAMA_STATUS_OK;
         }
     }
@@ -1189,62 +1202,62 @@ mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getLibraries (mamaMiddlewareLibrary* libraries,
-                                           mama_size_t*           size)
+mamaMiddlewareManager_getBridges (mamaBridge*  bridges,
+                                  mama_size_t* size)
 {
-    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
+    return mamaMiddlewareManagerImpl_getBridges (bridges, size,
                                                           NULL);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getOpenedBridges (mamaMiddlewareLibrary*  libraries,
-                                             mama_size_t*            size)
+mamaMiddlewareManager_getOpenedBridges (mamaBridge*  libraries,
+                                        mama_size_t* size)
 {
     mamaLibraryPredicateCb predicate =
-        mamaMiddlewareLibraryManagerImpl_isOpenedBridge;
-    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
-                                                          predicate);
+        mamaMiddlewareManagerImpl_isOpenedBridge;
+    return mamaMiddlewareManagerImpl_getBridges (libraries, size,
+                                                       predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getActiveBridges (mamaMiddlewareLibrary*  libraries,
-                                               mama_size_t*            size)
+mamaMiddlewareManager_getActiveBridges (mamaBridge*  libraries,
+                                        mama_size_t* size)
 {
     mamaLibraryPredicateCb predicate =
-        mamaMiddlewareLibraryManagerImpl_isActiveBridge;
-    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
-                                                          predicate);
+        mamaMiddlewareManagerImpl_isActiveBridge;
+    return mamaMiddlewareManagerImpl_getBridges (libraries, size,
+                                                       predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getInactiveBridges (mamaMiddlewareLibrary*  libraries,
-                                                 mama_size_t*            size)
+mamaMiddlewareManager_getInactiveBridges (mamaBridge*  libraries,
+                                          mama_size_t* size)
 {
     mamaLibraryPredicateCb predicate =
-        mamaMiddlewareLibraryManagerImpl_isInactiveBridge;
-    return mamaMiddlewareLibraryManagerImpl_getLibraries (libraries, size,
-                                                          predicate);
+        mamaMiddlewareManagerImpl_isInactiveBridge;
+    return mamaMiddlewareManagerImpl_getBridges (libraries, size,
+                                                       predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getClosedBridges (mamaMiddlewareLibrary*  bridges,
-                                               mama_size_t*            size)
+mamaMiddlewareManager_getClosedBridges (mamaBridge*  bridges,
+                                        mama_size_t* size)
 {
     mamaLibraryPredicateCb predicate =
-        mamaMiddlewareLibraryManagerImpl_isClosedBridge;
-    return mamaMiddlewareLibraryManagerImpl_getLibraries (bridges, size,
-                                                          predicate);
+        mamaMiddlewareManagerImpl_isClosedBridge;
+    return mamaMiddlewareManagerImpl_getBridges (bridges, size,
+                                                    predicate);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumLibraries (mama_size_t* size)
+mamaMiddlewareManager_getNumBridges (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK == status)
         *size = mwManager->mParent->mNumLibraries;
@@ -1255,14 +1268,14 @@ mamaMiddlewareLibraryManager_getNumLibraries (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumOpenedBridges (mama_size_t* size)
+mamaMiddlewareManager_getNumOpenedBridges (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK == status)
         *size = wInterlocked_read (&mwManager->mNumOpen);
@@ -1273,15 +1286,15 @@ mamaMiddlewareLibraryManager_getNumOpenedBridges (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumActiveBridges (mama_size_t* size)
+mamaMiddlewareManager_getNumActiveBridges (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
 
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK == status)
         *size = wInterlocked_read (&mwManager->mNumActive);
@@ -1292,14 +1305,14 @@ mamaMiddlewareLibraryManager_getNumActiveBridges (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumInactiveBridges (mama_size_t* size)
+mamaMiddlewareManager_getNumInactiveBridges (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK == status)
         *size = wInterlocked_read (&mwManager->mNumOpen) -
@@ -1311,14 +1324,14 @@ mamaMiddlewareLibraryManager_getNumInactiveBridges (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_getNumClosedBridges (mama_size_t* size)
+mamaMiddlewareManager_getNumClosedBridges (mama_size_t* size)
 {
     if (!size)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK == status)
         *size = wInterlocked_read (&mwManager->mParent->mNumLibraries) -
@@ -1330,13 +1343,13 @@ mamaMiddlewareLibraryManager_getNumClosedBridges (mama_size_t* size)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_openBridge (mamaBridge bridge)
 {
-    if (NULL == mwLibrary)
+    if (NULL == bridge)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge  bridge  = NULL;
-    mamaLibrary library = mwLibrary->mParent;
+    mamaMiddlewareLibrary  mwLibrary  = bridge->mLibrary;
+    mamaLibrary            library = mwLibrary->mParent;
 
     wlock_lock (library->mLock);
     mama_status status = MAMA_STATUS_OK;
@@ -1344,12 +1357,11 @@ mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary mwLibrary)
     if (0 == wInterlocked_read (&mwLibrary->mOpenCount))
     {
         status =    
-            mamaMiddlewareLibraryManagerImpl_activateLibrary (mwLibrary);
+            mamaMiddlewareManagerImpl_activateLibrary (mwLibrary);
 
         if (MAMA_STATUS_OK != status)
             return status;            
 
-        bridge = mwLibrary->mBridge;
         status = bridge->bridgeOpen (bridge);
 
         if (MAMA_STATUS_OK == status)
@@ -1364,13 +1376,13 @@ mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary mwLibrary)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_closeBridge (mamaBridge bridge)
 {
-    if (NULL == mwLibrary)
+    if (NULL == bridge)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge  bridge  = mwLibrary->mBridge;
-    mamaLibrary library = mwLibrary->mParent;
+    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;
+    mamaLibrary           library   = mwLibrary->mParent;
 
     wlock_lock (library->mLock);
     mama_status status = MAMA_STATUS_OK;
@@ -1383,12 +1395,12 @@ mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary mwLibrary)
             if (0 != wInterlocked_read (&mwLibrary->mStartCount))
             {
                 mama_log (MAMA_LOG_LEVEL_WARN,
-                          "mamaMiddlewareLibraryManager_closeBridge(): "
+                          "mamaMiddlewareManager_closeBridge(): "
                           "Closing %s library %s bridge but bridge was still "
                           "running, so forcing a bridge stop.",
                           library->mTypeName, library->mName);
 
-                mamaMiddlewareLibraryManagerImpl_stopFull (mwLibrary);
+                mamaMiddlewareManagerImpl_stopFull (mwLibrary);
             }
 
             /* For the old style bridges where create allocates the bridge
@@ -1404,14 +1416,14 @@ mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary mwLibrary)
             mamaBridgeImpl_stopInternalEventQueue (tmpBridge);
             status = bridge->bridgeClose (tmpBridge);
             
-            mamaMiddlewareLibraryManagerImpl_deactivateLibrary (mwLibrary);
+            mamaMiddlewareManagerImpl_deactivateLibrary (mwLibrary);
             wInterlocked_decrement (&mwLibrary->mManager->mNumOpen);
         }
     }
     else
     {
         mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaMiddlewareLibraryManager_closeBridge(): "
+                  "mamaMiddlewareManager_closeBridge(): "
                   "Attempted to close %s library %s bridge but it has "
                   "already been closed (or was never opened).",
                   library->mTypeName,
@@ -1424,19 +1436,19 @@ mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary mwLibrary)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_startBridge (mamaBridge bridge)
 {
-    if (NULL == mwLibrary)
+    if (NULL == bridge)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge                   bridge  = mwLibrary->mBridge;
-    mamaLibrary                  library = mwLibrary->mParent;
-    mamaMiddlewareLibraryManager manager = mwLibrary->mManager;
+    mamaMiddlewareLibrary        mwLibrary = bridge->mLibrary;
+    mamaLibrary                  library   = mwLibrary->mParent;
+    mamaMiddlewareManager        manager   = mwLibrary->mManager;
 
     if (!bridge->mDefaultEventQueue)
     {
         mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaMiddlewareLibraryManager_startBridge(): "
+                  "mamaMiddlewareManager_startBridge(): "
                   "Cannot start %s library %s bridge because it "
                   "hasn't been opened.",
                   library->mTypeName, library->mName);
@@ -1473,11 +1485,11 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary mwLibrary)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
-                                                    mamaMiddlewareLibraryCb cb,
-                                                    mamaStopCB              callback,
-                                                    mamaStopCBEx            exCallback,
-                                                    void*                   closure)
+mamaMiddlewareManager_startBackgroundHelper (mamaMiddlewareLibrary   library,
+                                             mamaMiddlewareCb        cb,
+                                             mamaStopCB              callback,
+                                             mamaStopCBEx            exCallback,
+                                             void*                   closure)
 {
     if (!library)
     {
@@ -1513,7 +1525,7 @@ mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   libr
 
     wthread_t thread = 0;
     if (0 != wthread_create(&thread, NULL, 
-            mamaMiddlewareLibraryManagerImpl_startThread, (void*) data))
+            mamaMiddlewareManagerImpl_startThread, (void*) data))
     {
         mama_log (MAMA_LOG_LEVEL_ERROR, "Could not start background MAMA "
                   "thread.");
@@ -1524,27 +1536,27 @@ mamaMiddlewareLibraryManager_startBackgroundHelper (mamaMiddlewareLibrary   libr
 }
 
 mama_status
-mamaMiddlewareLibraryManager_startBridgeBackground (mamaMiddlewareLibrary   library,
-                                                    mamaMiddlewareLibraryCb callback,
-                                                    void*                   closure)
+mamaMiddlewareManager_startBridgeBackground (mamaBridge        bridge,
+                                             mamaMiddlewareCb  callback,
+                                             void*             closure)
 {
-   return mamaMiddlewareLibraryManager_startBackgroundHelper (library,
-                                                              callback,
-                                                              NULL,
-                                                              NULL,
-                                                              closure);
+   return mamaMiddlewareManager_startBackgroundHelper (bridge->mLibrary,
+                                                       callback,
+                                                       NULL,
+                                                       NULL,
+                                                       closure);
 }
 
 
 mama_status
-mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_stopBridge (mamaBridge bridge)
 {
-    if (NULL == mwLibrary)
+    if (NULL == bridge)
         return MAMA_STATUS_NULL_ARG;
 
-    mamaBridge                   bridge  = mwLibrary->mBridge;
-    mamaLibrary                  library = mwLibrary->mParent;
-    mamaMiddlewareLibraryManager manager = mwLibrary->mManager;
+    mamaMiddlewareLibrary mwLibrary = bridge->mLibrary;    
+    mamaLibrary           library   = mwLibrary->mParent;
+    mamaMiddlewareManager manager   = mwLibrary->mManager;
     
     wlock_lock (library->mLock);
     mama_status status = MAMA_STATUS_OK;
@@ -1566,7 +1578,7 @@ mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
     else
     {
         mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaMiddlewareLibraryManager_stopBridge(): "
+                  "mamaMiddlewareManager_stopBridge(): "
                   "Attempted to stop %s library %s bridge but it has "
                   "already been stopped (or was never started).",
                   library->mTypeName,
@@ -1579,11 +1591,11 @@ mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary mwLibrary)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_stopAllBridges ()
+mamaMiddlewareManager_stopAllBridges ()
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1591,32 +1603,30 @@ mamaMiddlewareLibraryManager_stopAllBridges ()
     if (0 == wInterlocked_read (&mwManager->mNumActive))
         return MAMA_STATUS_OK;
 
-    mamaLibraryIterateCb cb = mamaMiddlewareLibraryManagerImpl_stopAllCb;
+    mamaLibraryIterateCb cb = mamaMiddlewareManagerImpl_stopAllCb;
     mamaLibraryManager_iterateLibraries (MAMA_MIDDLEWARE_LIBRARY, cb, NULL);
 
     return MAMA_STATUS_OK;
 }
 
 mama_status 
-mamaMiddlewareLibraryManager_getDefaultEventQueue (mamaMiddlewareLibrary library,
-                                                   mamaQueue*            defaultQueue)
+mamaMiddlewareManager_getDefaultEventQueue (mamaBridge bridge,
+                                            mamaQueue* defaultQueue)
 {
-    if (!library)
+    if (!bridge)
     {
         mama_log (MAMA_LOG_LEVEL_WARN, 
-            "mamaMiddlewareLibraryManager_getDefaultEventQueue(): "
+            "mamaMiddlewareManager_getDefaultEventQueue(): "
             "No library implementation specified");
         return MAMA_STATUS_NO_BRIDGE_IMPL;
     }
 
-    mamaBridge bridge = library->mBridge;
-
     if (!bridge || !bridge->mDefaultEventQueue)
     {
         mama_log (MAMA_LOG_LEVEL_WARN, 
-            "mamaMiddlewareLibraryManager_getDefaultEventQueue (): "
+            "mamaMiddlewareManager_getDefaultEventQueue (): "
             "NULL default queue for bridge impl. Has "
-            "mamaMiddlewareLibraryManager_openBridge() been called?");
+            "mamaMiddlewareManager_openBridge() been called?");
         return MAMA_STATUS_INVALID_QUEUE;
  
     }
@@ -1625,40 +1635,40 @@ mamaMiddlewareLibraryManager_getDefaultEventQueue (mamaMiddlewareLibrary library
 }
 
 const char*
-mamaMiddlewareLibraryManager_getLibraryVersion (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_getBridgeVersion (mamaBridge bridge)
 {
-    if (!mwLibrary)
+    if (!bridge)
         return NULL;
 
-    mamaLibrary library = mwLibrary->mParent;
+    mamaLibrary library = bridge->mLibrary->mParent;
 
     const char* prop =
-        mamaDefaultLibraryManager_getLibraryBridgeVersion (library);
+        mamaDefaultManager_getLibraryBridgeVersion (library);
 
     if (!(prop && *prop))
-        prop = mwLibrary->mBridge->bridgeGetVersion ();
+        prop = bridge->bridgeGetVersion ();
 
     return prop;
 }
 
 const char*
-mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary mwLibrary)
+mamaMiddlewareManager_getBridgeMamaVersion (mamaBridge bridge)
 {
-    if (!mwLibrary)
+    if (!bridge)
         return NULL;
 
-    mamaLibrary library = mwLibrary->mParent;
+    mamaLibrary library = bridge->mLibrary->mParent;
 
-    return mamaDefaultLibraryManager_getLibraryBridgeMamaVersion (library);
+    return mamaDefaultManager_getLibraryBridgeMamaVersion (library);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
-                                                   void*              closure)
+mamaMiddlewareManager_registerLoadCallback (mamaMiddlewareCb cb,
+                                            void*            closure)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1668,12 +1678,12 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
-                                                     void*              closure)
+mamaMiddlewareManager_registerUnloadCallback (mamaMiddlewareCb cb,
+                                              void*            closure)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1683,12 +1693,12 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
-                                                    void*              closure)
+mamaMiddlewareManager_registerStartCallback (mamaMiddlewareCb cb,
+                                             void*            closure)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1699,12 +1709,12 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
-                                                   void*             closure)
+mamaMiddlewareManager_registerStopCallback (mamaMiddlewareCb cb,
+                                            void*            closure)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1715,11 +1725,11 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb)
+mamaMiddlewareManager_deregisterLoadCallback (mamaMiddlewareCb cb)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1729,11 +1739,11 @@ mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb cb)
+mamaMiddlewareManager_deregisterUnloadCallback (mamaMiddlewareCb cb)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1743,11 +1753,11 @@ mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb c
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb)
+mamaMiddlewareManager_deregisterStartCallback (mamaMiddlewareCb cb)
 {
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1758,11 +1768,11 @@ mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb
 }
 
 mama_status
-mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb)
+mamaMiddlewareManager_deregisterStopCallback (mamaMiddlewareCb cb)
 { 
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1773,9 +1783,9 @@ mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
-                                          const char* propertyName,
-                                          const char* value)
+mamaMiddlewareManager_setProperty (const char* libraryName,
+                                   const char* propertyName,
+                                   const char* value)
 {
     return mamaLibraryManager_setProperty (libraryName,
                                            propertyName,
@@ -1783,35 +1793,41 @@ mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
 }
 
 const char* 
-mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library)
+mamaMiddlewareManager_getName (mamaBridge bridge)
 {
-    return mamaLibraryManager_getName(library->mParent);
+    if (!bridge)
+        return NULL;
+
+    return mamaLibraryManager_getName(bridge->mLibrary->mParent);
 }
 
 char 
-mamaMiddlewareLibraryManager_getId (mamaMiddlewareLibrary library)
+mamaMiddlewareManager_getId (mamaBridge bridge)
 {
-    return library->mMiddlewareId;
+    return bridge->mLibrary->mMiddlewareId;
 }
 
 const char*
-mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library)
+mamaMiddlewareManager_getPath (mamaBridge bridge)
 {
-    return mamaLibraryManager_getPath(library->mParent);
+    if (!bridge)
+        return NULL;
+
+    return mamaLibraryManager_getPath(bridge->mLibrary->mParent);
 }
 
 mama_status
-mamaMiddlewareLibraryManager_middlewareIdToString (char         middlewareId,
-                                                   const char** str)
+mamaMiddlewareManager_middlewareIdToString (char         middlewareId,
+                                            const char** str)
 {
     if (!str)
         return MAMA_STATUS_NULL_ARG;
 
     *str = NULL;
-    mamaMiddlewareLibraryManager mwManager = NULL;
+    mamaMiddlewareManager mwManager = NULL;
 
     mama_status status =
-        mamaMiddlewareLibraryManagerImpl_getInstance (&mwManager);
+        mamaMiddlewareManagerImpl_getInstance (&mwManager);
 
     if (status != MAMA_STATUS_OK)
         return status;
@@ -1826,36 +1842,36 @@ mamaMiddlewareLibraryManager_middlewareIdToString (char         middlewareId,
 }
 
 mama_status
-mamaMiddlewareLibraryManager_stringToMiddlewareId (const char*  str, 
-                                                   char*        middlewareId)
+mamaMiddlewareManager_stringToMiddlewareId (const char*  str, 
+                                            char*        middlewareId)
 {
     if (!str || !middlewareId)
         return MAMA_STATUS_NULL_ARG;
 
     *middlewareId = 0;
-    mamaMiddlewareLibrary library = NULL;
+    mamaBridge bridge = NULL;
     
     mama_status status =
-        mamaMiddlewareLibraryManager_getLibrary (str, &library);
+        mamaMiddlewareManager_getBridge (str, &bridge);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *middlewareId = library->mMiddlewareId;
+    *middlewareId = bridge->mLibrary->mMiddlewareId;
     return status;
 }
 
 mamaBridge
-mamaMiddlewareLibraryManager_findBridge ()
+mamaMiddlewareManager_findBridge ()
 {
-    mamaMiddlewareLibrary mwLibrary = NULL;
-    mamaMiddlewareLibraryManager_getDefaultLibrary (&mwLibrary);
+    mamaBridge bridge = NULL;
+    mamaMiddlewareManager_getDefaultBridge (&bridge);
  
-    return (mwLibrary ? mwLibrary->mBridge : NULL );
+    return (bridge ? bridge : NULL );
 }
 
 mamaMiddleware
-mamaMiddlewareLibraryManager_convertFromString (const char*  str)
+mamaMiddlewareManager_convertFromString (const char*  str)
 {
     if (!str)
         return MAMA_MIDDLEWARE_UNKNOWN;
@@ -1912,7 +1928,7 @@ mamaMiddlewareLibraryManager_convertFromString (const char*  str)
 }
 
 const char*
-mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware)
+mamaMiddlewareManager_convertToString (mamaMiddleware middleware)
 {
     switch (middleware)
     {
@@ -1954,8 +1970,8 @@ mamaMiddlewareLibraryManager_convertToString (mamaMiddleware middleware)
 }
 
 mama_status
-mamaMiddlewareLibraryManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
-                                                     mamaBridge*           bridge)
+mamaMiddlewareManager_convertLibraryToBridge (mamaMiddlewareLibrary library, 
+                                              mamaBridge*           bridge)
 {
     if (!library || !bridge)
         return MAMA_STATUS_NULL_ARG;

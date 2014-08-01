@@ -393,19 +393,6 @@ mama_status mamaPlayback_setBridge (mamaPlaybackPublisher mamaPlayback,
     return MAMA_STATUS_OK;
 }
 
-mama_status mamaPlayback_setMiddlewareLibrary (mamaPlaybackPublisher mamaPlayback,
-                                               mamaMiddlewareLibrary library)
-{
-    mamaFilePlaybackImpl* impl = (mamaFilePlaybackImpl*)mamaPlayback;
-
-    if (impl == NULL) return MAMA_STATUS_NULL_ARG;
-
-    mamaMiddlewareLibraryManager_convertLibraryToBridge (library, 
-                                         &impl->myBridge);
-  
-    return MAMA_STATUS_OK;
-}
-
 mama_bool_t mamaPlayback_publishFromFile (mamaPlaybackPublisher mamaPlayback,
                                           const char delim,
                                           mamaDateTime dateTime)

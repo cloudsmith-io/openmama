@@ -299,18 +299,6 @@ MAMAExpDLL
 extern mama_status mamaPlayback_setBridge (mamaPlaybackPublisher mamaPlayback, 
                                            mamaBridge bridge);
 
-
-/**
- * Method: mamaCaptuer_setBridge
- * @param: mamaPlaybackPublisher
- * @param: mamaMiddlewareLibrary
- * @Desc:  Sets the bridge to use for publishing on
- * @return mama_status
- */
-MAMAExpDLL
-extern mama_status mamaPlayback_setMiddlewareLibrary (mamaPlaybackPublisher mamaPlayback, 
-                                                      mamaMiddlewareLibrary library);
-
 #if defined(__cplusplus)
 }
 #endif

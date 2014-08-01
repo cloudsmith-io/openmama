@@ -29,25 +29,25 @@ class PayloadLibraryLoader
 {
 public:
     virtual void load (const char* path, 
-        mamaPayloadLibrary* library) = 0;
+        mamaPayloadBridge* bridge) = 0;
 
-    virtual void unload (mamaPayloadLibrary library) = 0;
+    virtual void unload (mamaPayloadBridge bridge) = 0;
 };
 
 class NewMethodPayloadLoader : public PayloadLibraryLoader
 {
 public:
     void load (const char* path, 
-        mamaPayloadLibrary* library)
+        mamaPayloadBridge* bridge)
     {
-        mamaPayloadLibraryManager_loadLibraryWithPath (getPayload(),
-                                                       NULL,
-                                                       library);
+        mamaPayloadManager_loadBridgeWithPath (getPayload(),
+                                               NULL,
+                                               bridge);
     }
 
-    void unload (mamaPayloadLibrary library)
+    void unload (mamaPayloadBridge bridge)
     {
-        mamaPayloadLibraryManager_unloadLib (library);
+        mamaPayloadManager_unloadBridge (bridge);
     }
 };
 
@@ -55,14 +55,12 @@ class OldMethodPayloadLoader : public PayloadLibraryLoader
 {
 public:
     void load (const char* path, 
-        mamaPayloadLibrary* library)
+        mamaPayloadBridge* bridge)
     {
-        mamaPayloadBridge bridge;
-        mama_loadPayloadBridge (&bridge, getPayload ());
-        *library = bridge->mLibrary;
+        mama_loadPayloadBridge (bridge, getPayload ());
     }
 
-    void unload (mamaPayloadLibrary library)
+    void unload (mamaPayloadBridge bridge)
     {
     }
 };
@@ -79,17 +77,17 @@ protected:
 
 public:
     T loader;
-    mamaPayloadLibrary  mLibrary;
+    mamaPayloadBridge  mBridge;
 };
 
 template <typename T> void PayloadManagerTestC<T>::SetUp(void)
 {
-    loader.load(NULL, &this->mLibrary);
+    loader.load(NULL, &this->mBridge);
 }
 
 template <typename T> void PayloadManagerTestC<T>::TearDown(void)
 {
-    loader.unload(this->mLibrary);
+    loader.unload(this->mBridge);
 }
 
 TYPED_TEST_CASE_P (PayloadManagerTestC);
@@ -108,21 +106,21 @@ TYPED_TEST_P (PayloadManagerTestC, GetLoadedPayloads)
      * so although we have not loaded one explicitly there
      * should be one payload bridge loaded at the very least.*/
 
-    mamaPayloadLibrary payloads[256];
-    mama_size_t        numPayloads = 256;
+    mamaPayloadBridge payloads[256];
+    mama_size_t       numPayloads = 256;
 
-    mamaPayloadLibraryManager_getLibraries (payloads, &numPayloads);
+    mamaPayloadManager_getBridges (payloads, &numPayloads);
 
     EXPECT_EQ (1, numPayloads);
-    EXPECT_EQ (this->mLibrary, payloads[0]);
+    EXPECT_EQ (this->mBridge, payloads[0]);
 }
 
 TYPED_TEST_P (PayloadManagerTestC, GetDefaultPayload)
 {
-    mamaPayloadLibrary payload = NULL;
+    mamaPayloadBridge payload = NULL;
     mama_status        status  = MAMA_STATUS_OK;
 
-    status = mamaPayloadLibraryManager_getDefaultLibrary (&payload);
+    status = mamaPayloadManager_getDefaultBridge (&payload);
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
@@ -130,16 +128,16 @@ TYPED_TEST_P (PayloadManagerTestC, GetDefaultPayload)
 
 TYPED_TEST_P (PayloadManagerTestC, GetPayload)
 {
-    mamaPayloadLibrary payload = NULL;
+    mamaPayloadBridge payload = NULL;
     mama_status        status  = MAMA_STATUS_OK;
 
-    status = mamaPayloadLibraryManager_getLibrary (getPayload(), &payload);
+    status = mamaPayloadManager_getBridge (getPayload(), &payload);
 
     ASSERT_TRUE (NULL != payload);
     ASSERT_EQ (MAMA_STATUS_OK, status);
 
     payload = NULL;
-    status = mamaPayloadLibraryManager_getLibrary ("foobar", &payload);
+    status = mamaPayloadManager_getBridge ("foobar", &payload);
 
     ASSERT_TRUE (NULL == payload);
     ASSERT_EQ   (MAMA_STATUS_NOT_FOUND, status);
@@ -147,25 +145,25 @@ TYPED_TEST_P (PayloadManagerTestC, GetPayload)
 
 TYPED_TEST_P (PayloadManagerTestC, GetPayloadById)
 {
-    mamaPayloadLibrary payload = NULL;
+    mamaPayloadBridge payload = NULL;
     mama_status        status  = MAMA_STATUS_OK;
 
-    status = mamaPayloadLibraryManager_getLibrary (getPayload(), &payload);
+    status = mamaPayloadManager_getBridge (getPayload(), &payload);
     
     ASSERT_EQ   (MAMA_STATUS_OK, status);
     ASSERT_TRUE (NULL != payload);
 
     char payloadId = 
-        mamaPayloadLibraryManager_getId (payload);
+        mamaPayloadManager_getId (payload);
 
-    mamaPayloadLibrary payload0 = NULL;
+    mamaPayloadBridge payload0 = NULL;
     
-    status = mamaPayloadLibraryManager_getLibraryById (payloadId, &payload0);
+    status = mamaPayloadManager_getBridgeById (payloadId, &payload0);
 
     ASSERT_EQ (payload, payload0);
     ASSERT_EQ (MAMA_STATUS_OK, status);
 
-    status = mamaPayloadLibraryManager_getLibraryById ('\r', &payload0);
+    status = mamaPayloadManager_getBridgeById ('\r', &payload0);
 
     ASSERT_TRUE (NULL == payload0);
     ASSERT_EQ (MAMA_STATUS_NO_BRIDGE_IMPL, status);
@@ -177,32 +175,32 @@ TYPED_TEST_P (PayloadManagerTestC, NullTestGetLoadedPayloads)
      * so although we have not loaded one explicitly there
      * should be one payload bridge loaded at the very least.*/
 
-    mamaPayloadLibrary payloads[256];
+    mamaPayloadBridge payloads[256];
     mama_size_t    numPayloads = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaPayloadLibraryManager_getLibraries (payloads, NULL));
+        mamaPayloadManager_getBridges (payloads, NULL));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaPayloadLibraryManager_getLibraries (NULL, &numPayloads));
+        mamaPayloadManager_getBridges (NULL, &numPayloads));
 }
 
 TYPED_TEST_P (PayloadManagerTestC, NullTestGetPayload)
 {
-    mamaPayloadLibrary payload = NULL;
+    mamaPayloadBridge payload = NULL;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaPayloadLibraryManager_getLibrary (NULL, &payload));
+        mamaPayloadManager_getBridge (NULL, &payload));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaPayloadLibraryManager_getLibrary (getPayload (), NULL));
+        mamaPayloadManager_getBridge (getPayload (), NULL));
 }
 
 TYPED_TEST_P (PayloadManagerTestC, NullTestGetPayloadById)
 {
     char payloadId = 'A';
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaPayloadLibraryManager_getLibraryById (payloadId, NULL));
+        mamaPayloadManager_getBridgeById (payloadId, NULL));
 }
 
 REGISTER_TYPED_TEST_CASE_P (PayloadManagerTestC, GetLoadedPayloads, 
@@ -222,14 +220,12 @@ protected:
     void SetUp();
     void TearDown ();
 public:
-    mamaPayloadLibrary                 mLibrary;
+    mamaPayloadBridge                 mBridge;
 };
 
 void MamaPropertiesPayloadManagerTestC::SetUp()
 {
-    mamaPayloadBridge bridge;
-    mama_loadPayloadBridge (&bridge, getPayload ());
-    mLibrary = bridge->mLibrary;
+    mama_loadPayloadBridge (&mBridge, getPayload ());
 }
 
 void MamaPropertiesPayloadManagerTestC::TearDown ()
@@ -239,13 +235,13 @@ void MamaPropertiesPayloadManagerTestC::TearDown ()
 TEST_F (MamaPropertiesPayloadManagerTestC, setProperty)
 {
     ASSERT_EQ (MAMA_STATUS_OK,    
-        mamaPayloadLibraryManager_setProperty  (
-            mamaPayloadLibraryManager_getName (mLibrary),
+        mamaPayloadManager_setProperty  (
+            mamaPayloadManager_getName (mBridge),
             "description", "TEST"));
 
     char property[256];
     snprintf (property, 256, "mama.library.%s.%s", 
-        mamaPayloadLibraryManager_getName (mLibrary),
+        mamaPayloadManager_getName (mBridge),
         "description");
 
     ASSERT_STREQ ("TEST", mama_getProperty (property));
@@ -254,11 +250,11 @@ TEST_F (MamaPropertiesPayloadManagerTestC, setProperty)
 TEST_F (MamaPropertiesPayloadManagerTestC, getName)
 {
     ASSERT_STREQ (getPayload (),
-        mamaPayloadLibraryManager_getName (mLibrary));
+        mamaPayloadManager_getName (mBridge));
 }
 
 TEST_F (MamaPropertiesPayloadManagerTestC, getPath)
 {
     ASSERT_EQ (NULL,
-        mamaPayloadLibraryManager_getPath (mLibrary));
+        mamaPayloadManager_getPath (mBridge));
 }

@@ -339,13 +339,13 @@ mamaLibraryManagerImpl_loadTypeManagerFunction (mamaLibraryTypeManager manager,
     /* Build target function spec */
     char funcSpec [MAX_LIBRARY_FUNCTION_NAME];
     if (snprintf (funcSpec, MAX_LIBRARY_FUNCTION_NAME-1,
-                  "mama%sLibraryManager_%%s",
+                  "mama%sManager_%%s",
                   manager->mTypeNameTitle) < 0)
     {
         return NULL;
     }
 
-    const char* funcAltSpec = "mamaDefaultLibraryManager_%s";
+    const char* funcAltSpec = "mamaDefaultManager_%s";
 
     return mamaLibraryManager_loadFunction (NULL /* handle */,
                                             funcSpec,
@@ -355,10 +355,10 @@ mamaLibraryManagerImpl_loadTypeManagerFunction (mamaLibraryTypeManager manager,
                                             NULL /* default */);
 }
 
-#define REGISTER_TYPE_MANAGER_FUNCTION(funcName)\
+#define REGISTER_TYPE_MANAGER_FUNCTION(funcType, funcName)\
 do {\
     void* func = mamaLibraryManagerImpl_loadTypeManagerFunction (manager, #funcName);\
-    manager->mFuncs->funcName = *(mamaLibraryTypeManager_ ## funcName*) &func;\
+    manager->mFuncs->funcName = *(mamaLibraryTypeManager_ ## funcType*) &func;\
     assert (manager->mFuncs->funcName);\
 } while (0);
 
@@ -409,28 +409,28 @@ mamaLibraryManagerImpl_createTypeManager (mamaLibraryTypeManagerInfo info)
     mamaLibraryManager_createCallbackSignal (manager, &manager->mUnloadSignal);
 
     /* Register all available type manager functions */
-    REGISTER_TYPE_MANAGER_FUNCTION (create);
-    REGISTER_TYPE_MANAGER_FUNCTION (destroy);
-    REGISTER_TYPE_MANAGER_FUNCTION (loadLibrary);
-    REGISTER_TYPE_MANAGER_FUNCTION (unloadLibrary);
-    REGISTER_TYPE_MANAGER_FUNCTION (dump);
-    REGISTER_TYPE_MANAGER_FUNCTION (dumpLibrary);
-    REGISTER_TYPE_MANAGER_FUNCTION (forwardCallback);
-    REGISTER_TYPE_MANAGER_FUNCTION (classifyLibraryType);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryProperty);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBoolProperty);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryIgnore);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryName);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryAuthor);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryUri);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryLicense);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryVersion);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryMamaVersion);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBridgeAuthor);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBridgeUri);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBridgeLicense);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBridgeVersion);
-    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBridgeMamaVersion);
+    REGISTER_TYPE_MANAGER_FUNCTION (create,                 create);
+    REGISTER_TYPE_MANAGER_FUNCTION (destroy,                destroy);
+    REGISTER_TYPE_MANAGER_FUNCTION (loadLibrary,            loadLibrary);
+    REGISTER_TYPE_MANAGER_FUNCTION (unloadLibrary,          unloadLibrary);
+    REGISTER_TYPE_MANAGER_FUNCTION (dump,                   dump);
+    REGISTER_TYPE_MANAGER_FUNCTION (dumpLibrary,            dumpLibrary);
+    REGISTER_TYPE_MANAGER_FUNCTION (forwardCallback,        forwardCallback);
+    REGISTER_TYPE_MANAGER_FUNCTION (classifyLibraryType,    classifyLibraryType);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryStringProperty, getLibraryStringProperty);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryBoolProperty, getLibraryBoolProperty);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryIgnore);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryName);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryAuthor);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryUri);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryLicense);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryVersion);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryMamaVersion);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryBridgeAuthor);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryBridgeUri);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryBridgeLicense);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryBridgeVersion);
+    REGISTER_TYPE_MANAGER_FUNCTION (getLibraryPropertyFunc, getLibraryBridgeMamaVersion);
 
     /* Library type specific initialisation */
     mama_status status = manager->mFuncs->create (manager);
@@ -1424,7 +1424,7 @@ mamaLibraryManagerImpl_dumpLibrariesCb (mamaLibrary library,
         i < sizeof(properties)/sizeof(properties[0]); ++i)
     {
         const char* prop = 
-            manager->mFuncs->getLibraryProperty (library,
+            manager->mFuncs->getLibraryStringProperty (library,
                                                  properties[i]);
     
         if (prop)

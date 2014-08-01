@@ -30,12 +30,12 @@ mamaMiddleware_convertFromString (const char*  str)
         return MAMA_MIDDLEWARE_UNKNOWN;
 
     char Id = 
-        mamaMiddlewareLibraryManager_convertFromString (str);
+        mamaMiddlewareManager_convertFromString (str);
 
     if (MAMA_MIDDLEWARE_UNKNOWN == Id)
     {
         mama_status status =
-            mamaMiddlewareLibraryManager_stringToMiddlewareId (str, &Id);  
+            mamaMiddlewareManager_stringToMiddlewareId (str, &Id);  
 
         if (MAMA_STATUS_OK != status)
             return MAMA_MIDDLEWARE_UNKNOWN; 
@@ -47,12 +47,12 @@ const char*
 mamaMiddleware_convertToString (mamaMiddleware  middleware)
 {
     const char* str = 
-        mamaMiddlewareLibraryManager_convertToString (middleware);
+        mamaMiddlewareManager_convertToString (middleware);
 
     if (NULL == str)
     {
         mama_status status = 
-            mamaMiddlewareLibraryManager_middlewareIdToString (middleware, &str);
+            mamaMiddlewareManager_middlewareIdToString (middleware, &str);
 
         if (MAMA_STATUS_OK != status)
             return NULL;

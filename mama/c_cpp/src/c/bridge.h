@@ -28,7 +28,7 @@
 #include "mamainternal.h"
 #include "conflation/manager_int.h"
 #include "wlock.h"
-#include "librarymanager.h"
+#include "middlewaremanager.h"
 #include "wombat/wInterlocked.h"
 
 #if defined(__cplusplus)

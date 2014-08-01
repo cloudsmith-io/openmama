@@ -245,28 +245,6 @@ extern mama_status
 mamaTransport_create (mamaTransport transport,
                       const char*   name,
                       mamaBridge    bridgeImpl);
-/**
- * Create a previously allocated transport.  Platform specific parameters
- * are read from the properties file <i>mama.properties</i>. The properties
- * file is located in the WOMBAT_PATH directory. The parameters are dependent
- * on the underlying messaging transport.
- * <p>
- * TIBRV: transports support the following: mama.tibrv.transport.name.service,
- * mama.tibrv.transport.name.network, and mama.tibrv.transport.name.daemon.
- * These correspond to the parameters for tibrvTransport_Create().
- * <p>
- * LBM: See the example mama.properties supplied with the release.
- *
- *
- * @param transport The previously allocated transport.
- * @param name The name of the transport in the mama.properties file.
- * @param bridgeImpl The middleware for which the transport is being created.
- */
-MAMAExpDLL
-extern mama_status
-mamaTransport_createWithLibrary (mamaTransport         transport,
-                                 const char*           name,
-                                 mamaMiddlewareLibrary library);
 
 /**
  * Set the transport name. This can be used to set the name without

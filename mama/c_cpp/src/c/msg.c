@@ -369,12 +369,12 @@ const char*
 mamaPayload_convertToString (mamaPayloadType payloadType)
 {
     const char* str = 
-        mamaPayloadLibraryManager_convertToString (payloadType);
+        mamaPayloadManager_convertToString (payloadType);
 
     if (NULL == str)
     {
         mama_status status = 
-            mamaPayloadLibraryManager_payloadIdToString (payloadType, &str);
+            mamaPayloadManager_payloadIdToString (payloadType, &str);
 
         if (MAMA_STATUS_OK != status)
             return NULL;
@@ -438,7 +438,7 @@ mama_status
 mamaMsg_createForPayload (mamaMsg* msg,  const char id)
 {
     return mamaMsg_createForPayloadBridge (msg, 
-      mamaPayloadLibraryManager_findPayload(id));
+      mamaPayloadManager_findPayload(id));
 }
 
 mama_status
@@ -518,7 +518,7 @@ mamaMsgImpl_setMsgBuffer(mamaMsg     msg,
     if (id == '\0')
         id = (char) ((const char*)data) [0];
 
-    impl->mPayloadBridge = mamaPayloadLibraryManager_findPayload(id);
+    impl->mPayloadBridge = mamaPayloadManager_findPayload(id);
     impl->mPayload = impl->mPayloads[(uint8_t)id];
 
     if (!impl->mPayloadBridge) return MAMA_STATUS_NO_BRIDGE_IMPL;
@@ -746,7 +746,7 @@ mama_status
 mamaMsg_create (mamaMsg* msg)
 {
     mama_status       status  = MAMA_STATUS_OK;
-    mamaPayloadBridge bridge  = mamaPayloadLibraryManager_getDefaultPayload ();
+    mamaPayloadBridge bridge  = mamaPayloadManager_getDefaultPayload ();
     msgPayload        payload = NULL;
 
     if (bridge)
@@ -3176,7 +3176,7 @@ mamaMsg_setNewBuffer (mamaMsg msg, void* buffer,
     if (!impl) return MAMA_STATUS_NULL_ARG;
 
     impl->mPayloadBridge = 
-        mamaPayloadLibraryManager_findPayload( ((const char*)buffer) [0]);
+        mamaPayloadManager_findPayload( ((const char*)buffer) [0]);
 
     if (impl->mPayloadBridge)
     {

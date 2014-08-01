@@ -30,53 +30,55 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-extern mama_status
-mamaPayloadLibraryManager_create (mamaLibraryTypeManager manager);
-
-extern void
-mamaPayloadLibraryManager_destroy (void);
+typedef struct mamaPayloadLibraryImpl_* mamaPayloadLibrary; 
 
 extern mama_status
-mamaPayloadLibraryManager_loadLibrary (mamaLibrary library);
+mamaPayloadManager_create (mamaLibraryTypeManager manager);
 
 extern void
-mamaPayloadLibraryManager_unloadLibrary (mamaLibrary library);
+mamaPayloadManager_destroy (void);
+
+extern mama_status
+mamaPayloadManager_loadLibrary (mamaLibrary library);
+
+extern void
+mamaPayloadManager_unloadLibrary (mamaLibrary library);
 
 extern mamaLibraryType
-mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
-                                               LIB_HANDLE  libraryLib);
+mamaPayloadManager_classifyLibraryType (const char* libraryName,
+                                        LIB_HANDLE  libraryLib);
 
 extern mama_bool_t
-mamaPayloadLibraryManager_forwardCallback (mamaLibraryCb cb, 
-                                           mamaLibrary   library, 
-                                           void*         closure);
+mamaPayloadManager_forwardCallback (mamaLibraryCb cb, 
+                                    mamaLibrary   library, 
+                                    void*         closure);
 
 extern void 
-mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager);
+mamaPayloadManager_dump (mamaLibraryTypeManager manager);
 
 extern void 
-mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library);
+mamaPayloadManager_dumpLibrary (mamaLibrary library);
 
 extern mamaPayloadBridge
-mamaPayloadLibraryManager_findPayload (char id);
+mamaPayloadManager_findPayload (char id);
 
 extern mamaPayloadBridge
-mamaPayloadLibraryManager_getDefaultPayload (void);
+mamaPayloadManager_getDefaultPayload (void);
 
 extern void
-mamaPayloadLibraryManager_setDefaultPayload (mamaPayloadLibrary library);
+mamaPayloadManager_setDefaultPayload (mamaPayloadLibrary library);
 
 extern mama_status
-mamaPayloadLibraryManager_activateLibrary (mamaPayloadLibrary library);
+mamaPayloadManager_activateLibrary (mamaPayloadLibrary library);
 
 /*Deprecated function for converting the payload enum to a string representation*/
 extern const char*
-mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType);
+mamaPayloadManager_convertToString (mamaPayloadType payloadType);
 
 /*Tempory method to convert payload library to payload bridge*/
 extern mama_status
-mamaPayloadLibraryManager_convertLibraryToPayload (mamaPayloadLibrary library,
-                                                   mamaPayloadBridge* bridge);
+mamaPayloadManager_convertLibraryToPayload (mamaPayloadLibrary library,
+                                            mamaPayloadBridge* bridge);
 
 #if defined(__cplusplus)
 }

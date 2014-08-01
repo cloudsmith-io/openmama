@@ -32,78 +32,78 @@ extern "C"
 /* Generic callback defintion for any middleware library callback*/
 
 typedef mama_bool_t
-(*mamaMiddlewareLibraryCb) (mamaMiddlewareLibrary library,
-                            void*                 closure);
+(*mamaMiddlewareCb) (mamaBridge library,
+                     void*      closure);
 
 /**
  * @brief Load a specific middleware bridge (if not already loaded).
  *
  * Method to locate a shared library of a specific name and try 
- * and it and its functions as a middleware library.
+ * and load it and its functions as a middleware bridge.
  *
  * @param[in]  middlewareName The name of the middleware we want to load.
  * @param[in]  path The path to the location of the library if known,
                otherwise NULL.
- * @param[out] library A pointer to a mamaMiddlewareLibrary structure where
+ * @param[out] bridge A pointer to a mamaBridge structure where
  *             the middleware bridge will be put, if found.
  * 
  *@return A mama_status indicating the success or failure of the load.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_loadLibraryWithPath (const char* middlewareName,
-                                                  const char* path,
-                                                  mamaMiddlewareLibrary* library);
+mamaMiddlewareManager_loadBridgeWithPath (const char* middlewareName,
+                                          const char* path,
+                                          mamaBridge* bridge);
 
 /**
  * @brief Unload a specific middleware bridge.
  *
  * Method to unload a specific middleware bridge. 
  *
- * @param[in] library The library to be unloaded.
+ * @param[in] bridge The library to be unloaded.
  * 
  *@return A mama_status indicating the success or failure of the unload.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_unloadLib (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_unloadBridge (mamaBridge bridge);
 
 /**
- * @brief Retrieve a specific middleware library.
+ * @brief Retrieve a specific middleware bridge.
  *
- * Method to return a specific middleware library based on name.
+ * Method to return a specific middleware bridge based on name.
  *
  * @param[in]  middlewareName The name of the payload we want to retrieve.
- * @param[out] library A pointer to the mamaMiddlewareLibrary structure where
- *             the middleware library will be put, if found.
+ * @param[out] bridge A pointer to the mamaBridge structure where
+ *             the middleware bridge will be put, if found.
  *
  * @return A mama_status indicating the success or failure of the retrieval.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getLibrary (const char* middlewareName,
-                                         mamaMiddlewareLibrary* library);
+mamaMiddlewareManager_getBridge (const char* middlewareName,
+                                 mamaBridge* bridge);
 
 /*
- * @brief Retrieve the default (usually first loaded) middleware library.
+ * @brief Retrieve the default (usually first loaded) middleware bridge.
  *
- * Method to return the default middleware library.
+ * Method to return the default middleware bridge.
  *
- * @param[out] library A pointer to the mamaMiddlewareLibrary structure where
- *                     the payload library will be put.
+ * @param[out] bridge A pointer to the mamaBridge structure where
+ *                     the middleware bridge will be put.
  *
  * @return A mama_status indicating the success or failure of the retrieval.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library);
+mamaMiddlewareManager_getDefaultBridge (mamaBridge* bridge);
 
 /**
- * @brief Retrieve all loaded middleware libraries.
+ * @brief Retrieve all loaded middleware bridges.
  *
- * Method to get all the loaded payload libraries.
+ * Method to get all the loaded middleware bridges.
  * 
- * @param[out] libraries A pointer to an array of mamaMiddlewareLibrary structures
+ * @param[out] libraries A pointer to an array of mamaBridge structures
  *             where the return libraries will be put.
  *
  * @param[in/out] size On calling the function this should be the size
@@ -114,16 +114,16 @@ mamaMiddlewareLibraryManager_getDefaultLibrary (mamaMiddlewareLibrary* library);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getLibraries (mamaMiddlewareLibrary* libraries,
-                                           mama_size_t*           size);
+mamaMiddlewareManager_getBridges (mamaBridge*  bridges,
+                                  mama_size_t* size);
 
 /**
- * @brief Retrieve all loaded middleware libraries, which represent open bridges.
+ * @brief Retrieve all loaded middleware bridges, which represent open bridges.
  *
- * Method to retrieve all libraries representing open middleware bridges.
+ * Method to retrieve all bridges representing open middleware bridges.
  *
- * @param[out] libraries A pointer to an array of mamaMiddlewareLibrary structures
- *             where the return libraries will be put.
+ * @param[out] bridges A pointer to an array of mamaBridge structures
+ *             where the return bridges will be put.
  *
  * @param[in/out] size On calling the function this should be the size
  *                of the array where we are to put the libraries, on the 
@@ -133,14 +133,14 @@ mamaMiddlewareLibraryManager_getLibraries (mamaMiddlewareLibrary* libraries,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getOpenedBridges (mamaMiddlewareLibrary* libraries,
-                                               mama_size_t*           size);
+mamaMiddlewareManager_getOpenedBridges (mamaBridge*   bridge,
+                                        mama_size_t*  size);
 /**
- * @brief Retrieve all loaded middleware libraries, which represent active bridges.
+ * @brief Retrieve all loaded middleware bridges, which represent active bridges.
  *
- * Method to retrieve all libraries representing active middleware bridges.
+ * Method to retrieve all bridges representing active middleware bridges.
  *
- * @param[out] libraries A pointer to an array of mamaMiddlewareLibrary structures
+ * @param[out] bridges A pointer to an array of mamaBridge structures
  *             where the return libraries will be put.
  *
  * @param[in/out] size On calling the function this should be the size
@@ -151,15 +151,15 @@ mamaMiddlewareLibraryManager_getOpenedBridges (mamaMiddlewareLibrary* libraries,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getActiveBridges (mamaMiddlewareLibrary* libraries,
-                                               mama_size_t*           size);
+mamaMiddlewareManager_getActiveBridges (mamaBridge*  bridges,
+                                        mama_size_t* size);
 
 /**
- * @brief Retrieve all loaded middleware libraries, which represent inactive bridges.
+ * @brief Retrieve all loaded middleware bridges, which represent inactive bridges.
  *
- * Method to retrieve all libraries representing inactive middleware bridges.
+ * Method to retrieve all bridges representing inactive middleware bridges.
  *
- * @param[out] libraries A pointer to an array of mamaMiddlewareLibrary structures
+ * @param[out] libraries A pointer to an array of mamaBridge structures
  *             where the return libraries will be put.
  *
  * @param[in/out] size On calling the function this should be the size
@@ -170,16 +170,16 @@ mamaMiddlewareLibraryManager_getActiveBridges (mamaMiddlewareLibrary* libraries,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getInactiveBridges (mamaMiddlewareLibrary* libraries,
-                                                 mama_size_t*           size);
+mamaMiddlewareManager_getInactiveBridges (mamaBridge*  bridges,
+                                          mama_size_t* size);
 
 /**
- * @brief Retrieve all loaded middleware libraries, which represent closed bridges.
+ * @brief Retrieve all loaded middleware bridges, which represent closed bridges.
  *
- * Method to retrieve all libraries representing closed middleware bridges.
+ * Method to retrieve all bridges representing closed middleware bridges.
  *
- * @param[out] libraries A pointer to an array of mamaMiddlewareLibrary structures
- *             where the return libraries will be put.
+ * @param[out] bridges A pointer to an array of mamaBridge structures
+ *             where the return bridges will be put.
  *
  * @param[in/out] size On calling the function this should be the size
  *                of the array where we are to put the libraries, on the 
@@ -189,12 +189,12 @@ mamaMiddlewareLibraryManager_getInactiveBridges (mamaMiddlewareLibrary* librarie
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getClosedBridges (mamaMiddlewareLibrary* libraries,
-                                               mama_size_t*           size);
+mamaMiddlewareManager_getClosedBridges (mamaBridge*  bridges,
+                                        mama_size_t* size);
 /**
- * @brief Get the number of middleware libraries loaded.
+ * @brief Get the number of middleware bridges loaded.
  *
- * Method to retrieve the number of loaded middleware libraries.
+ * Method to retrieve the number of loaded middleware bridges.
  *
  * @param[out] size A pointer to a mama_size_t where we will put the number
  *                  of libraries. 
@@ -203,7 +203,7 @@ mamaMiddlewareLibraryManager_getClosedBridges (mamaMiddlewareLibrary* libraries,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getNumLibraries (mama_size_t* size);
+mamaMiddlewareManager_getNumBridges (mama_size_t* size);
 
 /**
  * @brief Get the number of middleware libraries representing open bridges.
@@ -218,7 +218,7 @@ mamaMiddlewareLibraryManager_getNumLibraries (mama_size_t* size);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getNumOpenedBridges (mama_size_t* size);
+mamaMiddlewareManager_getNumOpenedBridges (mama_size_t* size);
 
 /**
  * @brief Get the number of middleware libraries representing active bridges.
@@ -233,7 +233,7 @@ mamaMiddlewareLibraryManager_getNumOpenedBridges (mama_size_t* size);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getNumActiveBridges (mama_size_t* size);
+mamaMiddlewareManager_getNumActiveBridges (mama_size_t* size);
 
 /**
  * @brief Get the number of middleware libraries representing inactive bridges.
@@ -248,7 +248,7 @@ mamaMiddlewareLibraryManager_getNumActiveBridges (mama_size_t* size);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getNumInactiveBridges (mama_size_t* size);
+mamaMiddlewareManager_getNumInactiveBridges (mama_size_t* size);
 
 /**
  * @brief Get the number of middleware libraries representing closed bridges.
@@ -263,63 +263,63 @@ mamaMiddlewareLibraryManager_getNumInactiveBridges (mama_size_t* size);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getNumClosedBridges (mama_size_t* size);
+mamaMiddlewareManager_getNumClosedBridges (mama_size_t* size);
 
 /**
- * @brief Open the bridge represented by the mamaMiddlewareLibrary handle.
+ * @brief Open the bridge represented by the mamaBridge handle.
  *
- * Method to open the bridge associated with the provided mamaMiddlewareLibrary,
+ * Method to open the bridge associated with the provided mamaBridge,
  * defers the opening to the middleware library's specific implementation of the 
  * open function.
  *
- * @param[in] library A mamaMiddlewareLibrary handle to the bridge to be opened.
+ * @param[in] library A mamaBridge handle to the bridge to be opened.
  *
  * @return A mama_status indicating the success or failure of the bridge open.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_openBridge (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_openBridge (mamaBridge bridge);
 
 /**
- * @brief Close the bridge represented by the mamaMiddlewareLibrary handle.
+ * @brief Close the bridge represented by the mamaBridge handle.
  *
- * Method to close the bridge associated with the provided mamaMiddlewareLibrary,
+ * Method to close the bridge associated with the provided mamaBridge,
  * defers the closing to the middleware library's specific implementation of the 
  * close function.
  *
- * @param[in] library A mamaMiddlewareLibrary handle to the bridge to be closed.
+ * @param[in] library A mamaBridge handle to the bridge to be closed.
  *
  * @return A mama_status indicating the success or failure of the bridge close.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_closeBridge (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_closeBridge (mamaBridge bridge);
 
 /**
- * @brief Start the middleware bridge represented by the mamaMiddlewareLibrary handle.
+ * @brief Start the middleware bridge represented by the mamaBridge handle.
  *
  * Method to start the middleware bridge associated with the provided 
- * mamaMiddlewareLibrary, defers the start to the middleware library's 
+ * mamaBridge, defers the start to the middleware library's 
  * specific implementation of the close function.
  *
- * @param[in] library A mamaMiddlewareLibrary handle to the middleware bridge 
+ * @param[in] library A mamaBridge handle to the middleware bridge 
  *                    to be started.
  *
  * @return A mama_status indicating the success or failure of the bridge start.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_startBridge (mamaBridge bridge);
 
 /**
- * @brief Start the middleware bridge represented by the mamaMiddlewareLibrary handle
+ * @brief Start the middleware bridge represented by the mamaBridge handle
  *        on another thread.
  *
  * Method to start (in the background) the middleware bridge associated with the 
- * provided mamaMiddlewareLibrary, defers the start to the middleware library's 
+ * provided mamaBridge, defers the start to the middleware library's 
  * specific implementation of the close function.
  *
- * @param[in] library A mamaMiddlewareLibrary handle to the middleware bridge 
+ * @param[in] library A mamaBridge handle to the middleware bridge 
  *                    to be started.
  *
  * @param[in] cb A callback to be fired if the background call to the bridge specific 
@@ -331,25 +331,25 @@ mamaMiddlewareLibraryManager_startBridge (mamaMiddlewareLibrary library);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_startBridgeBackground (mamaMiddlewareLibrary   library,
-                                                    mamaMiddlewareLibraryCb cb,
-                                                    void*                   closure);
+mamaMiddlewareManager_startBridgeBackground (mamaBridge       library,
+                                             mamaMiddlewareCb cb,
+                                             void*            closure);
 
 /**
- * @brief Stop the middleware bridge represent by the mamaMiddlewareLibrary handle.
+ * @brief Stop the middleware bridge represent by the mamaBridge handle.
  *
  * Method to stop the middleware bridge associated with the provided 
- * mamaMiddlewareLibrary, defers the start to the middleware library's 
+ * mamaBridge, defers the start to the middleware library's 
  * specific implementation of the close function.
  *
- * @param[in] library A mamaMiddlewareLibrary handle to the middleware bridge 
+ * @param[in] library A mamaBridge handle to the middleware bridge 
  *                    to be stopped.
  *
  * @return A mama_status indicating the success or failure of the bridge stop.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_stopBridge (mamaBridge bridge);
 
 /**
  * @brief Stops all middleware bridges.
@@ -360,7 +360,7 @@ mamaMiddlewareLibraryManager_stopBridge (mamaMiddlewareLibrary library);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_stopAllBridges (void);
+mamaMiddlewareManager_stopAllBridges (void);
 
 /**
  * Get a reference to the internal default event queue in use for the specified
@@ -374,22 +374,22 @@ mamaMiddlewareLibraryManager_stopAllBridges (void);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_getDefaultEventQueue (mamaMiddlewareLibrary library,
-                                                   mamaQueue* defaultQueue);
+mamaMiddlewareManager_getDefaultEventQueue (mamaBridge bridge,
+                                            mamaQueue* defaultQueue);
 
 /**
  * @brief Gets a string representing the library version.
  *
  * Method to return a string library version.
  *
- * @param[in] library A mamaMiddlewareLibrary pointer of which to 
+ * @param[in] library A mamaBridge pointer of which to 
  *                    get the version.
  *
  * @return A const char* pointing to the library version - do NOT free this.
  */
 MAMAExpDLL
 extern const char*
-mamaMiddlewareLibraryManager_getLibraryVersion (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_getBridgeVersion (mamaBridge bridge);
 
 /**
  * @brief Gets a string representing the minimum supported MAMA version 
@@ -398,14 +398,14 @@ mamaMiddlewareLibraryManager_getLibraryVersion (mamaMiddlewareLibrary library);
  * Method to return a string representing the minimum supported MAMA 
  * version for the library.
  *
- * @param[in] library A mamaMiddlewareLibrary pointer of which to 
+ * @param[in] library A mamaBridge pointer of which to 
  *                    get the MAMA version.
  *
  * @return A const char* pointing to the MAMA version - do NOT free this.
  */
 MAMAExpDLL
 extern const char*
-mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_getBridgeMamaVersion (mamaBridge bridge);
 
 /**
  * @brief Register a callback to be triggered when a new middleware 
@@ -414,7 +414,7 @@ mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary librar
  * Method to register a callback to be triggered on a new middleware 
  * library load.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaBridgeCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -422,8 +422,8 @@ mamaMiddlewareLibraryManager_getLibraryMamaVersion (mamaMiddlewareLibrary librar
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
-                                                   void*              closure);
+mamaMiddlewareManager_registerLoadCallback (mamaMiddlewareCb cb,
+                                            void*            closure);
 
 /**
  * @brief Register a callback to be triggered when a middleware 
@@ -432,7 +432,7 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
  * Method to register a callback to be triggered when a middleware 
  * library is unloaded.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaBridgeCb function pointer to be trigger on 
  *               unload of a middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -440,8 +440,8 @@ mamaMiddlewareLibraryManager_registerLoadCallback (mamaMiddlewareLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
-                                                     void*              closure);
+mamaMiddlewareManager_registerUnloadCallback (mamaMiddlewareCb cb,
+                                              void*            closure);
 /**
  * @brief Register a callback to be triggered when start is called
  *        on an a middleware bridge.
@@ -449,7 +449,7 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
  * Method to register a callback to be triggered when start is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaBridgeCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -457,8 +457,8 @@ mamaMiddlewareLibraryManager_registerUnloadCallback (mamaMiddlewareLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
-                                                    void*              closure);
+mamaMiddlewareManager_registerStartCallback (mamaMiddlewareCb cb,
+                                             void*            closure);
 /**
  * @brief Register a callback to be triggered when stop is called
  *        on an a middleware bridge.
@@ -466,7 +466,7 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
  * Method to register a callback to be triggered when stop is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaBridgeCb function pointer to be trigger on 
  *               load of a new middleware.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -474,8 +474,8 @@ mamaMiddlewareLibraryManager_registerStartCallback (mamaMiddlewareLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
-                                                   void*              closure);
+mamaMiddlewareManager_registerStopCallback (mamaMiddlewareCb cb,
+                                            void*            closure);
 
 /**
  * @brief Deregister a callback to be triggered when a new middleware 
@@ -484,14 +484,14 @@ mamaMiddlewareLibraryManager_registerStopCallback (mamaMiddlewareLibraryCb cb,
  * Method to deregister a callback to be triggered on a new middleware 
  * library load.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaBridgeCb function pointer to be trigger on 
  *               load of a new middleware.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb);
+mamaMiddlewareManager_deregisterLoadCallback (mamaMiddlewareCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when a middleware 
@@ -500,14 +500,14 @@ mamaMiddlewareLibraryManager_deregisterLoadCallback (mamaMiddlewareLibraryCb cb)
  * Method to deregister a callback to be triggered when a middleware 
  * library is unloaded.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer that was previously
+ * @param[in] cb A mamaBridgeCb function pointer that was previously
  *               registered.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb cb);
+mamaMiddlewareManager_deregisterUnloadCallback (mamaMiddlewareCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when start is called
@@ -516,14 +516,14 @@ mamaMiddlewareLibraryManager_deregisterUnloadCallback (mamaMiddlewareLibraryCb c
  * Method to deregister a callback to be triggered when start is called
  * on a middleware bridge.
  *
- * @param[in] cb A mamaMiddlewareLibraryCb function pointer that was previously
+ * @param[in] cb A mamaBridgeCb function pointer that was previously
  *               registered. 
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb);
+mamaMiddlewareManager_deregisterStartCallback (mamaMiddlewareCb cb);
 
 /**
  * @brief Remove a callback to be triggered when stop is called
@@ -532,13 +532,13 @@ mamaMiddlewareLibraryManager_deregisterStartCallback (mamaMiddlewareLibraryCb cb
  * Method to remove a callback to be triggered when stop is called
  * on a middleware bridge.
  *
- * @param[in] cb An existing mamaMiddlewareLibraryCb that was previosuly registered. 
+ * @param[in] cb An existing mamaBridgeCb that was previosuly registered. 
  *
  * @return A mama_status indicating the success or failure of the deregistration.
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb);
+mamaMiddlewareManager_deregisterStopCallback (mamaMiddlewareCb cb);
 
 /*
  * @brief Set a property programmatically for a specific library.
@@ -554,48 +554,48 @@ mamaMiddlewareLibraryManager_deregisterStopCallback (mamaMiddlewareLibraryCb cb)
 
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_setProperty (const char* libraryName,
-                                          const char* propertyName,
-                                          const char* value);
+mamaMiddlewareManager_setProperty (const char* libraryName,
+                                   const char* propertyName,
+                                   const char* value);
 
 /**
  * @brief Retrieve the name of a library.
  *
  * Method to retrieve the name of a library.
  *
- * @param[in] library A mamaMiddlewareLibrary from which to get the name.
+ * @param[in] library A mamaBridge from which to get the name.
  *
  * @return A null terminated string of the name - do NOT free this..
  */
 MAMAExpDLL
 extern const char* 
-mamaMiddlewareLibraryManager_getName (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_getName (mamaBridge bridge);
 
 /**
  * @brief Retrieve the Id of a library.
  *
  * Method to retrieve the Id of a library.
  *
- * @param[in] library A mamaMiddlewareLibrary from which to get the name.
+ * @param[in] library A mamaBridge from which to get the name.
  *
  * @return A character representing the ID.
  */
 MAMAExpDLL
 extern char 
-mamaMiddlewareLibraryManager_getId (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_getId (mamaBridge bridge);
 
 /**
  * @brief Retrieve the path from where a library was loaded.
  *
  * Method to retrieve the path from where a library was loaded.
  *
- * @param[in] library A mamaMiddlewareLibrary.
+ * @param[in] library A mamaBridge.
  *
  * @return A null terminated string of the path - do NOT free this.
  */
 MAMAExpDLL
 extern const char*
-mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library);
+mamaMiddlewareManager_getPath (mamaBridge bridge);
 
 /**
  * @brief Get a string representation of a middleware Id.
@@ -611,8 +611,8 @@ mamaMiddlewareLibraryManager_getPath (mamaMiddlewareLibrary library);
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_middlewareIdToString (char         middlewareId,
-                                                   const char** str);
+mamaMiddlewareManager_middlewareIdToString (char         middlewareId,
+                                            const char** str);
 /**
  * @brief Get the middleware Id from the string representation of the library name.
  *
@@ -626,8 +626,8 @@ mamaMiddlewareLibraryManager_middlewareIdToString (char         middlewareId,
  */
 MAMAExpDLL
 extern mama_status
-mamaMiddlewareLibraryManager_stringToMiddlewareId (const char*  str, 
-                                                   char*        middlewareId);
+mamaMiddlewareManager_stringToMiddlewareId (const char*  str, 
+                                            char*        middlewareId);
 
 #if defined(__cplusplus)
 }

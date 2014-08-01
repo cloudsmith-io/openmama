@@ -29,78 +29,78 @@ extern "C"
 #endif /* __cplusplus */
 
 extern mama_status
-mamaDefaultLibraryManager_create (mamaLibraryTypeManager manager);
+mamaDefaultManager_create (mamaLibraryTypeManager manager);
 
 extern void
-mamaDefaultLibraryManager_destroy (void);
+mamaDefaultManager_destroy (void);
 
 extern mama_status
-mamaDefaultLibraryManager_loadLibrary (mamaLibrary library);
+mamaDefaultManager_loadLibrary (mamaLibrary library);
 
 extern void
-mamaDefaultLibraryManager_unloadLibrary (mamaLibrary library);
+mamaDefaultManager_unloadLibrary (mamaLibrary library);
 
 extern void  
-mamaDefaultLibraryManager_dump (mamaLibraryTypeManager manager);
+mamaDefaultManager_dump (mamaLibraryTypeManager manager);
 
 extern void
-mamaDefaultLibraryManager_dumpLibrary (mamaLibrary library);
+mamaDefaultManager_dumpLibrary (mamaLibrary library);
 
 extern mamaLibraryType
-mamaDefaultLibraryManager_classifyLibraryType (const char* libraryName,
+mamaDefaultManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib);
 
 extern mama_bool_t
-mamaDefaultLibraryManager_forwardCallback (mamaLibraryCb cb,
+mamaDefaultManager_forwardCallback (mamaLibraryCb cb,
                                            mamaLibrary   library,
                                            void*         closure);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryProperty (mamaLibrary library,
-                                              const char* property);
+mamaDefaultManager_getLibraryStringProperty (mamaLibrary library,
+                                                    const char* property);
 
 extern mama_bool_t
-mamaDefaultLibraryManager_getLibraryBoolProperty (mamaLibrary library,
+mamaDefaultManager_getLibraryBoolProperty (mamaLibrary library,
                                                   const char* property);
 
 extern mama_bool_t
-mamaDefaultLibraryManager_getLibraryIgnore (mamaLibrary library);
+mamaDefaultManager_getLibraryIgnore (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryName (mamaLibrary library);
+mamaDefaultManager_getLibraryName (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryDescription (mamaLibrary library);
+mamaDefaultManager_getLibraryDescription (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryAuthor (mamaLibrary library);
+mamaDefaultManager_getLibraryAuthor (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryUri (mamaLibrary library);
+mamaDefaultManager_getLibraryUri (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryLicense (mamaLibrary library);
+mamaDefaultManager_getLibraryLicense (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryVersion (mamaLibrary library);
+mamaDefaultManager_getLibraryVersion (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryMamaVersion (mamaLibrary library);
+mamaDefaultManager_getLibraryMamaVersion (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryBridgeAuthor (mamaLibrary library);
+mamaDefaultManager_getLibraryBridgeAuthor (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryBridgeUri (mamaLibrary library);
+mamaDefaultManager_getLibraryBridgeUri (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryBridgeLicense (mamaLibrary library);
+mamaDefaultManager_getLibraryBridgeLicense (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryBridgeVersion (mamaLibrary library);
+mamaDefaultManager_getLibraryBridgeVersion (mamaLibrary library);
 
 extern const char*
-mamaDefaultLibraryManager_getLibraryBridgeMamaVersion (mamaLibrary library);
+mamaDefaultManager_getLibraryBridgeMamaVersion (mamaLibrary library);
 
 #if defined(__cplusplus)
 }

@@ -30,27 +30,27 @@ class MiddlewareLibraryLoader
 {
 public:
     virtual void load (const char* path, 
-        mamaMiddlewareLibrary* library) = 0;
+        mamaBridge* bridge) = 0;
 
-    virtual void unload (mamaMiddlewareLibrary library) = 0;
+    virtual void unload (mamaBridge bridge) = 0;
 };
 
 class NewMethodLoader : public MiddlewareLibraryLoader
 {
 public:
     void load (const char* path, 
-        mamaMiddlewareLibrary* library)
+             mamaBridge* bridge)
     {
-        mamaMiddlewareLibraryManager_loadLibraryWithPath (getMiddleware(),
-                                                          NULL,
-                                                          library);
+        mamaMiddlewareManager_loadBridgeWithPath (getMiddleware(),
+                                                  NULL,
+                                                  bridge);
     
-        mamaMiddlewareLibraryManager_openBridge (*library);
+        mamaMiddlewareManager_openBridge (*bridge);
     
         mama_open ();
     }
 
-    void unload (mamaMiddlewareLibrary library)
+    void unload (mamaBridge library)
     {
         mama_close ();
     }
@@ -60,15 +60,13 @@ class OldMethodLoader : public MiddlewareLibraryLoader
 {
 public:
     void load (const char* path, 
-        mamaMiddlewareLibrary* library)
+        mamaBridge* bridge)
     {
-        mamaBridge bridge;
-        mama_loadBridge (&bridge, getMiddleware ());
-        *library = bridge->mLibrary;
+        mama_loadBridge (bridge, getMiddleware ());
         mama_open ();
     }
 
-    void unload (mamaMiddlewareLibrary library)
+    void unload (mamaBridge bridge)
     {
         mama_close ();
     }
@@ -86,17 +84,17 @@ protected:
 
 public:
     T loader;
-    mamaMiddlewareLibrary  mLibrary;
+    mamaBridge  mBridge;
 };
 
 template <typename T> void MiddlewareManagerTestC<T>::SetUp(void)
 {
-    loader.load(NULL, &this->mLibrary);
+    loader.load(NULL, &this->mBridge);
 }
 
 template <typename T> void MiddlewareManagerTestC<T>::TearDown(void)
 {
-    loader.unload(this->mLibrary);
+    loader.unload(this->mBridge);
 }
 
 TYPED_TEST_CASE_P (MiddlewareManagerTestC);
@@ -111,30 +109,30 @@ TYPED_TEST_CASE_P (MiddlewareManagerTestC);
 
 TYPED_TEST_P (MiddlewareManagerTestC, GetLoadedMiddlewares)
 {
-    mama_size_t           numBridges = 256;
-    mamaMiddlewareLibrary bridges [256];
+    mama_size_t numBridges = 256;
+    mamaBridge  bridges [256];
 
-    mamaMiddlewareLibraryManager_getLibraries (bridges, &numBridges);
+    mamaMiddlewareManager_getBridges (bridges, &numBridges);
 
     EXPECT_EQ (1,        numBridges);
-    EXPECT_EQ (this->mLibrary, bridges[0]);
+    EXPECT_EQ (this->mBridge, bridges[0]);
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, GetNumLoadedMiddlewares)
 {
     mama_size_t           numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getNumLibraries (&numBridges);
+    mamaMiddlewareManager_getNumBridges (&numBridges);
 
     EXPECT_EQ (1,        numBridges);
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, GetOpenMiddlewares)
 {
-    mama_size_t           numBridges = 256;
-    mamaMiddlewareLibrary bridges [256];
+    mama_size_t numBridges = 256;
+    mamaBridge  bridges [256];
 
-    mamaMiddlewareLibraryManager_getOpenedBridges (bridges, &numBridges);
+    mamaMiddlewareManager_getOpenedBridges (bridges, &numBridges);
     EXPECT_EQ (1, numBridges);
 }
 
@@ -142,7 +140,7 @@ TYPED_TEST_P (MiddlewareManagerTestC, GetNumOpenMiddlewares)
 {
     mama_size_t           numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getNumOpenedBridges (&numBridges);
+    mamaMiddlewareManager_getNumOpenedBridges (&numBridges);
     EXPECT_EQ (1, numBridges);
 }
 
@@ -150,10 +148,10 @@ TYPED_TEST_P (MiddlewareManagerTestC, GetActiveMiddlewares)
 {
     /*We havent called mama_start on the bridge therefore it should not
      * be dispatching*/
-    mamaMiddlewareLibrary bridges[256];
-    mama_size_t           numBridges = 256;
+    mamaBridge  bridges[256];
+    mama_size_t numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getActiveBridges (bridges, &numBridges);
+    mamaMiddlewareManager_getActiveBridges (bridges, &numBridges);
 
     EXPECT_EQ (0, numBridges);
 }
@@ -164,16 +162,16 @@ TYPED_TEST_P (MiddlewareManagerTestC, GetNumActiveMiddlewares)
      * be dispatching*/
     mama_size_t           numBridges = 0;
 
-    mamaMiddlewareLibraryManager_getNumActiveBridges (&numBridges);
+    mamaMiddlewareManager_getNumActiveBridges (&numBridges);
 
     EXPECT_EQ (0, numBridges);
 }
 
-static mama_bool_t stopCb (mamaMiddlewareLibrary library, 
-                           void*                 closure)
+static mama_bool_t stopCb (mamaBridge bridge, 
+                           void*      closure)
 {
     mama_log (MAMA_LOG_LEVEL_ERROR, "Failed to start %s library",
-              mamaMiddlewareLibraryManager_getName (library));
+              mamaMiddlewareManager_getName (bridge));
     return 1;
 }
 
@@ -181,72 +179,72 @@ TYPED_TEST_P (MiddlewareManagerTestC, ActiveGetActiveMiddlewares)
 {
     mama_size_t size   = 0;
     mama_status status = 
-        mamaMiddlewareLibraryManager_startBridgeBackground (this->mLibrary, 
-                                                             stopCb, NULL);
+        mamaMiddlewareManager_startBridgeBackground (this->mBridge, 
+                                                      stopCb, NULL);
 
     if (status == MAMA_STATUS_OK)
     {
-        status = mamaMiddlewareLibraryManager_getNumActiveBridges (&size);
+        status = mamaMiddlewareManager_getNumActiveBridges (&size);
         while (!size && status == MAMA_STATUS_OK)
         {
             sleep(1);
-            status = mamaMiddlewareLibraryManager_getNumActiveBridges (&size);
+            status = mamaMiddlewareManager_getNumActiveBridges (&size);
         }
 
-        mamaMiddlewareLibrary libraries[256];
-        mama_size_t           numBridges = 256;
+        mamaBridge  bridges[256];
+        mama_size_t numBridges = 256;
 
-        mamaMiddlewareLibraryManager_getActiveBridges (libraries, &numBridges);
+        mamaMiddlewareManager_getActiveBridges (bridges, &numBridges);
 
         EXPECT_EQ (1, numBridges);
-        EXPECT_EQ (libraries[0], this->mLibrary);
+        EXPECT_EQ (bridges[0], this->mBridge);
 
-        mamaMiddlewareLibraryManager_stopBridge (libraries[0]);
+        mamaMiddlewareManager_stopBridge (bridges[0]);
 
     }
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, GetInactiveMiddlewares)
 {
-    mamaMiddlewareLibrary  bridges[256];
+    mamaBridge  bridges[256];
     mama_size_t numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getInactiveBridges (bridges, &numBridges);
+    mamaMiddlewareManager_getInactiveBridges (bridges, &numBridges);
 
     ASSERT_EQ (1, numBridges);
-    ASSERT_EQ (this->mLibrary, bridges[0]);
+    ASSERT_EQ (this->mBridge, bridges[0]);
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, GetClosedMiddlewares)
 {
-    mamaMiddlewareLibrary  bridges[256];
+    mamaBridge  bridges[256];
     mama_size_t numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getClosedBridges (bridges, &numBridges);
+    mamaMiddlewareManager_getClosedBridges (bridges, &numBridges);
 
     ASSERT_EQ (0, numBridges);
 
-    mamaMiddlewareLibraryManager_closeBridge (this->mLibrary); 
+    mamaMiddlewareManager_closeBridge (this->mBridge); 
  
     numBridges = 256;
-    mamaMiddlewareLibraryManager_getClosedBridges (bridges, &numBridges);
+    mamaMiddlewareManager_getClosedBridges (bridges, &numBridges);
  
     ASSERT_EQ (1, numBridges);
-    ASSERT_EQ (this->mLibrary, bridges[0]);
+    ASSERT_EQ (this->mBridge, bridges[0]);
 }
   
 TYPED_TEST_P (MiddlewareManagerTestC, GetMiddleware)
 {
-    mamaMiddlewareLibrary bridge   = NULL;
+    mamaBridge bridge   = NULL;
     mama_status status = 
-        mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
+        mamaMiddlewareManager_getBridge (getMiddleware(), &bridge);
 
-    ASSERT_EQ (this->mLibrary, bridge);
+    ASSERT_EQ (this->mBridge, bridge);
     ASSERT_EQ (MAMA_STATUS_OK, status);
 
     bridge = NULL;
     status = 
-        mamaMiddlewareLibraryManager_getLibrary ("foobar", &bridge); 
+        mamaMiddlewareManager_getBridge ("foobar", &bridge); 
 
     ASSERT_TRUE (NULL == bridge);
     ASSERT_EQ   (MAMA_STATUS_NOT_FOUND, status);  
@@ -254,85 +252,85 @@ TYPED_TEST_P (MiddlewareManagerTestC, GetMiddleware)
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetLoadedMiddlewares)
 {
-    mamaMiddlewareLibrary  bridges[256];
-    mama_size_t        numBridges = 256;
+    mamaBridge  bridges[256];
+    mama_size_t numBridges = 256;
 
-    mamaMiddlewareLibraryManager_getLibraries (bridges, &numBridges);
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getLibraries (bridges, NULL));
+    mamaMiddlewareManager_getBridges (bridges, &numBridges);
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getLibraries (NULL, &numBridges));
+        mamaMiddlewareManager_getBridges (bridges, NULL));
+
+    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
+        mamaMiddlewareManager_getBridges (NULL, &numBridges));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetNumLoadedMiddlewares)
 {
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getNumLibraries (NULL));
+        mamaMiddlewareManager_getNumBridges (NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetOpenMiddlewares)
 {
-    mamaMiddlewareLibrary  bridges[256];
-    mama_size_t        numBridges = 256;
+    mamaBridge  bridges[256];
+    mama_size_t numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getOpenedBridges (NULL, &numBridges));
+        mamaMiddlewareManager_getOpenedBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getOpenedBridges (bridges, NULL));
+        mamaMiddlewareManager_getOpenedBridges (bridges, NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetNumOpenMiddlewares)
 {
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getNumOpenedBridges (NULL));
+        mamaMiddlewareManager_getNumOpenedBridges (NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetActiveMiddlewares)
 {
     /*We havent called mama_start on the bridge therefore it should not
      * be dispatching*/
-    mamaMiddlewareLibrary  bridges[256];
+    mamaBridge  bridges[256];
     mama_size_t numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getActiveBridges (NULL, &numBridges));
+        mamaMiddlewareManager_getActiveBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getActiveBridges (bridges, NULL));
+        mamaMiddlewareManager_getActiveBridges (bridges, NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetNumActiveMiddlewares)
 {
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getNumActiveBridges (NULL));
+        mamaMiddlewareManager_getNumActiveBridges (NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetInactiveMiddlewares)
 {
-    mamaMiddlewareLibrary  bridges[256];
-    mama_size_t        numBridges = 256;
+    mamaBridge   bridges[256];
+    mama_size_t  numBridges = 256;
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getInactiveBridges (NULL, &numBridges));
+        mamaMiddlewareManager_getInactiveBridges (NULL, &numBridges));
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getInactiveBridges (bridges, NULL));
+        mamaMiddlewareManager_getInactiveBridges (bridges, NULL));
 }
 
 TYPED_TEST_P (MiddlewareManagerTestC, NullTestGetMiddleware)
 {
-    mamaMiddlewareLibrary bridge    = NULL;
+    mamaBridge bridge    = NULL;
 
-    mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), &bridge);
-
-    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getLibrary (getMiddleware(), NULL));
+    mamaMiddlewareManager_getBridge (getMiddleware(), &bridge);
 
     ASSERT_EQ (MAMA_STATUS_NULL_ARG,
-        mamaMiddlewareLibraryManager_getLibrary (NULL, &bridge));
+        mamaMiddlewareManager_getBridge (getMiddleware(), NULL));
+
+    ASSERT_EQ (MAMA_STATUS_NULL_ARG,
+        mamaMiddlewareManager_getBridge (NULL, &bridge));
 }
 
 REGISTER_TYPED_TEST_CASE_P (MiddlewareManagerTestC,          GetLoadedMiddlewares, 
@@ -361,44 +359,44 @@ protected:
 
 TEST_F (MamaOpenCloseMiddlewareManagerTestC, openBridge)
 {
-    mamaMiddlewareLibrary library = NULL;
+    mamaBridge bridge = NULL;
 
     ASSERT_EQ (MAMA_STATUS_OK, 
-        mamaMiddlewareLibraryManager_loadLibraryWithPath (getMiddleware(),
-                                                          NULL,
-                                                          &library));
+        mamaMiddlewareManager_loadBridgeWithPath (getMiddleware(),
+                                                  NULL,
+                                                  &bridge));
     ASSERT_EQ (MAMA_STATUS_OK, 
-        mamaMiddlewareLibraryManager_openBridge (library));
+        mamaMiddlewareManager_openBridge (bridge));
 
     ASSERT_EQ (MAMA_STATUS_OK, 
-        mamaMiddlewareLibraryManager_openBridge (library));
+        mamaMiddlewareManager_openBridge (bridge));
  
     ASSERT_EQ (MAMA_STATUS_OK,
-        mamaMiddlewareLibraryManager_closeBridge (library));
+        mamaMiddlewareManager_closeBridge (bridge));
 
     ASSERT_EQ (MAMA_STATUS_OK,
-        mamaMiddlewareLibraryManager_closeBridge (library));
+        mamaMiddlewareManager_closeBridge (bridge));
 }
 
 TEST_F (MamaOpenCloseMiddlewareManagerTestC, closeBridge)
 {
-    mamaMiddlewareLibrary library = NULL;
+    mamaBridge bridge = NULL;
     
     ASSERT_EQ (MAMA_STATUS_OK,
-        mamaMiddlewareLibraryManager_loadLibraryWithPath (getMiddleware(),
-                                                          NULL,
-                                                          &library));
+        mamaMiddlewareManager_loadBridgeWithPath (getMiddleware(),
+                                                  NULL,
+                                                  &bridge));
     ASSERT_EQ (MAMA_STATUS_SYSTEM_ERROR,
-        mamaMiddlewareLibraryManager_closeBridge (library));
+        mamaMiddlewareManager_closeBridge (bridge));
 
     ASSERT_EQ (MAMA_STATUS_OK,
-        mamaMiddlewareLibraryManager_openBridge (library));
+        mamaMiddlewareManager_openBridge (bridge));
 
     ASSERT_EQ (MAMA_STATUS_OK,
-        mamaMiddlewareLibraryManager_closeBridge (library));
+        mamaMiddlewareManager_closeBridge (bridge));
 
     ASSERT_EQ (MAMA_STATUS_SYSTEM_ERROR,
-        mamaMiddlewareLibraryManager_closeBridge (library));    
+        mamaMiddlewareManager_closeBridge (bridge));    
 }
 
 class MamaPropertiesMiddlewareManagerTestC : public ::testing::Test
@@ -410,14 +408,12 @@ protected:
     void SetUp();
     void TearDown ();
 public:
-    mamaMiddlewareLibrary                 mLibrary;
+    mamaBridge                 mBridge;
 };
 
 void MamaPropertiesMiddlewareManagerTestC::SetUp()
 {
-    mamaBridge bridge;
-    mama_loadBridge (&bridge, getMiddleware ());
-    mLibrary = bridge->mLibrary;
+    mama_loadBridge (&mBridge, getMiddleware ());
     mama_open ();
 }
 
@@ -429,13 +425,13 @@ void MamaPropertiesMiddlewareManagerTestC::TearDown ()
 TEST_F (MamaPropertiesMiddlewareManagerTestC, setProperty)
 {
     ASSERT_EQ (MAMA_STATUS_OK,    
-        mamaMiddlewareLibraryManager_setProperty  (
-            mamaMiddlewareLibraryManager_getName (mLibrary),
+        mamaMiddlewareManager_setProperty  (
+            mamaMiddlewareManager_getName (mBridge),
             "description", "TEST"));
 
     char property[256];
     snprintf (property, 256, "mama.library.%s.%s", 
-        mamaMiddlewareLibraryManager_getName (mLibrary),
+        mamaMiddlewareManager_getName (mBridge),
         "description");
 
     ASSERT_STREQ ("TEST", mama_getProperty (property));
@@ -444,11 +440,11 @@ TEST_F (MamaPropertiesMiddlewareManagerTestC, setProperty)
 TEST_F (MamaPropertiesMiddlewareManagerTestC, getName)
 {
     ASSERT_STREQ (getMiddleware (),
-        mamaMiddlewareLibraryManager_getName (mLibrary));
+        mamaMiddlewareManager_getName (mBridge));
 }
 
 TEST_F (MamaPropertiesMiddlewareManagerTestC, getPath)
 {
     ASSERT_EQ (NULL,
-        mamaMiddlewareLibraryManager_getPath (mLibrary));
+        mamaMiddlewareManager_getPath (mBridge));
 }

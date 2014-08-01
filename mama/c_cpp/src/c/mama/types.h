@@ -130,9 +130,6 @@ typedef struct mamaStatImpl_*                   mamaStat;
 typedef struct mamaStatsCollectorImpl_*         mamaStatsCollector;
 typedef struct mamaStatsGeneratorImpl_*         mamaStatsGenerator;
 typedef struct mamaMsgReplyImpl_*               mamaMsgReply;
-typedef struct mamaMiddlewareLibraryImpl_*      mamaMiddlewareLibrary;
-typedef struct mamaPayloadLibraryImpl_*         mamaPayloadLibrary;
-typedef struct mamaPluginLibraryImpl_*          mamaPluginLibrary;
 
 #if defined(__cplusplus)
 }

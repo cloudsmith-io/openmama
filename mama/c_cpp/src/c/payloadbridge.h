@@ -30,6 +30,7 @@ extern "C" {
 #include <mama/mama.h>
 #include <mamainternal.h>
 #include <mama/subscmsgtype.h>
+#include "payloadmanager.h"
 
 #define XSTR(s) STR(s)
 #define STR(s) #s

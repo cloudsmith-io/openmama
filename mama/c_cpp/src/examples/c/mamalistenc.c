@@ -216,7 +216,7 @@ static const char*           gSymbolNamespace    = NULL;
 static mamaSource            gSubscriptionSource = NULL;
 static mamaSource            gDictSource         = NULL;
 static const char*           gMiddleware         = "wmw";
-static mamaMiddlewareLibrary gMamaMiddlewareLib  = NULL;
+static mamaBridge            gMamaMiddleware     = NULL;
 static mamaQueue             gMamaDefaultQueue   = NULL;
 static const char*           gAppName            = NULL;
 static size_t                gHighWaterMark      = 0;
@@ -308,7 +308,7 @@ static void MAMACALLTYPE
 shutdownTimerCallback(mamaTimer timer, void *closure)
 {
 	/* Stop dispatching messages. */
-	mamaMiddlewareLibraryManager_stopBridge (gMamaMiddlewareLib);
+	mama_stop (gMamaMiddleware);
 }
 
 
@@ -361,7 +361,7 @@ int main (int argc, const char **argv)
     /* Start dispatching on the default event queue, this will block until Ctrl+C is pressed or the shutdown
 	 * timer fires.
 	 */
-    mamaMiddlewareLibraryManager_startBridge (gMamaMiddlewareLib);
+    mama_start (gMamaMiddleware);
 
 	/* Destroy the shutdown timer if it was created. */
 	if(shutdownTimer != NULL)
@@ -409,7 +409,7 @@ static void subscribeToSymbols (void)
         for (i = 0; i < gThreads; i++)
         {
             if (MAMA_STATUS_OK != (status = 
-                mamaQueue_createWithLibrary (&gQueues[i], gMamaMiddlewareLib)))
+                mamaQueue_create (&gQueues[i], gMamaMiddleware)))
             {
                 fprintf (stderr, "Error creating queue %s\n",
                          mamaStatus_stringForStatus( status ) );
@@ -590,14 +590,14 @@ void MAMACALLTYPE
 timeoutCb (mamaDictionary dict, void *closure)
 {
     printf ("Timed out waiting for dictionary\n" );
-    mamaMiddlewareLibraryManager_stopBridge (gMamaMiddlewareLib);
+    mama_stop (gMamaMiddleware);
 }
 
 void MAMACALLTYPE
 errorCb (mamaDictionary dict, const char *errMsg, void *closure)
 {
     fprintf (stderr, "Error getting dictionary: %s\n", errMsg );
-    mamaMiddlewareLibraryManager_stopBridge (gMamaMiddlewareLib);
+    mama_stop (gMamaMiddleware);
 }
 
 void MAMACALLTYPE
@@ -607,7 +607,7 @@ completeCb (mamaDictionary dict, void *closure)
     /*
        Stop processing events until all subscriptions have been created.
     */
-    mamaMiddlewareLibraryManager_stopBridge (gMamaMiddlewareLib);
+    mama_stop (gMamaMiddleware);
 }
 
 static void buildDataDictionary (void)
@@ -646,7 +646,7 @@ static void buildDataDictionary (void)
             Start dispatching on the default event queue. Dispatching on the
             queue is unblocked once one of the dictionary callbacks is invoked.
         */
-        mamaMiddlewareLibraryManager_startBridge (gMamaMiddlewareLib);
+        mama_start (gMamaMiddleware);
 
         /*
             True only if onComplete resulted in the unblocking of the queue
@@ -774,51 +774,25 @@ void initializeMama (void)
         mama_setApplicationName (gAppName);
     }
 
-    if (!gLibraryPath)
-    {
-        status = 
-            mamaMiddlewareLibraryManager_setProperty (NULL,
-                                                  "path",
-                                                  "../lib");
 
-        if (MAMA_STATUS_OK != status)
-        {
-            fprintf (stderr, "Could not set path property %s", gLibraryPath);
-            exit (1);
-        }
-    }
-
-    status = 
-        mamaMiddlewareLibraryManager_getLibrary (gMiddleware,
-                                                 &gMamaMiddlewareLib);
+    status =
+            mama_loadBridge (&gMamaMiddleware, gMiddleware); 
 
     if (MAMA_STATUS_OK != status)
     {
-        fprintf (stderr, "Could not get MAMA %s bridge.\n",
+        fprintf (stderr, "Could not load MAMA %s bridge.\n",
                                          gMiddleware);
         exit (1);
     }
     
     if (gPrintVersionAndExit)
     {
-        if (gMamaMiddlewareLib != NULL)
+        if (gMamaMiddleware != NULL)
         {
-            printf ("%s\n",mamaMiddlewareLibraryManager_getLibraryVersion (
-                                                       gMamaMiddlewareLib));
+            printf ("%s\n", mama_getVersion (gMamaMiddleware));
         }
         exit (0);
     }
-
-    status = 
-        mamaMiddlewareLibraryManager_openBridge (gMamaMiddlewareLib);
-    
-    if (MAMA_STATUS_OK!=status)
-    {
-        fprintf (stderr,"Could not open MAMA %s bridge.\n",
-                                         gMiddleware);
-        exit (1);
-    }    
-    
     /*
         mama_open() should be the first MAMA API call made in an
         application, with the exception of mama_loadBridge,
@@ -836,7 +810,7 @@ void initializeMama (void)
     }
 
     /*Get the default event queue*/
-    mamaMiddlewareLibraryManager_getDefaultEventQueue (gMamaMiddlewareLib, &gMamaDefaultQueue);
+    mama_getDefaultEventQueue (gMamaMiddleware, &gMamaDefaultQueue);
 
     /*Check if we are monitoring queue activity*/
     setQueueMonitors (gMamaDefaultQueue, -1);
@@ -881,8 +855,8 @@ void initializeMama (void)
 
     /* Create the transport after any properties have been set. */
     if (MAMA_STATUS_OK!=
-       (status=mamaTransport_createWithLibrary (gTransport, gTport, 
-                                              gMamaMiddlewareLib)))
+       (status=mamaTransport_create (gTransport, gTport, 
+                                        gMamaMiddleware)))
     {
         fprintf (stderr,
                  "Failed to create transport STATUS: %d %s\n", status,
@@ -924,8 +898,8 @@ void initializeMama (void)
         if (strlen(gDictTport)==0) gDictTport = NULL;
 
         status = mamaTransport_allocate (&gDictTransport);
-        status = mamaTransport_createWithLibrary (gDictTransport, 
-                                  gDictTport, gMamaMiddlewareLib);
+        status = mamaTransport_create (gDictTransport, 
+                                  gDictTport, gMamaMiddleware);
 
         if (status != MAMA_STATUS_OK)
         {

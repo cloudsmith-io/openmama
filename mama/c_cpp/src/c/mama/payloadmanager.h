@@ -30,93 +30,93 @@ extern "C"
 #endif /* __cplusplus */
 
 typedef mama_bool_t
-(*mamaPayloadLibraryCb) (mamaPayloadLibrary library,
-                         void*              closure);
+(*mamaPayloadCb) (mamaPayloadBridge bridge,
+                  void*             closure);
 
 /**
  * @brief Load a specific payload bridge (if not already loaded).
  *
  * Method to locate a shared library of a specific name and try 
- * and it and its functions as a payload library.
+ * and load it and its functions as a payload bridge.
  *
  * @param[in]  payloadName The name of the payload we want to load.
  * @param[in]  path The path to the location of the library if known,
                otherwise NULL.
- * @param[out] library A pointer to a mamaPayloadLibrary structure where
+ * @param[out] bridge A pointer to a mamaPayloadBridge structure where
  *             the payload bridge will be put, if found.
  * 
  *@return A mama_status indicating the success or failure of the load.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_loadLibraryWithPath (const char* payloadName,
-                                               const char* path,
-                                               mamaPayloadLibrary* library);
+mamaPayloadManager_loadBridgeWithPath (const char*        payloadName,
+                                       const char*        path,
+                                       mamaPayloadBridge* bridge);
 /**
  * @brief Unload a specific payload bridge.
  *
  * Method to unload a specific payload bridge. 
  *
- * @param[in] library The library to be unloaded.
+ * @param[in] bridge The bridge to be unloaded.
  * 
  *@return A mama_status indicating the success or failure of the unload.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_unloadLib (mamaPayloadLibrary library);
+mamaPayloadManager_unloadBridge (mamaPayloadBridge bridge);
 
 /**
- * @brief Retrieve a specific payload library.
+ * @brief Retrieve a specific payload bridge.
  *
  * Method to return a specific payload based on name.
  *
  * @param[in]  payloadName The name of the payload we want to retrieve.
- * @param[out] library A pointer to the mamaPayloadLibrary structure where
- *             the payload library will be put, if found.
+ * @param[out] bridge A pointer to the mamaPayloadBridge structure where
+ *             the payload bridge will be put, if found.
  *
  * @return A mama_status indicating the success or failure of the retrieval.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_getLibrary (const char*         payloadName,
-                                      mamaPayloadLibrary* library);
+mamaPayloadManager_getBridge (const char*        payloadName,
+                              mamaPayloadBridge* bridge);
 
 /*
- * @brief Retrieve the default (usually first loaded) payload library.
+ * @brief Retrieve the default (usually first loaded) payload bridge.
  *
- * Method to return the default payload library.
+ * Method to return the default payload bridge.
  *
- * @param[out] library A pointer to the mamaPayloadLibrary structure where
+ * @param[out] bridge A pointer to the mamaPayloadBridge structure where
  *                     the payload library will be put.
  *
  * @return A mama_status indicating the success or failure of the retrieval.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_getDefaultLibrary (mamaPayloadLibrary* library);
+mamaPayloadManager_getDefaultBridge (mamaPayloadBridge* bridge);
 
 /**
- * @brief Retrieve a specific payload library by Id.
+ * @brief Retrieve a specific payload bridge by Id.
  *
- * Method to retrieve a specific payload library by Id.
+ * Method to retrieve a specific payload bridge by Id.
  *
  * @param[in]  payloadId The ID of the payload we want to retrieve.
- * @param[out] library A pointer to the mamaPayloadLibrary structure where
- *             the payload library will be put, if found.
+ * @param[out] bridge A pointer to the mamaPayloadBridge structure where
+ *             the payload bridge will be put, if found.
  *
  * @return A mama_status indicating the success or failure of the retrieval.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_getLibraryById (char                payloadId,
-                                          mamaPayloadLibrary* library);
+mamaPayloadManager_getBridgeById (char               payloadId,
+                                 mamaPayloadBridge* bridge);
 /**
- * @brief Retrieve all loaded payload libraries.
+ * @brief Retrieve all loaded payload bridges.
  *
- * Method to return all loaded payload libraries.
+ * Method to return all loaded payload bridges.
  *
- * @param[out] libraries A pointer to an array of mamaPayloadLibrary structures
- *             where the return libraries will be put.
+ * @param[out] bridges A pointer to an array of mamaPayloadBridges structures
+ *             where the return bridges will be put.
  *
  * @param[in/out] size On calling the function this should be the size
  *                of the array where we are to put the libraries, on the 
@@ -126,8 +126,8 @@ mamaPayloadLibraryManager_getLibraryById (char                payloadId,
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
-                                        mama_size_t*        size);
+mamaPayloadManager_getBridges (mamaPayloadBridge* libraries,
+                               mama_size_t*       size);
 
 
 /**
@@ -135,7 +135,7 @@ mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
  *
  * Method to register a callback to be triggered on a new payload load.
  *
- * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger 
+ * @param[in] cb A mamaPayloadBridgeCb function pointer to be trigger 
  *               on load of a new payload.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -143,15 +143,15 @@ mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
-                                                void*           closure);
+mamaPayloadManager_registerLoadCallback (mamaPayloadCb cb,
+                                         void*         closure);
 
 /**
  * @brief Register a callback to be triggered when a payload library is unloaded.
  *
  * Method to register a callback to be triggered when a payload is unloaded.
  *
- * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger 
+ * @param[in] cb A mamaPayloadBridgeCb function pointer to be trigger 
  *               on unload of a payload.
  * @param[in] closure Data to pass to the callback function. 
  *
@@ -159,8 +159,8 @@ mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
-                                                  void*           closure);
+mamaPayloadManager_registerUnloadCallback (mamaPayloadCb cb,
+                                           void*         closure);
 
 /**
  * @brief Deregister a callback to be triggered when a new payload 
@@ -169,14 +169,14 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
  * Method to deregister a callback to be triggered on a new payload 
  * library load.
  *
- * @param[in] cb A mamaPayloadLibraryCb function pointer to be trigger on 
+ * @param[in] cb A mamaPayloadBridgeCb function pointer to be trigger on 
  *               load of a new payload.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb);
+mamaPayloadManager_deregisterLoadCallback (mamaPayloadCb cb);
 
 /**
  * @brief Deregister a callback to be triggered when a payload 
@@ -185,14 +185,14 @@ mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb);
  * Method to deregister a callback to be triggered when a payload 
  * library is unloaded.
  *
- * @param[in] cb A mamaPayloadLibraryCb function pointer that was previously
+ * @param[in] cb A mamaPayloadBridgeCb function pointer that was previously
  *               registered.
  *
  * @return A mama_status indicating the success or failure of the registration.
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb);
+mamaPayloadManager_deregisterUnloadCallback (mamaPayloadCb cb);
 
 /*
  * @brief Set a property programmatically for a specific library.
@@ -207,47 +207,47 @@ mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb);
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_setProperty (const char* libraryName,
-                                       const char* propertyName,
-                                       const char* value);
+mamaPayloadManager_setProperty (const char* libraryName,
+                                const char* propertyName,
+                                const char* value);
 /**
  * @brief Retrieve the name of a library.
  *
  * Method to retrieve the name of a library.
  *
- * @param[in] library A mamaPayloadLibrary from which to get the name.
+ * @param[in] library A mamaPayloadBridge from which to get the name.
  *
  * @return A null terminated string of the name - do NOT free this..
  */
 MAMAExpDLL
 extern const char* 
-mamaPayloadLibraryManager_getName (mamaPayloadLibrary library);
+mamaPayloadManager_getName (mamaPayloadBridge bridge);
 
 /**
  * @brief Retrieve the Id of a library.
  *
  * Method to retrieve the Id of a library.
  *
- * @param[in] library A mamaPayloadLibrary from which to get the name.
+ * @param[in] library A mamaPayloadBridge from which to get the name.
  *
  * @return A character representing the ID.
  */
 MAMAExpDLL
 extern char 
-mamaPayloadLibraryManager_getId (mamaPayloadLibrary library);
+mamaPayloadManager_getId (mamaPayloadBridge bridge);
 
 /**
  * @brief Retrieve the path from where a library was loaded.
  *
  * Method to retrieve the path from where a library was loaded.
  *
- * @param[in] library A mamaPayloadLibrary.
+ * @param[in] library A mamaPayloadBridge.
  *
  * @return A null terminated string of the path - do NOT free this.
  */
 MAMAExpDLL
 extern const char*
-mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library);
+mamaPayloadManager_getPath (mamaPayloadBridge bridge);
 
 /**
  * @brief set the default payload by ID.
@@ -260,7 +260,7 @@ mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library);
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_setDefaultPayloadbyId (char id);
+mamaPayloadManager_setDefaultPayloadbyId (char id);
 
 /**
  * @brief Get a string representation of a payload Id.
@@ -276,8 +276,8 @@ mamaPayloadLibraryManager_setDefaultPayloadbyId (char id);
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_payloadIdToString (char         payloadId,
-                                             const char** str);
+mamaPayloadManager_payloadIdToString (char         payloadId,
+                                      const char** str);
 /**
  * @brief Get the payload Id from the string representation of the library name.
  *
@@ -291,12 +291,11 @@ mamaPayloadLibraryManager_payloadIdToString (char         payloadId,
  */
 MAMAExpDLL
 extern mama_status
-mamaPayloadLibraryManager_stringToPayloadId (const char* str, 
-                                             char*       payloadId);
+mamaPayloadManager_stringToPayloadId (const char* str, 
+                                      char*       payloadId);
 
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */
 
 #endif /* MamaPayloadManagerH__ */
-

@@ -37,7 +37,7 @@ static mamaPayloadLibrary gDefaultPayload = NULL;
  * Private types
  */
 
-typedef struct mamaPayloadLibraryManagerImpl* mamaPayloadLibraryManager;
+typedef struct mamaPayloadManagerImpl* mamaPayloadManager;
 
 typedef struct mamaPayloadLibraryImpl_
 {
@@ -45,76 +45,76 @@ typedef struct mamaPayloadLibraryImpl_
     mamaPayloadBridge         mBridge;
     wInterlockedInt           mActiveCount;
     char                      mPayloadId;
-    mamaPayloadLibraryManager mManager;
+    mamaPayloadManager mManager;
 } mamaPayloadLibraryImpl;
 
-typedef struct mamaPayloadLibraryManagerImpl
+typedef struct mamaPayloadManagerImpl
 {
     mamaLibraryTypeManager mParent;
     mamaPayloadLibrary     mPayloads [MAMA_MAX_LIBRARIES];
-} mamaPayloadLibraryManagerImpl;
+} mamaPayloadManagerImpl;
 
 /*
  * Private declarations
  */
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getInstance (
-        mamaPayloadLibraryManager* plManager);
+mamaPayloadManagerImpl_getInstance (
+        mamaPayloadManager* plManager);
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary*    libraries,
+mamaPayloadManagerImpl_getLibraries (mamaPayloadLibrary*    libraries,
                                             mama_size_t*           size,
                                             mamaLibraryPredicateCb predicate);
 
 static Payload_createImpl
-mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
+mamaPayloadManagerImpl_getCreateImpl (const char* libraryName,
                                              LIB_HANDLE  libraryHandle);
 
 static Payload_destroyImpl
-mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
+mamaPayloadManagerImpl_getDestroyImpl (const char* libraryName,
                                               LIB_HANDLE  libraryHandle);
 
 static Payload_load
-mamaPayloadLibraryManagerImpl_getLoad (const char* libraryName,
+mamaPayloadManagerImpl_getLoad (const char* libraryName,
                                        LIB_HANDLE  libraryHandle);
 static Payload_unload
-mamaPayloadLibraryManagerImpl_getUnload (const char* libraryName,
+mamaPayloadManagerImpl_getUnload (const char* libraryName,
                                          LIB_HANDLE  libraryHandle);
 static Payload_createImpl
-mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library);
+mamaPayloadManagerImpl_getLibraryCreateImpl (mamaLibrary library);
 
 static Payload_destroyImpl
-mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library);
+mamaPayloadManagerImpl_getLibraryDestroyImpl (mamaLibrary library);
 
 static Payload_load
-mamaPayloadLibraryManagerImpl_getLibraryLoad (mamaLibrary library);
+mamaPayloadManagerImpl_getLibraryLoad (mamaLibrary library);
 
 static Payload_unload
-mamaPayloadLibraryManagerImpl_getLibraryUnload (mamaLibrary library);
+mamaPayloadManagerImpl_getLibraryUnload (mamaLibrary library);
 
 static mama_status
-mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
+mamaPayloadManagerImpl_createBridge (mamaLibrary        library,
                                             mamaPayloadBridge* bridge0);
 
 static mama_status
-mamaPayloadLibraryManagerImpl_loadBridge (mamaPayloadLibrary plLibrary);
+mamaPayloadManagerImpl_loadBridge (mamaPayloadLibrary plLibrary);
 
 static void
-mamaPayloadLibraryManager_destroyBridge (mamaPayloadBridge bridge);
+mamaPayloadManager_destroyBridge (mamaPayloadBridge bridge);
 
 static void
-mamaPayloadLibraryManager_deactivateLibrary (mamaPayloadLibrary library);
+mamaPayloadManager_deactivateLibrary (mamaPayloadLibrary library);
 
 static mama_status
-mamaPayloadLibraryManagerImpl_createLibrary (
+mamaPayloadManagerImpl_createLibrary (
         mamaLibrary library, mamaPayloadLibrary* plLibrary0);
 
 static void
-mamaPayloadLibraryManagerImpl_destroyLibrary (mamaPayloadLibrary plLibrary);
+mamaPayloadManagerImpl_destroyLibrary (mamaPayloadLibrary plLibrary);
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
+mamaPayloadManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
                                             char*              payloadId);
 
 /*
@@ -122,8 +122,8 @@ mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
  */
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getInstance (
-        mamaPayloadLibraryManager* plManager)
+mamaPayloadManagerImpl_getInstance (
+        mamaPayloadManager* plManager)
 {
      if (!plManager)
          return MAMA_STATUS_NULL_ARG;
@@ -133,7 +133,7 @@ mamaPayloadLibraryManagerImpl_getInstance (
          mamaLibraryManager_getTypeManager (MAMA_PAYLOAD_LIBRARY, &manager);
 
      if (MAMA_STATUS_OK == status)
-         *plManager = (mamaPayloadLibraryManager) manager->mClosure;
+         *plManager = (mamaPayloadManager) manager->mClosure;
      else
          *plManager = NULL;
 
@@ -141,7 +141,7 @@ mamaPayloadLibraryManagerImpl_getInstance (
 }
 
 static Payload_createImpl
-mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
+mamaPayloadManagerImpl_getCreateImpl (const char* libraryName,
                                              LIB_HANDLE  libraryHandle)
 {
     void* func = 
@@ -152,7 +152,7 @@ mamaPayloadLibraryManagerImpl_getCreateImpl (const char* libraryName,
 }
 
 static Payload_destroyImpl
-mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
+mamaPayloadManagerImpl_getDestroyImpl (const char* libraryName,
                                               LIB_HANDLE  libraryHandle)
 {
     void* func = 
@@ -164,7 +164,7 @@ mamaPayloadLibraryManagerImpl_getDestroyImpl (const char* libraryName,
 }
 
 static Payload_load
-mamaPayloadLibraryManagerImpl_getLoad (const char* libraryName,
+mamaPayloadManagerImpl_getLoad (const char* libraryName,
                                        LIB_HANDLE  libraryHandle)
 {
     void* func = 
@@ -175,7 +175,7 @@ mamaPayloadLibraryManagerImpl_getLoad (const char* libraryName,
 }
 
 static Payload_unload
-mamaPayloadLibraryManagerImpl_getUnload (const char* libraryName,
+mamaPayloadManagerImpl_getUnload (const char* libraryName,
                                          LIB_HANDLE  libraryHandle)
 {
     void* func = 
@@ -186,43 +186,43 @@ mamaPayloadLibraryManagerImpl_getUnload (const char* libraryName,
 }
 
 static Payload_createImpl
-mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (mamaLibrary library)
+mamaPayloadManagerImpl_getLibraryCreateImpl (mamaLibrary library)
 {
     return (Payload_createImpl)
-        mamaPayloadLibraryManagerImpl_getCreateImpl (library->mName,
+        mamaPayloadManagerImpl_getCreateImpl (library->mName,
                                                      library->mHandle);
 }
 
 static Payload_destroyImpl
-mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (mamaLibrary library)
+mamaPayloadManagerImpl_getLibraryDestroyImpl (mamaLibrary library)
 {
     return (Payload_destroyImpl)
-        mamaPayloadLibraryManagerImpl_getDestroyImpl (library->mName,
+        mamaPayloadManagerImpl_getDestroyImpl (library->mName,
                                                       library->mHandle);
 }
 
 static Payload_load
-mamaPayloadLibraryManagerImpl_getLibraryLoad (mamaLibrary library)
+mamaPayloadManagerImpl_getLibraryLoad (mamaLibrary library)
 {
     return (Payload_load)
-        mamaPayloadLibraryManagerImpl_getLoad (library->mName,
+        mamaPayloadManagerImpl_getLoad (library->mName,
                                                library->mHandle);
 }
 
 static Payload_unload
-mamaPayloadLibraryManagerImpl_getLibraryUnload (mamaLibrary library)
+mamaPayloadManagerImpl_getLibraryUnload (mamaLibrary library)
 {
     return (Payload_unload)
-        mamaPayloadLibraryManagerImpl_getUnload (library->mName,
+        mamaPayloadManagerImpl_getUnload (library->mName,
                                                  library->mHandle);
 }
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
-                                            mama_size_t*           size,
-                                            mamaLibraryPredicateCb predicate)
+mamaPayloadManagerImpl_getBridges (mamaPayloadBridge* plBridges,
+                                   mama_size_t*           size,
+                                   mamaLibraryPredicateCb predicate)
 {
-    if (!plLibraries || !size)
+    if (!plBridges || !size)
         return MAMA_STATUS_NULL_ARG;
 
     mamaLibrary libraries [MAMA_MAX_LIBRARIES];
@@ -235,7 +235,8 @@ mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
                                          predicate);
 
     for (mama_size_t k = 0; k < librariesSize && k < *size; ++k)
-        plLibraries[k] = (mamaPayloadLibrary)libraries[k]->mClosure;
+        plBridges[k] = (mamaPayloadBridge)((mamaPayloadLibrary)libraries[k]->
+                        mClosure)->mBridge;
 
     if (librariesSize < *size)
         *size = librariesSize;
@@ -244,18 +245,22 @@ mamaPayloadLibraryManagerImpl_getLibraries (mamaPayloadLibrary* plLibraries,
 }
 
 mama_status
-mamaPayloadLibraryManagerImpl_loadBridge (mamaPayloadLibrary plLibrary)
+mamaPayloadManagerImpl_loadBridge (mamaPayloadLibrary plLibrary)
 {
-    mama_status status = 
-        mamaPayloadLibraryManagerImpl_createBridge (plLibrary->mParent,
-                                                    &plLibrary->mBridge);
-
-    if (MAMA_STATUS_OK != status)    
-        return status;
-
+    mama_status       status  = MAMA_STATUS_OK;
     mamaLibrary       library = plLibrary->mParent;
     mamaPayloadBridge bridge  = plLibrary->mBridge;
-    bridge->mLibrary          = plLibrary;
+    
+    if (!bridge)
+    {
+        status = 
+            mamaPayloadManagerImpl_createBridge (plLibrary->mParent,
+                                             &plLibrary->mBridge);
+        if (MAMA_STATUS_OK != status)    
+            return status;
+
+        bridge->mLibrary          = plLibrary;
+    }
 
     /* Once the bridge has been successfully loaded, and the initialization
      * function called, we register each of the required bridge functions.
@@ -838,8 +843,8 @@ mamaPayloadLibraryManagerImpl_loadBridge (mamaPayloadLibrary plLibrary)
  * them and then copy the relevant parts before deallocating theirs again.
  */
 static mama_status
-mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
-                                            mamaPayloadBridge* bridge0)
+mamaPayloadManagerImpl_createBridge (mamaLibrary        library,
+                                     mamaPayloadBridge* bridge0)
 {
     assert (bridge0);
     *bridge0 = NULL;
@@ -853,7 +858,7 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
     mama_status status = MAMA_STATUS_OK;
     
     Payload_createImpl createImpl =
-        mamaPayloadLibraryManagerImpl_getLibraryCreateImpl (library);
+        mamaPayloadManagerImpl_getLibraryCreateImpl (library);
 
     if (createImpl)
     {        
@@ -868,7 +873,7 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
         if (MAMA_STATUS_OK != status || !oldBridge)
         {
             mama_log (MAMA_LOG_LEVEL_ERROR,
-                      "mamaPayloadLibraryManager_createBridge(): "
+                      "mamaPayloadManager_createBridge(): "
                       "Could not initialise %s library %s bridge using "
                       "old-style allocation.",
                       library->mTypeName, library->mName);
@@ -887,7 +892,7 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
          * we unload the new-style bridge, in case this does more
          * than just freeing the bridge struct. */
         Payload_destroyImpl destroyImpl =
-            mamaPayloadLibraryManagerImpl_getLibraryDestroyImpl (library);
+            mamaPayloadManagerImpl_getLibraryDestroyImpl (library);
 
         if (destroyImpl)
             destroyImpl (oldBridge);
@@ -901,13 +906,13 @@ mamaPayloadLibraryManagerImpl_createBridge (mamaLibrary        library,
 }
 
 static void
-mamaPayloadLibraryManager_destroyBridge (mamaPayloadBridge bridge)
+mamaPayloadManager_destroyBridge (mamaPayloadBridge bridge)
 {
     free (bridge);
 }
 
 mama_status
-mamaPayloadLibraryManager_activateLibrary (mamaPayloadLibrary plLibrary)
+mamaPayloadManager_activateLibrary (mamaPayloadLibrary plLibrary)
 {
     if (0 == wInterlocked_read (&plLibrary->mActiveCount))
     {
@@ -916,7 +921,7 @@ mamaPayloadLibraryManager_activateLibrary (mamaPayloadLibrary plLibrary)
         if (0 == wInterlocked_read (&plLibrary->mActiveCount))
         {
             mama_status status = 
-                mamaPayloadLibraryManagerImpl_loadBridge (plLibrary);
+                mamaPayloadManagerImpl_loadBridge (plLibrary);
 
             if (MAMA_STATUS_OK == status)
                 wInterlocked_increment (&plLibrary->mActiveCount);
@@ -927,12 +932,12 @@ mamaPayloadLibraryManager_activateLibrary (mamaPayloadLibrary plLibrary)
 }
 
 static void
-mamaPayloadLibraryManager_deactivateLibrary (mamaPayloadLibrary plLibrary)
+mamaPayloadManager_deactivateLibrary (mamaPayloadLibrary plLibrary)
 {
     wlock_lock (plLibrary->mParent->mLock);
     if (0 != wInterlocked_read (&plLibrary->mActiveCount))
     {
-        mamaPayloadLibraryManager_destroyBridge (plLibrary->mBridge); 
+        mamaPayloadManager_destroyBridge (plLibrary->mBridge); 
 
         wInterlocked_decrement (&plLibrary->mActiveCount);    
     } 
@@ -940,15 +945,15 @@ mamaPayloadLibraryManager_deactivateLibrary (mamaPayloadLibrary plLibrary)
 }
 
 static mama_status
-mamaPayloadLibraryManagerImpl_createLibrary (
+mamaPayloadManagerImpl_createLibrary (
         mamaLibrary library, mamaPayloadLibrary* plLibrary0)
 {
     assert (plLibrary0);
     *plLibrary0 = NULL;
 
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -960,7 +965,7 @@ mamaPayloadLibraryManagerImpl_createLibrary (
         return MAMA_STATUS_NOMEM;
 
     Payload_load load = 
-        mamaPayloadLibraryManagerImpl_getLibraryLoad (library);
+        mamaPayloadManagerImpl_getLibraryLoad (library);
 
     if (load)
     {
@@ -969,7 +974,7 @@ mamaPayloadLibraryManagerImpl_createLibrary (
         if (MAMA_STATUS_OK != status)
         {
              mama_log (MAMA_LOG_LEVEL_ERROR,
-                      "mamaPayloadLibraryManagerImpl_createLibrary(): "
+                      "mamaPayloadManagerImpl_createLibrary(): "
                       "Could not initialise %s library %s bridge using "
                       "new-style initialisation.",
                       library->mTypeName, library->mName);
@@ -995,21 +1000,28 @@ mamaPayloadLibraryManagerImpl_createLibrary (
 
     wInterlocked_initialize (&plLibrary->mActiveCount);
     wInterlocked_set (0, &plLibrary->mActiveCount);
-    
+ 
+    status = 
+            mamaPayloadManagerImpl_createBridge (plLibrary->mParent,
+                                                &plLibrary->mBridge);
+    if (MAMA_STATUS_OK != status)    
+        return status;
+
+    plLibrary->mBridge->mLibrary          = plLibrary;
     *plLibrary0 = plLibrary;
     return MAMA_STATUS_OK;
 }
 
 static void
-mamaPayloadLibraryManagerImpl_destroyLibrary (
+mamaPayloadManagerImpl_destroyLibrary (
         mamaPayloadLibrary plLibrary)
 {
     mamaLibrary library = plLibrary->mParent;
 
-    mamaPayloadLibraryManager_deactivateLibrary (plLibrary);
+    mamaPayloadManager_deactivateLibrary (plLibrary);
 
     Payload_unload unload = 
-        mamaPayloadLibraryManagerImpl_getLibraryUnload (library);
+        mamaPayloadManagerImpl_getLibraryUnload (library);
 
     if (unload)
     {
@@ -1027,7 +1039,7 @@ mamaPayloadLibraryManagerImpl_destroyLibrary (
 }
 
 static mama_status
-mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
+mamaPayloadManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
                                             char*              payloadId)
 {
     assert (plLibrary);
@@ -1045,7 +1057,7 @@ mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
         if (*payloadId)
         {
             mama_log (MAMA_LOG_LEVEL_FINE,
-                      "mamaPayloadLibraryManagerImpl_getPayloadId(): "
+                      "mamaPayloadManagerImpl_getPayloadId(): "
                       "Overriding payload bridge ID [%c] "
                       "with configured ID [%c]",
                       *payloadId, prop[0]);
@@ -1069,7 +1081,7 @@ mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
     if (*payloadId && tmpId != *payloadId)
     {
         mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaPayloadLibraryManagerImpl_getPayloadId(): "
+                  "mamaPayloadManagerImpl_getPayloadId(): "
                   "Received payload bridge ID [%c] from load "
                   "and different payload ID [%c] from getType",
                    *payloadId, tmpId);
@@ -1085,10 +1097,10 @@ mamaPayloadLibraryManagerImpl_getPayloadId (mamaPayloadLibrary plLibrary,
  */
 
 mama_status
-mamaPayloadLibraryManager_create (mamaLibraryTypeManager manager)
+mamaPayloadManager_create (mamaLibraryTypeManager manager)
 {
-    mamaPayloadLibraryManager plManager = (mamaPayloadLibraryManager)
-        calloc (1, sizeof (mamaPayloadLibraryManagerImpl));
+    mamaPayloadManager plManager = (mamaPayloadManager)
+        calloc (1, sizeof (mamaPayloadManagerImpl));
 
     if (!plManager)
         return MAMA_STATUS_NOMEM;
@@ -1101,11 +1113,11 @@ mamaPayloadLibraryManager_create (mamaLibraryTypeManager manager)
 }
 
 void
-mamaPayloadLibraryManager_destroy (void)
+mamaPayloadManager_destroy (void)
 {
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK == status)
     {
@@ -1115,18 +1127,18 @@ mamaPayloadLibraryManager_destroy (void)
 }
 
 mama_status
-mamaPayloadLibraryManager_loadLibrary (mamaLibrary library)
+mamaPayloadManager_loadLibrary (mamaLibrary library)
 {
     mamaPayloadLibrary plLibrary = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_createLibrary (library,
+        mamaPayloadManagerImpl_createLibrary (library,
                                                      &plLibrary);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    mamaPayloadLibraryManager plManager = NULL;
-    status = mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+    mamaPayloadManager plManager = NULL;
+    status = mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1134,7 +1146,7 @@ mamaPayloadLibraryManager_loadLibrary (mamaLibrary library)
     plLibrary->mManager = plManager;
 
     status =
-        mamaPayloadLibraryManagerImpl_getPayloadId (plLibrary,
+        mamaPayloadManagerImpl_getPayloadId (plLibrary,
                                                     &plLibrary->mPayloadId);
 
     if (MAMA_STATUS_OK != status)
@@ -1145,7 +1157,7 @@ mamaPayloadLibraryManager_loadLibrary (mamaLibrary library)
     if (dupLibrary)
     {
         mama_log (MAMA_LOG_LEVEL_ERROR,
-                  "mamaPayloadLibraryManager_loadLibrary(): "
+                  "mamaPayloadManager_loadLibrary(): "
                   "Payload id [%d] for %s library %s duplicates library %s.",
                   plLibrary->mPayloadId, library->mTypeName,
                   library->mName,
@@ -1157,45 +1169,45 @@ mamaPayloadLibraryManager_loadLibrary (mamaLibrary library)
     /* Store indexed lookup */
     plManager->mPayloads[plLibrary->mPayloadId] = plLibrary;
 
-    if (!mamaPayloadLibraryManager_getDefaultPayload ())
-        mamaPayloadLibraryManager_setDefaultPayload (plLibrary);
+    if (!mamaPayloadManager_getDefaultPayload ())
+        mamaPayloadManager_setDefaultPayload (plLibrary);
 
     return status;
 }
 
 void
-mamaPayloadLibraryManager_unloadLibrary (mamaLibrary library)
+mamaPayloadManager_unloadLibrary (mamaLibrary library)
 {
     mamaPayloadLibrary plLibrary = ((mamaPayloadLibrary) library->mClosure);
-    mamaPayloadLibraryManager plManager = plLibrary->mManager;
+    mamaPayloadManager plManager = plLibrary->mManager;
 
     char payloadId = plLibrary->mPayloadId;
-    mamaPayloadLibraryManagerImpl_destroyLibrary (plLibrary);
+    mamaPayloadManagerImpl_destroyLibrary (plLibrary);
     plManager->mPayloads[payloadId] = NULL;
     gDefaultPayload = NULL;
 }
 
 mamaLibraryType
-mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
+mamaPayloadManager_classifyLibraryType (const char* libraryName,
                                                LIB_HANDLE  libraryLib)
 {
     Payload_load load = 
-        mamaPayloadLibraryManagerImpl_getLoad (libraryName,
+        mamaPayloadManagerImpl_getLoad (libraryName,
                                                libraryLib);
 
     Payload_unload unload = 
-        mamaPayloadLibraryManagerImpl_getUnload (libraryName,
+        mamaPayloadManagerImpl_getUnload (libraryName,
                                                  libraryLib);
 
     if (load || unload)
         return MAMA_PAYLOAD_LIBRARY;
 
     Payload_createImpl createImpl =
-        mamaPayloadLibraryManagerImpl_getCreateImpl (libraryName,
+        mamaPayloadManagerImpl_getCreateImpl (libraryName,
                                                      libraryLib);
 
     Payload_destroyImpl destroyImpl =
-        mamaPayloadLibraryManagerImpl_getDestroyImpl (libraryName,
+        mamaPayloadManagerImpl_getDestroyImpl (libraryName,
                                                       libraryLib);
 
     if (createImpl || destroyImpl)
@@ -1205,24 +1217,24 @@ mamaPayloadLibraryManager_classifyLibraryType (const char* libraryName,
 }
 
 mama_bool_t
-mamaPayloadLibraryManager_forwardCallback (mamaLibraryCb cb, 
-                                           mamaLibrary   library, 
-                                           void*         closure)
+mamaPayloadManager_forwardCallback (mamaLibraryCb cb, 
+                                    mamaLibrary   library, 
+                                    void*         closure)
 {
-    mamaPayloadLibraryCb plCb      = (mamaPayloadLibraryCb)cb;
+    mamaPayloadCb plCb             = (mamaPayloadCb)cb;
     mamaPayloadLibrary   plLibrary = 
         (mamaPayloadLibrary)library->mClosure;
 
-    return plCb (plLibrary, closure);
+    return plCb (plLibrary->mBridge, closure);
 }
 
-void mamaPayloadLibraryManager_dump (mamaLibraryTypeManager manager)
+void mamaPayloadManager_dump (mamaLibraryTypeManager manager)
 {
-    mamaPayloadLibraryManager mwManager = 
-        (mamaPayloadLibraryManager) manager->mClosure;
+    mamaPayloadManager mwManager = 
+        (mamaPayloadManager) manager->mClosure;
 }
 
-void mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library)
+void mamaPayloadManager_dumpLibrary (mamaLibrary library)
 {
     mamaPayloadLibrary plLibrary = 
         (mamaPayloadLibrary) library->mClosure;
@@ -1236,11 +1248,11 @@ void mamaPayloadLibraryManager_dumpLibrary (mamaLibrary library)
  */
 
 mama_status
-mamaPayloadLibraryManager_loadLibraryWithPath (const char*         payloadName,
-                                               const char*         path,
-                                               mamaPayloadLibrary* plLibrary0)
+mamaPayloadManager_loadBridgeWithPath (const char*        payloadName,
+                                       const char*        path,
+                                       mamaPayloadBridge* bridge)
 {
-    if (!plLibrary0 || !payloadName)
+    if (!bridge || !payloadName)
         return MAMA_STATUS_NULL_ARG;
     
     mamaLibrary library = NULL;
@@ -1252,24 +1264,24 @@ mamaPayloadLibraryManager_loadLibraryWithPath (const char*         payloadName,
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *plLibrary0 =
-        (mamaPayloadLibrary) library->mClosure;
+    *bridge =
+        (mamaPayloadBridge)((mamaPayloadLibrary) library->mClosure)->mBridge;
 
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaPayloadLibraryManager_unloadLib (mamaPayloadLibrary library)
+mamaPayloadManager_unloadBridge (mamaPayloadBridge bridge)
 {
     return mamaLibraryManager_unloadLibrary (
-        mamaPayloadLibraryManager_getName(library), MAMA_PAYLOAD_LIBRARY);
+        mamaPayloadManager_getName(bridge), MAMA_PAYLOAD_LIBRARY);
 }
 
 mama_status
-mamaPayloadLibraryManager_getLibrary (const char*         payloadName,
-                                      mamaPayloadLibrary* plLibrary)
+mamaPayloadManager_getBridge (const char*        payloadName,
+                               mamaPayloadBridge* plBridge)
 {
-    if (!plLibrary || !payloadName)
+    if (!plBridge || !payloadName)
         return MAMA_STATUS_NULL_ARG;
     
     mamaLibrary library = NULL;
@@ -1281,62 +1293,63 @@ mamaPayloadLibraryManager_getLibrary (const char*         payloadName,
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *plLibrary =
-        (mamaPayloadLibrary) library->mClosure;
+    *plBridge =
+        (mamaPayloadBridge)((mamaPayloadLibrary) library->mClosure)->mBridge;
 
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaPayloadLibraryManager_getDefaultLibrary (mamaPayloadLibrary* plLibrary)
+mamaPayloadManager_getDefaultBridge (mamaPayloadBridge* plBridge)
 {
     if (!gDefaultPayload)
         return MAMA_STATUS_NOT_FOUND;
     
     mama_status status = 
-        mamaPayloadLibraryManager_activateLibrary (gDefaultPayload);
+        mamaPayloadManager_activateLibrary (gDefaultPayload);
 
-    *plLibrary = gDefaultPayload;
+    *plBridge = gDefaultPayload->mBridge;
     return status;
 }
 
 mama_status
-mamaPayloadLibraryManager_getLibraryById (char                payloadId,
-                                          mamaPayloadLibrary* plLibrary)
+mamaPayloadManager_getBridgeById (char                payloadId,
+                                  mamaPayloadBridge* plBridge)
 {
-    if (!plLibrary)
+    if (!plBridge)
         return MAMA_STATUS_NULL_ARG;    
 
-    *plLibrary = NULL;
+    *plBridge = NULL;
 
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *plLibrary =
+    mamaPayloadLibrary plLibrary =
         plManager->mPayloads[payloadId];
 
-    return (*plLibrary ? MAMA_STATUS_OK : MAMA_STATUS_NO_BRIDGE_IMPL);
+    *plBridge = plLibrary->mBridge; 
+    return (*plBridge ? MAMA_STATUS_OK : MAMA_STATUS_NO_BRIDGE_IMPL);
 }
 
 mama_status
-mamaPayloadLibraryManager_getLibraries (mamaPayloadLibrary* libraries,
-                                        mama_size_t*        size)
+mamaPayloadManager_getBridges (mamaPayloadBridge* bridges,
+                                 mama_size_t*       size)
 {
-    return mamaPayloadLibraryManagerImpl_getLibraries (libraries, size,
-                                                       NULL);
+    return mamaPayloadManagerImpl_getBridges (bridges, size,
+                                                      NULL);
 }
 
 mama_status
-mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
-                                                void*           closure)
+mamaPayloadManager_registerLoadCallback (mamaPayloadCb cb,
+                                         void*         closure)
 {
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1346,12 +1359,12 @@ mamaPayloadLibraryManager_registerLoadCallback (mamaPayloadLibraryCb cb,
 }
 
 mama_status
-mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
-                                                  void*           closure)
+mamaPayloadManager_registerUnloadCallback (mamaPayloadCb cb,
+                                           void*           closure)
 {
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1361,11 +1374,11 @@ mamaPayloadLibraryManager_registerUnloadCallback (mamaPayloadLibraryCb cb,
 }
 
 mama_status
-mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb)
+mamaPayloadManager_deregisterLoadCallback (mamaPayloadCb cb)
 {
-    mamaPayloadLibraryManager mwManager = NULL;
+    mamaPayloadManager mwManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&mwManager);
+        mamaPayloadManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1375,11 +1388,11 @@ mamaPayloadLibraryManager_deregisterLoadCallback (mamaPayloadLibraryCb cb)
 }
 
 mama_status
-mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb)
+mamaPayloadManager_deregisterUnloadCallback (mamaPayloadCb cb)
 {
-    mamaPayloadLibraryManager mwManager = NULL;
+    mamaPayloadManager mwManager = NULL;
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&mwManager);
+        mamaPayloadManagerImpl_getInstance (&mwManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1389,9 +1402,9 @@ mamaPayloadLibraryManager_deregisterUnloadCallback (mamaPayloadLibraryCb cb)
 }
 
 mama_status
-mamaPayloadLibraryManager_setProperty (const char* libraryName,
-                                       const char* propertyName,
-                                       const char* value)
+mamaPayloadManager_setProperty (const char* libraryName,
+                                const char* propertyName,
+                                const char* value)
 {
     return mamaLibraryManager_setProperty (libraryName,
                                            propertyName,
@@ -1399,49 +1412,55 @@ mamaPayloadLibraryManager_setProperty (const char* libraryName,
 }
 
 const char* 
-mamaPayloadLibraryManager_getName (mamaPayloadLibrary library)
+mamaPayloadManager_getName (mamaPayloadBridge bridge)
 {
-    return mamaLibraryManager_getName(library->mParent);
+    if (!bridge)
+        return NULL;
+
+    return mamaLibraryManager_getName(bridge->mLibrary->mParent);
 }
 
 char 
-mamaPayloadLibraryManager_getId (mamaPayloadLibrary library)
+mamaPayloadManager_getId (mamaPayloadBridge bridge)
 {
-    return library->mPayloadId;
+    return bridge->mLibrary->mPayloadId;
 }
 
 const char*
-mamaPayloadLibraryManager_getPath (mamaPayloadLibrary library)
+mamaPayloadManager_getPath (mamaPayloadBridge bridge)
 {
-    return mamaLibraryManager_getPath(library->mParent);
+    if (!bridge)
+        return NULL;
+
+    return mamaLibraryManager_getPath(bridge->mLibrary->mParent);
 }
 
 mamaPayloadBridge
-mamaPayloadLibraryManager_findPayload (char id)
+mamaPayloadManager_findPayload (char id)
 {
-    mamaPayloadLibrary library = NULL;
-    mamaPayloadLibraryManager_getLibraryById (id, &library);
+    mamaPayloadBridge bridge = NULL;
+    mamaPayloadManager_getBridgeById (id, &bridge);
    
-    if (!library)
+    if (!bridge)
         return NULL;
 
     mama_status status = 
-        mamaPayloadLibraryManager_activateLibrary (library);
+        mamaPayloadManager_activateLibrary (bridge->mLibrary);
 
     if (MAMA_STATUS_OK != status)
         return NULL;
  
-    return library->mBridge;
+    return bridge;
 }
 
 mamaPayloadBridge
-mamaPayloadLibraryManager_getDefaultPayload (void)
+mamaPayloadManager_getDefaultPayload (void)
 {
     if (!gDefaultPayload)
         return NULL;
 
      mama_status status = 
-        mamaPayloadLibraryManager_activateLibrary (gDefaultPayload);
+        mamaPayloadManager_activateLibrary (gDefaultPayload);
 
     if (MAMA_STATUS_OK != status)
         return NULL;
@@ -1450,19 +1469,23 @@ mamaPayloadLibraryManager_getDefaultPayload (void)
 }
 
 void
-mamaPayloadLibraryManager_setDefaultPayload (mamaPayloadLibrary library)
+mamaPayloadManager_setDefaultPayload (mamaPayloadLibrary library)
 {
     gDefaultPayload = library; 
 }
 
 mama_status
-mamaPayloadLibraryManager_setDefaultPayloadbyId (char id)
+mamaPayloadManager_setDefaultPayloadbyId (char id)
 {
     if (id == '\0')
         return MAMA_STATUS_NULL_ARG;
 
+    mamaPayloadBridge bridge = NULL;
+
     mama_status status =
-        mamaPayloadLibraryManager_getLibraryById (id, &gDefaultPayload);
+        mamaPayloadManager_getBridgeById (id, &bridge);
+
+    gDefaultPayload = bridge->mLibrary;
 
     if (status != MAMA_STATUS_OK)
         return status;
@@ -1471,17 +1494,17 @@ mamaPayloadLibraryManager_setDefaultPayloadbyId (char id)
 }
 
 mama_status
-mamaPayloadLibraryManager_payloadIdToString (char         payloadId,
-                                             const char** str)
+mamaPayloadManager_payloadIdToString (char         payloadId,
+                                      const char** str)
 {
     if (!str)
         return MAMA_STATUS_NULL_ARG;
 
     *str = NULL;
-    mamaPayloadLibraryManager plManager = NULL;
+    mamaPayloadManager plManager = NULL;
 
     mama_status status =
-        mamaPayloadLibraryManagerImpl_getInstance (&plManager);
+        mamaPayloadManagerImpl_getInstance (&plManager);
 
     if (MAMA_STATUS_OK != status)
         return status;
@@ -1496,27 +1519,27 @@ mamaPayloadLibraryManager_payloadIdToString (char         payloadId,
 }
 
 mama_status
-mamaPayloadLibraryManager_stringToPayloadId (const char* str, 
-                                             char*       payloadId)
+mamaPayloadManager_stringToPayloadId (const char* str, 
+                                      char*       payloadId)
 {
     if (!str || !payloadId)
         return MAMA_STATUS_NULL_ARG;
 
     *payloadId = 0;
-    mamaPayloadLibrary library = NULL;
+    mamaPayloadBridge bridge = NULL;
 
     mama_status status =
-        mamaPayloadLibraryManager_getLibrary (str, &library);
+        mamaPayloadManager_getBridge (str, &bridge);
 
     if (MAMA_STATUS_OK != status)
         return status;
 
-    *payloadId = library->mPayloadId;
+    *payloadId = bridge->mLibrary->mPayloadId;
     return status;
 }
 
 const char*
-mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType)
+mamaPayloadManager_convertToString (mamaPayloadType payloadType)
 {
     switch (payloadType)
     {
@@ -1560,8 +1583,8 @@ mamaPayloadLibraryManager_convertToString (mamaPayloadType payloadType)
 }
 
 mama_status
-mamaPayloadLibraryManager_convertLibraryToPayload (mamaPayloadLibrary library,
-                                                   mamaPayloadBridge* bridge)
+mamaPayloadManager_convertLibraryToPayload (mamaPayloadLibrary library,
+                                            mamaPayloadBridge* bridge)
 {
     assert (library);
     assert (bridge);

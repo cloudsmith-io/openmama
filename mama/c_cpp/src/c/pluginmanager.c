@@ -33,20 +33,20 @@
  * Private types
  */
 
-typedef struct mamaPluginLibraryManagerImpl* mamaPluginLibraryManager;
+typedef struct mamaPluginManagerImpl* mamaPluginManager;
 
 typedef struct mamaPluginLibraryImpl_
 {
     mamaLibrary                 mParent;
     mamaPlugin                  mBridge;
-    mamaPluginLibraryManager    mManager;
+    mamaPluginManager    mManager;
 } mamaPluginLibraryImpl;
 
-typedef struct mamaPluginLibraryManagerImpl
+typedef struct mamaPluginManagerImpl
 {
     mamaLibraryTypeManager mParent;
     mamaLibrary            mPlugins [MAMA_MAX_LIBRARIES];
-} mamaPluginLibraryManagerImpl;
+} mamaPluginManagerImpl;
 
 /*
  * Private declarations
@@ -57,35 +57,35 @@ typedef struct mamaPluginLibraryManagerImpl
  */
 
 mama_status
-mamaPluginLibraryManager_create (mamaLibraryTypeManager manager)
+mamaPluginManager_create (mamaLibraryTypeManager manager)
 {
     return MAMA_STATUS_OK;
 }
 
 void
-mamaPluginLibraryManager_destroy (void)
+mamaPluginManager_destroy (void)
 {
 }
 
 mama_status
-mamaPluginLibraryManager_loadLibrary (mamaLibrary library)
+mamaPluginManager_loadLibrary (mamaLibrary library)
 {
     return MAMA_STATUS_OK;
 }
 
 mama_status
-mamaPluginLibraryManager_unloadLib (mamaPluginLibrary library)
+mamaPluginManager_unloadLib (mamaPluginLibrary library)
 {
     return MAMA_STATUS_OK;
 }
 
 void
-mamaPluginLibraryManager_unloadLibrary (mamaLibrary library)
+mamaPluginManager_unloadLibrary (mamaLibrary library)
 {
 }
 
 mamaLibraryType
-mamaPluginLibraryManager_classifyLibraryType (const char* libraryName,
+mamaPluginManager_classifyLibraryType (const char* libraryName,
                                               LIB_HANDLE  libraryLib)
 {
 #if 0
@@ -99,11 +99,11 @@ mamaPluginLibraryManager_classifyLibraryType (const char* libraryName,
     return MAMA_UNKNOWN_LIBRARY;
 }
 
-void mamaPluginLibraryManager_dump (mamaLibraryTypeManager manager)
+void mamaPluginManager_dump (mamaLibraryTypeManager manager)
 {
 }
 
-void mamaPluginLibraryManager_dumpLibrary (mamaLibrary library)
+void mamaPluginManager_dumpLibrary (mamaLibrary library)
 {
 }
 
@@ -112,7 +112,7 @@ void mamaPluginLibraryManager_dumpLibrary (mamaLibrary library)
  */
 
 mama_status
-mamaPluginLibraryManager_loadBridge (const char*  pluginName,
+mamaPluginManager_loadBridge (const char*  pluginName,
                                      const char*  path,
                                      mamaPlugin*  plugin)
 {
@@ -120,7 +120,7 @@ mamaPluginLibraryManager_loadBridge (const char*  pluginName,
 }
 
 mama_status
-mamaPluginLibraryManager_setProperty (const char* libraryName,
+mamaPluginManager_setProperty (const char* libraryName,
                                       const char* propertyName,
                                       const char* value)
 {
@@ -130,13 +130,13 @@ mamaPluginLibraryManager_setProperty (const char* libraryName,
 }
 
 const char* 
-mamaPluginLibraryManager_getName (mamaPluginLibrary library)
+mamaPluginManager_getName (mamaPluginLibrary library)
 {
     return mamaLibraryManager_getName(library->mParent);
 }
 
 const char*
-mamaPluginLibraryManager_getPath (mamaPluginLibrary library)
+mamaPluginManager_getPath (mamaPluginLibrary library)
 {
     return mamaLibraryManager_getPath(library->mParent);
 }

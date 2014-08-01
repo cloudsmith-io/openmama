@@ -34,9 +34,9 @@ extern "C"
  */
 MAMAExpDLL
 extern mama_status
-mamaPluginLibraryManager_loadBridge (const char* pluginName,
-                                     const char* path,
-                                     mamaPlugin* plugin);
+mamaPluginManager_loadBridge (const char* pluginName,
+                              const char* path,
+                              mamaPlugin* plugin);
 /**
  * @brief Unload a specific plugin library.
  *
@@ -48,7 +48,7 @@ mamaPluginLibraryManager_loadBridge (const char* pluginName,
  */
 MAMAExpDLL
 extern mama_status
-mamaPluginLibraryManager_unloadLib (mamaPluginLibrary library);
+mamaPluginManager_unloadLib (mamaPluginLibrary library);
 
 /**
  * @brief Retrieve the name of a library.
@@ -61,7 +61,7 @@ mamaPluginLibraryManager_unloadLib (mamaPluginLibrary library);
  */
 MAMAExpDLL
 extern const char* 
-mamaPluginLibraryManager_getName (mamaPluginLibrary library);
+mamaPluginManager_getName (mamaPluginLibrary library);
 
 /**
  * @brief Retrieve the path from where a library was loaded.
@@ -74,7 +74,7 @@ mamaPluginLibraryManager_getName (mamaPluginLibrary library);
  */
 MAMAExpDLL
 extern const char*
-mamaPluginLibraryManager_getPath (mamaPluginLibrary library);
+mamaPluginManager_getPath (mamaPluginLibrary library);
 
 /*
  * @brief Set a property programmatically for a specific library.
@@ -90,9 +90,9 @@ mamaPluginLibraryManager_getPath (mamaPluginLibrary library);
 
 MAMAExpDLL
 extern mama_status
-mamaPluginLibraryManager_setProperty (const char* libraryName,
-                                      const char* propertyName,
-                                      const char* value);
+mamaPluginManager_setProperty (const char* libraryName,
+                               const char* propertyName,
+                               const char* value);
 
 
 #if defined(__cplusplus)

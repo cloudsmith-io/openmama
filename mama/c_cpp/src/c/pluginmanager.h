@@ -28,27 +28,29 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-extern mama_status
-mamaPluginLibraryManager_create (mamaLibraryTypeManager manager);
-
-extern void
-mamaPluginLibraryManager_destroy (void);
+typedef struct mamaPluginLibraryImpl_*          mamaPluginLibrary;
 
 extern mama_status
-mamaPluginLibraryManager_loadLibrary (mamaLibrary library);
+mamaPluginManager_create (mamaLibraryTypeManager manager);
 
 extern void
-mamaPluginLibraryManager_unloadLibrary (mamaLibrary library);
+mamaPluginManager_destroy (void);
+
+extern mama_status
+mamaPluginManager_loadLibrary (mamaLibrary library);
+
+extern void
+mamaPluginManager_unloadLibrary (mamaLibrary library);
 
 extern mamaLibraryType
-mamaPluginLibraryManager_classifyLibraryType (const char* libraryName,
-                                              LIB_HANDLE  libraryLib);
+mamaPluginManager_classifyLibraryType (const char* libraryName,
+                                       LIB_HANDLE  libraryLib);
 
 extern void 
-mamaPluginLibraryManager_dump (mamaLibraryTypeManager manager);
+mamaPluginManager_dump (mamaLibraryTypeManager manager);
 
 extern void 
-mamaPluginLibraryManager_dumpLibrary (mamaLibrary library);
+mamaPluginManager_dumpLibrary (mamaLibrary library);
 
 #if defined(__cplusplus)
 }
