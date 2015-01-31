@@ -40,8 +40,10 @@ msgUtils_getIssueSymbol (mamaMsg msg, const char** result)
 
     if(MAMA_STATUS_OK!=(status=mamaMsg_getString( msg, NULL, 305, result)))
     {
-        mama_log (MAMA_LOG_LEVEL_FINE, "Could not get wIssueSymbol [%s]."
-                  "Trying wIndexSymbol.", mamaMsgStatus_stringForStatus (status));
+        mama_log (MAMA_LOG_LEVEL_FINE,
+                    "Could not get wIssueSymbol [%s]."
+                    "Trying wIndexSymbol.",
+                    mamaStatus_stringForStatus (status));
         /*The symbol might be in wIndexSymbol*/
         status = mamaMsg_getString (msg, NULL, 293, result);
     }

@@ -60,6 +60,7 @@ TEST_F (MamaEnumTestsC, testPayloadStringConversions)
     testData[MAMA_PAYLOAD_EXEGY]      = PayloadNameLib ("EXEGY",      "exegymsg");
     testData[MAMA_PAYLOAD_FAST]       = PayloadNameLib ("FAST",       "fastmsg");
     testData[MAMA_PAYLOAD_IBMWFO]     = PayloadNameLib ("ibmwfo",     "ibmwfomsg");
+    testData[MAMA_PAYLOAD_INRUSH]     = PayloadNameLib ("inrush",     "inrushmsg");
     testData[MAMA_PAYLOAD_QPID]       = PayloadNameLib ("QPID",       "qpidmsg");
     testData[MAMA_PAYLOAD_RAI]        = PayloadNameLib ("rai",        "raimsg");
     testData[MAMA_PAYLOAD_SOLACE]     = PayloadNameLib ("solacemsg",  "solacemsg");
@@ -101,20 +102,22 @@ TEST_F (MamaEnumTestsC, testPayloadStringConversions)
 TEST_F (MamaEnumTestsC, testMiddlewareStringConversions)
 {
     MamaMiddlewareMapType testData;
-    testData[MAMA_MIDDLEWARE_WMW]        = "wmw";
-    testData[MAMA_MIDDLEWARE_LBM]        = "lbm";
-    testData[MAMA_MIDDLEWARE_TIBRV]      = "tibrv";
+    testData[MAMA_MIDDLEWARE_ACTIV]      = "activ";
     testData[MAMA_MIDDLEWARE_AVIS]       = "AVIS";
-    testData[MAMA_MIDDLEWARE_TICK42BLP]  = "tick42blp";
-    testData[MAMA_MIDDLEWARE_SOLACE]     = "SOLACE";
-    testData[MAMA_MIDDLEWARE_RAI]        = "rai";
-    testData[MAMA_MIDDLEWARE_QPID]       = "QPID";
     testData[MAMA_MIDDLEWARE_EXEGY]      = "exegy";
     testData[MAMA_MIDDLEWARE_IBMWFO]     = "ibmwfo";
-    testData[MAMA_MIDDLEWARE_ACTIV]      = "activ";
+    testData[MAMA_MIDDLEWARE_INRUSH]     = "inrush";
+    testData[MAMA_MIDDLEWARE_LBM]        = "lbm";
+    testData[MAMA_MIDDLEWARE_LBMKOMODO]  = "lbmkomodo";
+    testData[MAMA_MIDDLEWARE_QPID]       = "QPID";
+    testData[MAMA_MIDDLEWARE_RAI]        = "rai";
+    testData[MAMA_MIDDLEWARE_SOLACE]     = "SOLACE";
+    testData[MAMA_MIDDLEWARE_TIBRV]      = "tibrv";
+    testData[MAMA_MIDDLEWARE_TICK42BLP]  = "tick42blp";
     testData[MAMA_MIDDLEWARE_TICK42RMDS] = "tick42rmds";
     testData[MAMA_MIDDLEWARE_UMS]        = "ums";
     testData[MAMA_MIDDLEWARE_VULCAN]     = "vulcan";
+    testData[MAMA_MIDDLEWARE_WMW]        = "wmw";
     testData[MAMA_MIDDLEWARE_UNKNOWN]    = "unknown";
     MamaMiddlewareMapType::iterator itr;
 

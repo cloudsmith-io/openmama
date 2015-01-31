@@ -160,6 +160,7 @@ int wsem_getvalue (wsem_t*, int* items);
 #define wwrite(x,y,z) send((x),(y),(z),0)
 #define close _close
 #define sleep(x) Sleep( (x)*1000)
+#define wclosesocket(x) closesocket(x)
 
 COMMONExpDLL
 int gettimeofday( struct timeval *result, void *dummy );
@@ -181,6 +182,7 @@ const char *index( const char *str, char c );
 */
 #define PRId64 "I64d"
 #define PRIu64 "I64u"
+#define PRIi64 "I64i"
 
 #ifndef INT8_MIN
 #define INT8_MIN SCHAR_MIN

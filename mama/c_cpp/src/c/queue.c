@@ -113,6 +113,7 @@ typedef struct mamaDispatcherImpl_
     wInterlockedInt mIsDispatching;
 } mamaDispatcherImpl;
 
+static wInterlockedInt gQueueNumber = 0;
 
 mama_status
 mamaQueue_setClosure ( mamaQueue queue, void* closure)
@@ -190,6 +191,7 @@ mamaQueue_create (mamaQueue* queue,
     mama_status     status      =   MAMA_STATUS_OK;
     mamaBridgeImpl* bImpl       =   (mamaBridgeImpl*)bridgeImpl;
     mamaQueueImpl*  impl        =   NULL;
+    char            queueName[32];
 
     if (!bridgeImpl)
     {
@@ -203,6 +205,10 @@ mamaQueue_create (mamaQueue* queue,
         return MAMA_STATUS_NULL_ARG;
     }
 
+    /* Generate a unique queue name */
+    snprintf (queueName, sizeof(queueName),
+            "NO_NAME_%d", wInterlocked_increment(&gQueueNumber));
+
     /*Create the queue structure*/
     impl = (mamaQueueImpl*)calloc (1, sizeof (mamaQueueImpl));
 
@@ -212,7 +218,7 @@ mamaQueue_create (mamaQueue* queue,
     impl->mBridgeImpl           =   bImpl;
     impl->mMamaQueueBridgeImpl  =   NULL;
     impl->mDispatcher           =   NULL;
-    impl->mQueueName            =   strdup ("NO_NAME");
+    impl->mQueueName            =   strdup (queueName);
     impl->mHighWatermark        =   0;
     impl->mLowWatermark         =   1;
     impl->mQueueMonitorCallbacks.onQueueHighWatermarkExceeded =   NULL;
@@ -397,6 +403,7 @@ mamaQueue_create_usingNative (mamaQueue* queue,
     mama_status     status  =   MAMA_STATUS_OK;
     mamaBridgeImpl* bImpl   =   (mamaBridgeImpl*)bridgeImpl;
     mamaQueueImpl*  impl    =   NULL;
+    char            queueName[32];
 
     if (!bridgeImpl)
     {
@@ -410,6 +417,10 @@ mamaQueue_create_usingNative (mamaQueue* queue,
         return MAMA_STATUS_NULL_ARG;
     }
 
+    /* Generate a unique queue name */
+    snprintf (queueName, sizeof(queueName),
+            "NO_NAME_%d", wInterlocked_increment(&gQueueNumber));
+
     /*Create the queue structure*/
     impl = (mamaQueueImpl*)calloc (1, sizeof (mamaQueueImpl));
 
@@ -420,7 +431,7 @@ mamaQueue_create_usingNative (mamaQueue* queue,
     impl->mBridgeImpl           =   bImpl;
     impl->mMamaQueueBridgeImpl  =   NULL;
     impl->mDispatcher           =   NULL;
-    impl->mQueueName            =   strdup ("NO_NAME");
+    impl->mQueueName            =   strdup (queueName);
     impl->mHighWatermark        =   0;
     impl->mLowWatermark         =   1;
     impl->mQueueMonitorCallbacks.onQueueHighWatermarkExceeded =   NULL;
@@ -753,6 +764,9 @@ mamaQueue_destroy (mamaQueue queue)
         /* Destroy the counter lock */
         wInterlocked_destroy(&impl->mNumberOpenObjects);
         wInterlocked_destroy(&impl->mIsDispatching);
+
+        /* Destroy the queue counter lock */
+        wInterlocked_destroy(&gQueueNumber);
 
         free (impl);
 
@@ -1348,7 +1362,11 @@ mamaDispatcher_destroy (mamaDispatcher dispatcher)
     wthread_join (impl->mThread, NULL);
     wInterlocked_destroy (&impl->mIsDispatching);
 
+    /* Destroy the thread handle. */
+    wthread_destroy(impl->mThread);
+
     impl->mQueue->mDispatcher = NULL;
+    impl->mThread = 0; 
     free (impl);
     return MAMA_STATUS_OK;
 }

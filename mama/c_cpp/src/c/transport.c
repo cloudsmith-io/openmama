@@ -1870,7 +1870,7 @@ struct topicsForSourceClosure
 {
     int curIdx;
     const char* source;
-    const char** topics;
+    const char** topics;    /* Array of deep copies of the symbol names. */
     mama_i32_t*  types;
 
     /* This is index of the sub transport bridge that the subscription is
@@ -1907,7 +1907,7 @@ topicsForSourceIterator (wList list, void* element, void* c)
                 mamaSubscriptionType subscType = MAMA_SUBSC_TYPE_NORMAL;
                 mamaSubscription_getSubscriptionType (subsc->mSubscription, &subscType);
                 closure->types[closure->curIdx] = subscType;
-                closure->topics[closure->curIdx++] = topic;
+                closure->topics[closure->curIdx++] = strdup (topic);
             }
         }
     }
